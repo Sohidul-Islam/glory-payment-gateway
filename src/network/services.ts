@@ -163,5 +163,5 @@ export const getPaymentTypes = async () => {
 
 export const createPaymentType = async (data: CreatePaymentTypeData) => {
   const response = await AXIOS.post("/payment/types", data);
-  return response.data;
+  return response;
 };
