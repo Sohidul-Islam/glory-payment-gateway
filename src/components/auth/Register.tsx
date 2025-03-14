@@ -2,8 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { RegisterData, registerUser } from "../../network/services";
-import { cn } from "../../utils/utils";
-import { toast } from "react-hot-toast";
+import { cn, successToast } from "../../utils/utils";
 import { Link, useNavigate } from "react-router-dom";
 
 export const Register = () => {
@@ -17,11 +16,11 @@ export const Register = () => {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: () => {
-      toast.success("Registration successful! Please login.");
+      successToast("Registration successful! Please login.", "success");
       navigate("/login");
     },
     onError: (error: any) => {
-      toast.error(error?.message || "Registration failed");
+      successToast(error?.message || "Registration failed", "warn");
     },
   });
 

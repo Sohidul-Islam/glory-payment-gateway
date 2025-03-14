@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { LoginData, loginUser } from "../../network/services";
-import { cn } from "../../utils/utils";
-import { toast } from "react-hot-toast";
+import { cn, successToast } from "../../utils/utils";
+
 import { useNavigate, Link } from "react-router-dom";
 
 export const Login = () => {
@@ -24,12 +24,12 @@ export const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      toast.success("Login successful!");
+      successToast("Login successful!", "success");
       // Redirect to dashboard using navigate
       navigate("/");
     },
     onError: (error: Error) => {
-      toast.error(error?.message || "Login failed");
+      successToast(error?.message || "Login failed", "error");
     },
   });
 
@@ -130,6 +130,28 @@ export const Login = () => {
             </button>
           </div>
         </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                Don't have an account?
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <Link
+              to="/register"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Register now
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
