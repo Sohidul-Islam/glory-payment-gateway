@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { RegisterData, registerUser } from "../../network/services";
 import { cn, successToast } from "../../utils/utils";
 import { Link, useNavigate } from "react-router-dom";
+import { Input } from "../ui/Input";
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -39,149 +40,51 @@ export const Register = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            {/* Full Name */}
-            <div>
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("fullName", {
-                    required: "Full name is required",
-                  })}
-                  className={cn(
-                    "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400",
-                    "focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                    errors.fullName ? "border-red-300" : "border-gray-300"
-                  )}
-                />
-                {errors.fullName && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.fullName.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Input
+              {...register("fullName", { required: "Full name is required" })}
+              label="Full Name"
+              error={errors.fullName?.message}
+            />
 
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                  className={cn(
-                    "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400",
-                    "focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                    errors.email ? "border-red-300" : "border-gray-300"
-                  )}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Input
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              label="Email address"
+              type="email"
+              error={errors.email?.message}
+            />
 
-            {/* Phone Number */}
-            <div>
-              <label
-                htmlFor="phoneNumber"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Phone Number
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("phoneNumber", {
-                    required: "Phone number is required",
-                  })}
-                  className={cn(
-                    "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400",
-                    "focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                    errors.phoneNumber ? "border-red-300" : "border-gray-300"
-                  )}
-                />
-                {errors.phoneNumber && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.phoneNumber.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Input
+              {...register("phoneNumber", {
+                required: "Phone number is required",
+              })}
+              label="Phone Number"
+              error={errors.phoneNumber?.message}
+            />
 
-            {/* Location */}
-            <div>
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Location
-              </label>
-              <div className="mt-1">
-                <input
-                  {...register("location", {
-                    required: "Location is required",
-                  })}
-                  className={cn(
-                    "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400",
-                    "focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                    errors.location ? "border-red-300" : "border-gray-300"
-                  )}
-                />
-                {errors.location && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.location.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Input
+              {...register("location", { required: "Location is required" })}
+              label="Location"
+              error={errors.location?.message}
+            />
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  type="password"
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
-                  className={cn(
-                    "appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400",
-                    "focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                    errors.password ? "border-red-300" : "border-gray-300"
-                  )}
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Input
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              label="Password"
+              type="password"
+              error={errors.password?.message}
+            />
 
             <div>
               <button

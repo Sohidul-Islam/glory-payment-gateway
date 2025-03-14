@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { LoginData, loginUser } from "../../network/services";
 import { cn, successToast } from "../../utils/utils";
+import { Input } from "../ui/Input";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -46,56 +47,28 @@ export const Login = () => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
-              </label>
-              <input
-                {...register("email", {
-                  required: true,
-                  pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                })}
-                className={cn(
-                  "appearance-none rounded-md relative block w-full px-3 py-2 border",
-                  "border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none",
-                  "focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                  errors.email && "border-red-500"
-                )}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">
-                  Please enter a valid email address
-                </p>
-              )}
-            </div>
+          <div className="space-y-4">
+            <Input
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
+              label="Email address"
+              type="email"
+              error={errors.email?.message}
+            />
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                {...register("password", { required: true })}
-                className={cn(
-                  "appearance-none rounded-md relative block w-full px-3 py-2 border",
-                  "border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none",
-                  "focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm",
-                  errors.password && "border-red-500"
-                )}
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">
-                  Password is required
-                </p>
-              )}
-            </div>
+            <Input
+              {...register("password", {
+                required: "Password is required",
+              })}
+              label="Password"
+              type="password"
+              error={errors.password?.message}
+            />
           </div>
 
           {mutation.isError && (
