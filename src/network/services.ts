@@ -90,8 +90,15 @@ export const resetPassword = async (data: ResetPasswordData) => {
   return response.data;
 };
 
-export const createPaymentMethod = async (data: PaymentMethodData) => {
-  const response = await AXIOS.post("/payment/methods", data);
+export const createPaymentMethod = async (
+  data: PaymentMethodData & {
+    id?: number;
+  }
+) => {
+  const response = await AXIOS.post(
+    data?.id ? `/payment/methods/${data?.id}` : `/payment/methods`,
+    data
+  );
   return response.data;
 };
 

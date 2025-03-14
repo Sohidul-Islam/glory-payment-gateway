@@ -10,6 +10,9 @@ import { cn } from "../utils/utils";
 
 const PaymentMethods = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMethodId, setSelectedMethodId] = useState<
+    number | undefined
+  >();
   const queryClient = useQueryClient();
 
   const { data: methods = [], isLoading } = useQuery({
@@ -19,8 +22,18 @@ const PaymentMethods = () => {
 
   const handleSuccess = () => {
     setIsModalOpen(false);
+    setSelectedMethodId(undefined);
     queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
-    toast.success("Payment method added successfully");
+    toast.success(
+      selectedMethodId
+        ? "Payment method updated successfully"
+        : "Payment method added successfully"
+    );
+  };
+
+  const handleEdit = (id: number) => {
+    setSelectedMethodId(id);
+    setIsModalOpen(true);
   };
 
   if (isLoading) {
@@ -36,7 +49,10 @@ const PaymentMethods = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Payment Methods</h1>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setSelectedMethodId(undefined);
+            setIsModalOpen(true);
+          }}
           className="btn-primary flex items-center gap-2"
         >
           <PlusIcon className="w-5 h-5" />
@@ -75,7 +91,12 @@ const PaymentMethods = () => {
               </div>
             </div>
             <div className="mt-4 flex gap-2">
-              <button className="btn-primary text-sm">Edit</button>
+              <button
+                onClick={() => handleEdit(method.id)}
+                className="btn-primary text-sm"
+              >
+                Edit
+              </button>
               <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
                 Configure
               </button>
@@ -86,12 +107,18 @@ const PaymentMethods = () => {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add Payment Method"
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedMethodId(undefined);
+        }}
+        title={selectedMethodId ? "Edit Payment Method" : "Add Payment Method"}
         size="md"
         position="center"
       >
-        <PaymentMethodForm onSuccess={handleSuccess} />
+        <PaymentMethodForm
+          onSuccess={handleSuccess}
+          methodId={selectedMethodId}
+        />
       </Modal>
     </div>
   );

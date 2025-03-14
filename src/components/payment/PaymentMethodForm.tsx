@@ -23,8 +23,10 @@ const PAYMENT_METHODS: PaymentMethodType[] = [
 
 export const PaymentMethodForm = ({
   onSuccess,
+  methodId,
 }: {
   onSuccess?: () => void;
+  methodId?: number;
 }) => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -101,7 +103,7 @@ export const PaymentMethodForm = ({
   };
 
   const onSubmit = (data: PaymentMethodData) => {
-    mutation.mutate(data);
+    mutation.mutate({ ...data, id: methodId });
   };
 
   return (
