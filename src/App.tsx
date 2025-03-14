@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -20,23 +21,55 @@ import "./App.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = document.cookie.includes("access_token");
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
+
   return <>{children}</>;
+};
+
+// App Routes Component
+const AppRoutes = () => {
+  return (
+    <Routes>
+      {/* Auth Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="payment-methods" element={<PaymentMethods />} />
+        <Route path="mobile-banking" element={<MobileBanking />} />
+        <Route path="transactions" element={<Transactions />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="notifications" element={<Notifications />} />
+      </Route>
+    </Routes>
+  );
 };
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <Suspense
             fallback={
               <div className="flex items-center justify-center min-h-screen">
@@ -44,32 +77,11 @@ function App() {
               </div>
             }
           >
-            <Routes>
-              {/* Auth Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-
-              {/* Protected Routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <MainLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Dashboard />} />
-                <Route path="payment-methods" element={<PaymentMethods />} />
-                <Route path="mobile-banking" element={<MobileBanking />} />
-                <Route path="transactions" element={<Transactions />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="notifications" element={<Notifications />} />
-              </Route>
-            </Routes>
+            <AppRoutes />
           </Suspense>
-        </Router>
-        <ToastContainer position="top-right" autoClose={3000} />
-      </AuthProvider>
+          <ToastContainer position="top-right" autoClose={3000} />
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import AXIOS from "../network/Axios";
 import { LoginResponse } from "../network/services";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +20,10 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<LoginResponse["user"] | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log({ user });
 
   // Profile fetch query
   const { refetch: refreshProfile } = useQuery({
@@ -26,22 +31,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       if (!user?.email) return null;
       const response = await AXIOS.get(`/profile?email=${user.email}`);
-      setUser(response.data.user);
+      if (response.data.user) setUser(response.data.user);
       return response.data;
     },
     enabled: !!user?.email, // Only run if we have an email
   });
 
-  // Initialize auth state from localStorage
+  //   console.log({ userData });
+
+  //   Initialize auth state from localStorage and handle redirects
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+    const publicPaths = ["/login", "/register"];
+    const isPublicPath = publicPaths.includes(location.pathname);
 
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+
+      // If user is authenticated and trying to access login/register, redirect to dashboard
+      if (isPublicPath) {
+        navigate("/", { replace: true });
+      }
+    } else {
+      // If no auth data and not on a public path, redirect to login
+      if (!isPublicPath) {
+        navigate("/login", {
+          replace: true,
+          state: { from: location.pathname }, // Save the attempted URL
+        });
+      }
     }
-  }, []);
+  }, [navigate, location.pathname]);
 
   const login = (userData: LoginResponse) => {
     setUser(userData.user);
@@ -53,6 +75,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Set cookie
     document.cookie = `access_token=${userData.token}; path=/;`;
+
+    // Redirect to the saved location or default to dashboard
+    const savedPath = location.state?.from || "/";
+    navigate(savedPath, { replace: true });
   };
 
   const logout = () => {
@@ -66,6 +92,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Clear cookie
     document.cookie =
       "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
+    // Redirect to login after logout
+    navigate("/login", { replace: true });
   };
 
   return (

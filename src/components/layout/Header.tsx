@@ -15,9 +15,7 @@ const Header = ({ children }: HeaderProps) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigator = useNavigate();
 
-  const { user } = useAuth();
-
-  console.log({ user });
+  const { user, logout } = useAuth();
 
   return (
     <header className="bg-white border-b border-gray-200 h-16">
@@ -81,7 +79,12 @@ const Header = ({ children }: HeaderProps) => {
                   Settings
                 </a>
                 <hr className="my-2 border-gray-200" />
-                <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                <button
+                  onClick={() => {
+                    logout();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                >
                   Sign out
                 </button>
               </div>

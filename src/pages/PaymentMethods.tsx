@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import noImage from "../assets/no-image-overlay.webp";
 
 const PaymentMethods = () => {
   const [methods] = useState([
@@ -26,7 +27,7 @@ const PaymentMethods = () => {
           >
             <div className="flex items-center gap-4">
               <img
-                src={method.logo}
+                src={noImage}
                 alt={method.name}
                 className="w-16 h-16 object-contain"
               />
