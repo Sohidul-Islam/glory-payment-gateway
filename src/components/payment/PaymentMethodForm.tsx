@@ -76,9 +76,7 @@ export const PaymentMethodForm = ({
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Add Payment Method</h2>
-
+    <div className="max-w-md mx-auto bg-white p-4 rounded-xl">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Payment Method Selection */}
         <div>
@@ -88,7 +86,7 @@ export const PaymentMethodForm = ({
           <select
             {...register("name", { required: "Payment method is required" })}
             className={cn(
-              "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none",
+              "mt-1 block border border-1 w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none",
               "focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md",
               errors.name && "border-red-300"
             )}
@@ -150,7 +148,7 @@ export const PaymentMethodForm = ({
           </label>
           <select
             {...register("status")}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="mt-1 border border-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
