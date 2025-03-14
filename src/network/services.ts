@@ -65,6 +65,19 @@ export interface ResetPasswordData {
   password: string;
 }
 
+export type PaymentMethodType =
+  | "MOBILE_BANKING"
+  | "VISA"
+  | "MASTERCARD"
+  | "CREDIT_CARD"
+  | "USDT";
+
+export interface PaymentMethodData {
+  name: PaymentMethodType;
+  image: string;
+  status: "active" | "inactive";
+}
+
 // API Functions
 
 export const forgotPassword = async (data: ForgotPasswordData) => {
@@ -75,4 +88,34 @@ export const forgotPassword = async (data: ForgotPasswordData) => {
 export const resetPassword = async (data: ResetPasswordData) => {
   const response = await AXIOS.post("/reset-password", data);
   return response.data;
+};
+
+export const createPaymentMethod = async (data: PaymentMethodData) => {
+  const response = await AXIOS.post("/payment/methods", data);
+  return response.data;
+};
+
+export const uploadFile = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await AXIOS.post("/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data.url;
+};
+
+export interface PaymentMethod {
+  id: number;
+  name: PaymentMethodType;
+  image: string;
+  status: "active" | "inactive";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getPaymentMethods = async () => {
+  const response = await AXIOS.get("/payment/methods");
+  return response.data as PaymentMethod[];
 };
