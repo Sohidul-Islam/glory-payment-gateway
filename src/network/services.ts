@@ -47,3 +47,32 @@ export const loginUser = async (data: LoginData) => {
   const response = await AXIOS.post("/login", data);
   return response.data as LoginResponse;
 };
+
+export interface RegisterData {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  location: string;
+  password: string;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  token: string;
+  password: string;
+}
+
+// API Functions
+
+export const forgotPassword = async (data: ForgotPasswordData) => {
+  const response = await AXIOS.post("/forgot-password", data);
+  return response.data;
+};
+
+export const resetPassword = async (data: ResetPasswordData) => {
+  const response = await AXIOS.post("/reset-password", data);
+  return response.data;
+};

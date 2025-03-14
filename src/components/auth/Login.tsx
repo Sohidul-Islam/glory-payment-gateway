@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { LoginData, loginUser } from "../../network/services";
 import { cn } from "../../utils/utils";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export const Login = () => {
   const {
@@ -103,6 +103,17 @@ export const Login = () => {
               Login failed. Please check your credentials.
             </div>
           )}
+
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <Link
+                to="/forgot-password"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
 
           <div>
             <button

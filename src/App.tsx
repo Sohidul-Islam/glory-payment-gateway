@@ -22,6 +22,7 @@ import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
+import { ForgotPassword } from "./components/auth/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const AppRoutes = () => {
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* Protected Routes */}
       <Route

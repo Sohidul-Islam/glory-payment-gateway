@@ -23,8 +23,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log({ user });
-
   // Profile fetch query
   const { refetch: refreshProfile } = useQuery({
     queryKey: ["profile", user?.email],
@@ -43,7 +41,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-    const publicPaths = ["/login", "/register"];
+    const publicPaths = [
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+    ];
     const isPublicPath = publicPaths.includes(location.pathname);
 
     if (storedToken && storedUser) {
