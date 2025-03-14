@@ -7,6 +7,7 @@ import { PaymentMethodForm } from "../components/payment/PaymentMethodForm";
 import { toast } from "react-hot-toast";
 import { Modal } from "../components/ui/Modal";
 import { cn } from "../utils/utils";
+import { Loader } from "../components/ui/Loader";
 
 const PaymentMethods = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,11 +38,7 @@ const PaymentMethods = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
@@ -97,9 +94,9 @@ const PaymentMethods = () => {
               >
                 Edit
               </button>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+              {/* <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
                 Configure
-              </button>
+              </button> */}
             </div>
           </div>
         ))}

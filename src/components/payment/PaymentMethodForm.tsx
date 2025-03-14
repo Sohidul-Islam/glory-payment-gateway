@@ -75,8 +75,6 @@ export const PaymentMethodForm = ({
     }
   }, [data]);
 
-  console.log({ data });
-
   const handleImageUpload = async (file: File) => {
     try {
       setIsUploading(true);
