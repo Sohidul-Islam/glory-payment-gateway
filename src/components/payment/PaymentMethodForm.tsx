@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import {
   PaymentMethodData,
   PaymentMethodType,
   createPaymentMethod,
+  getPaymentMethodById,
 } from "../../network/services";
 
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn, uploadFile } from "../../utils/utils";
 import { ImagePlus, Loader2, X } from "lucide-react";
 
@@ -36,11 +37,18 @@ export const PaymentMethodForm = ({
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<PaymentMethodData>({
     defaultValues: {
       status: "active",
     },
+  });
+
+  const { data, isLoading: isLoadingMethod } = useQuery({
+    queryKey: ["paymentMethod", methodId],
+    queryFn: () => getPaymentMethodById(methodId!),
+    enabled: !!methodId,
   });
 
   const mutation = useMutation({
@@ -53,6 +61,21 @@ export const PaymentMethodForm = ({
       toast.error(error?.message || "Failed to create payment method");
     },
   });
+
+  useEffect(() => {
+    if (data) {
+      const method = data;
+      reset({
+        name: method.name,
+        status: method.status,
+        image: method.image,
+      });
+      // Set image preview
+      setImagePreview(method.image);
+    }
+  }, [data]);
+
+  console.log({ data });
 
   const handleImageUpload = async (file: File) => {
     try {
@@ -105,6 +128,14 @@ export const PaymentMethodForm = ({
   const onSubmit = (data: PaymentMethodData) => {
     mutation.mutate({ ...data, id: methodId });
   };
+
+  if (isLoadingMethod) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto bg-white p-4 rounded-xl">

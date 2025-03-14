@@ -124,5 +124,11 @@ export interface PaymentMethod {
 
 export const getPaymentMethods = async () => {
   const response = await AXIOS.get("/payment/methods");
+
   return response.data as PaymentMethod[];
+};
+
+export const getPaymentMethodById = async (id: number) => {
+  const response = await AXIOS.get(`/payment/methods/${id}`);
+  return response.data as PaymentMethod;
 };
