@@ -23,6 +23,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
   const menuItems = [
     { name: "Dashboard", icon: HomeIcon, path: "/" },
     { name: "Payment Methods", icon: CreditCardIcon, path: "/payment-methods" },
+    { name: "Payment Types", icon: CreditCardIcon, path: "/payment-types" },
     { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
     { name: "Transactions", icon: ChartBarIcon, path: "/transactions" },
     { name: "User Management", icon: UserGroupIcon, path: "/users" },

@@ -23,6 +23,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
+import { PaymentTypes } from "./pages/PaymentTypes";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const AppRoutes = () => {
       >
         <Route index element={<Dashboard />} />
         <Route path="payment-methods" element={<PaymentMethods />} />
+        <Route path="payment-types" element={<PaymentTypes />} />
         <Route path="mobile-banking" element={<MobileBanking />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />

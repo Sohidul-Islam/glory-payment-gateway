@@ -132,3 +132,36 @@ export const getPaymentMethodById = async (id: number) => {
   const response = await AXIOS.get(`/payment/methods/${id}`);
   return response.data as PaymentMethod;
 };
+
+export interface PaymentTypeDetail {
+  value: string;
+  description: string;
+  maxLimit: number;
+}
+
+export interface PaymentType {
+  id: number;
+  paymentMethodId: number;
+  name: string;
+  image: string;
+  details: PaymentTypeDetail[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePaymentTypeData {
+  paymentMethodId: number;
+  name: string;
+  image: string;
+  details: PaymentTypeDetail[];
+}
+
+export const getPaymentTypes = async () => {
+  const response = await AXIOS.get("/payment/types");
+  return response.data;
+};
+
+export const createPaymentType = async (data: CreatePaymentTypeData) => {
+  const response = await AXIOS.post("/payment/types", data);
+  return response.data;
+};

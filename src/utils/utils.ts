@@ -76,4 +76,21 @@ export const cn = (
   return inputs.filter(Boolean).join(" ");
 };
 
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+};
+
+// Usage examples:
+// formatDate("2025-03-14T17:33:12.000Z") -> "Mar 14, 2025, 11:33 PM"
+// formatDate("2025-03-14T18:55:10.000Z") -> "Mar 14, 2025, 12:55 PM"
+
 // make a cn function
