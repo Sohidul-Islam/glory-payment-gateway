@@ -240,3 +240,20 @@ export const getPaymentDetailInfo = async (paymentDetailId: number) => {
   const response = await AXIOS.get(`/payment/details/${paymentDetailId}`);
   return response.data as PaymentDetailResponse;
 };
+
+export interface CreateAccountData {
+  paymentDetailId: number;
+  accountNumber: string;
+  maxLimit: string;
+  status: "active" | "inactive";
+}
+
+export const createPaymentAccount = async (data: CreateAccountData) => {
+  const response = await AXIOS.post("/payment/account/create", data);
+  return response.data;
+};
+
+export const updatePaymentAccount = async (id: number, data: CreateAccountData) => {
+  const response = await AXIOS.post(`/payment/account/update/${id}`, data);
+  return response.data;
+};

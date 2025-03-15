@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { PaymentDetailResponse, getPaymentDetailInfo } from "../network/services";
+import { PaymentDetailResponse, getPaymentDetailInfo, AccountInfo } from "../network/services";
 import { Loader } from "../components/ui/Loader";
+import { Modal } from "../components/ui/Modal";
+import { AccountForm } from "../components/payment/AccountForm";
 import {
   ArrowLeft,
   CreditCard,
@@ -15,6 +18,7 @@ import {
   ToggleLeft,
   Settings,
   Landmark,
+  Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/utils";
@@ -22,6 +26,8 @@ import { formatDate } from "../utils/utils";
 export const PaymentDetails = () => {
   const { paymentDetailsId } = useParams();
   const navigate = useNavigate();
+  const [isAccountFormOpen, setIsAccountFormOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
 
   const { data: response, isLoading } = useQuery<PaymentDetailResponse>({
     queryKey: ["paymentDetail", paymentDetailsId],
@@ -53,6 +59,11 @@ export const PaymentDetails = () => {
 
   const { paymentMethod, accountInfo } = response;
   const { PaymentType } = paymentMethod;
+
+  const handleAccountAction = (account?: AccountInfo) => {
+    setSelectedAccount(account || null);
+    setIsAccountFormOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -177,8 +188,15 @@ export const PaymentDetails = () => {
 
       {/* Account Information */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold">Linked Accounts</h2>
+          <button
+            onClick={() => handleAccountAction()}
+            className="inline-flex items-center px-3 py-1.5 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Add Account
+          </button>
         </div>
         <div className="divide-y divide-gray-200">
           {accountInfo.map((account) => (
@@ -209,7 +227,10 @@ export const PaymentDetails = () => {
                     </div>
                   </div>
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <button
+                  onClick={() => handleAccountAction(account)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
                   <Settings className="w-5 h-5 text-gray-600" />
                 </button>
               </div>
@@ -217,6 +238,26 @@ export const PaymentDetails = () => {
           ))}
         </div>
       </div>
+
+      {/* Account Form Modal */}
+      <Modal
+        isOpen={isAccountFormOpen}
+        onClose={() => {
+          setIsAccountFormOpen(false);
+          setSelectedAccount(null);
+        }}
+        title={selectedAccount ? "Edit Account" : "Add New Account"}
+        size="md"
+      >
+        <AccountForm
+          paymentDetailId={Number(paymentDetailsId)}
+          initialData={selectedAccount}
+          onSuccess={() => {
+            setIsAccountFormOpen(false);
+            setSelectedAccount(null);
+          }}
+        />
+      </Modal>
 
       {/* Actions */}
       <div className="bg-white rounded-xl shadow-sm p-6">
@@ -226,12 +267,14 @@ export const PaymentDetails = () => {
             <ToggleLeft className="w-4 h-4 mr-2" />
             Toggle Status
           </button>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          <button
+            onClick={() => handleAccountAction()}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <Plus className="w-4 h-4 mr-2" />
             Add New Account
           </button>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-            Update Limits
-          </button>
+   
         </div>
       </div>
     </div>
