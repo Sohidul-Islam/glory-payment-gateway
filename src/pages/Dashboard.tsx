@@ -1,5 +1,6 @@
 import { Card } from "../components/ui/Card";
 import { LineChart, BarChart } from "../components/charts";
+import { AgentLinkCard } from "../components/dashboard/AgentLinkCard";
 
 const Dashboard = () => {
   const stats = [
@@ -26,7 +27,14 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+      
+      {/* Agent Link Section */}
+      <div className="max-w-3xl">
+        <AgentLinkCard />
+      </div>
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex gap-4">

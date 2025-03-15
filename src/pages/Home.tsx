@@ -1,31 +1,17 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { PaymentMethod, getPaymentMethods } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import { Shield, CreditCard, Wallet, ArrowRight, CheckCircle2, Copy, Link as LinkIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { Shield, CreditCard, Wallet, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Home = () => {
   const { agentId } = useParams();
-  const [copied, setCopied] = useState(false);
 
   const { data: paymentMethods, isLoading } = useQuery<PaymentMethod[]>({
     queryKey: ["paymentMethods", agentId],
     queryFn: () => getPaymentMethods(),
     enabled: !!agentId,
   });
-
-  const copyAgentLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      toast.success("Link copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      toast.error("Failed to copy link");
-    }
-  };
 
   if (isLoading) {
     return <Loader />;
@@ -43,27 +29,6 @@ export const Home = () => {
             <p className="mt-6 text-xl text-indigo-100 max-w-3xl mx-auto">
               Make secure payments through our trusted agent network. Fast, reliable, and protected transactions.
             </p>
-            {/* Copy Link Button */}
-            <div className="mt-8 flex justify-center">
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                <LinkIcon className="w-5 h-5 text-indigo-200" />
-                <span className="text-sm text-indigo-100">Agent Link:</span>
-                <code className="px-2 py-1 bg-white/20 rounded text-sm font-mono text-indigo-100">
-                  {window.location.href}
-                </code>
-                <button
-                  onClick={copyAgentLink}
-                  className="ml-2 p-2 hover:bg-white/20 rounded-md transition-colors"
-                  title="Copy link"
-                >
-                  {copied ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-400" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-indigo-200" />
-                  )}
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
