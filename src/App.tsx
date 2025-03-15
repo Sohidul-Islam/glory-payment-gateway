@@ -14,6 +14,7 @@ import UserManagement from "./pages/UserManagement";
 import Notifications from "./pages/Notifications";
 import { Login } from "./components/auth/Login";
 import { Register } from "./components/auth/Register";
+import { ResetPassword } from "./components/auth/ResetPassword";
 import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +26,8 @@ import { useAuth } from "./hooks/useAuth";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { PaymentTypes } from "./pages/PaymentTypes";
 import { PaymentDetails } from "./pages/PaymentDetails";
+import { Home } from "./pages/Home";
+
 
 const queryClient = new QueryClient();
 
@@ -48,6 +51,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Protected Routes */}
       <Route
@@ -67,6 +71,8 @@ const AppRoutes = () => {
         <Route path="users" element={<UserManagement />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
+
+      <Route path="/agent/:agentId" element={<Home />} />
     </Routes>
   );
 };
