@@ -134,26 +134,39 @@ export const getPaymentMethodById = async (id: number) => {
 };
 
 export interface PaymentTypeDetail {
+  id: number;
+  paymentTypeId: number;
   value: string;
   description: string;
-  maxLimit: number;
+  maxLimit: string;
+  currentUsage: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PaymentType {
   id: number;
+  userId: number;
   paymentMethodId: number;
   name: string;
   image: string;
-  details: PaymentTypeDetail[];
+  status: "active" | "inactive";
+  PaymentDetails: PaymentTypeDetail[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreatePaymentTypeData {
+  id?:number;
   paymentMethodId: number;
   name: string;
   image: string;
-  details: PaymentTypeDetail[];
+  details: {
+    value: string;
+    description: string;
+    maxLimit: string;
+  }[];
 }
 
 export const getPaymentTypes = async () => {
@@ -163,5 +176,13 @@ export const getPaymentTypes = async () => {
 
 export const createPaymentType = async (data: CreatePaymentTypeData) => {
   const response = await AXIOS.post("/payment/types", data);
+  return response;
+};
+
+export const updatePaymentType = async (data: CreatePaymentTypeData) => {
+  if(!data.id){
+    throw Error("Payment type is methods.")
+  }
+  const response = await AXIOS.post(`/payment/types/${data.id}`, data);
   return response;
 };

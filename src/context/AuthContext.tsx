@@ -62,11 +62,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!isPublicPath) {
         navigate("/login", {
           replace: true,
-          state: { from: location.pathname }, // Save the attempted URL
+          state: { from: location?.pathname }, // Save the attempted URL
         });
       }
     }
-  }, [navigate, location.pathname]);
+  }, [navigate, location?.pathname]);
 
   const login = (userData: LoginResponse) => {
     setUser(userData.user);

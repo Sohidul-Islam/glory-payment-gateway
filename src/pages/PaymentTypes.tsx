@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PaymentType, getPaymentTypes } from "../network/services";
 import { Modal } from "../components/ui/Modal";
 import { Loader } from "../components/ui/Loader";
-import { PlusIcon, Eye, Pencil } from "lucide-react";
+import { PlusIcon, Eye, Pencil, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDate } from "../utils/utils";
 import { PaymentTypeForm } from "../components/payment/PaymentTypeForm";
 
@@ -11,6 +11,7 @@ export const PaymentTypes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<PaymentType | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
   const { data: types = [], isLoading } = useQuery({
     queryKey: ["paymentTypes"],
@@ -20,6 +21,10 @@ export const PaymentTypes = () => {
   if (isLoading) {
     return <Loader />;
   }
+
+  const toggleExpand = (id: number) => {
+    setExpandedCard(expandedCard === id ? null : id);
+  };
 
   return (
     <div className="space-y-6">
@@ -34,84 +39,148 @@ export const PaymentTypes = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment Method
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Details Count
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created At
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {types.map((type: PaymentType) => (
-                <tr key={type.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <img
-                          className="h-10 w-10 rounded-full object-cover"
-                          src={type.image}
-                          alt={type.name}
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {type.name}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {type.paymentMethodId}
+      {/* Grid of Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {types.map((type: PaymentType) => (
+          <div
+            key={type.id}
+            className="bg-white rounded-lg shadow-md overflow-hidden h-fit"
+          >
+            {/* Card Header */}
+            <div className="p-4">
+              <div className="flex items-center space-x-4">
+                <img
+                  src={type.image}
+                  alt={type.name}
+                  className="h-16 w-16 rounded-lg object-cover"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {type.name}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        type.status === "active"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {type.status}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {type.details.length} details
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(type.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      onClick={() => {
-                        setSelectedType(type);
-                        setIsModalOpen(true);
-                      }}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    >
-                      <Eye className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedType(type);
-                        setIsFormModalOpen(true);
-                      }}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Pencil className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                    {type.paymentMethodId}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card Actions */}
+            <div className="px-4 py-3 bg-gray-50 flex justify-between items-center">
+              <button
+                onClick={() => toggleExpand(type.id)}
+                className="text-sm font-medium text-gray-600 flex items-center gap-1 hover:text-gray-900"
+              >
+                {type.PaymentDetails?.length || 0} Details
+                {expandedCard === type.id ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedType(type);
+                    setIsModalOpen(true);
+                  }}
+                  className="p-1 text-indigo-600 hover:text-indigo-900 rounded-full hover:bg-indigo-50"
+                >
+                  <Eye className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedType(type);
+                    setIsFormModalOpen(true);
+                  }}
+                  className="p-1 text-blue-600 hover:text-blue-900 rounded-full hover:bg-blue-50"
+                >
+                  <Pencil className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Expandable Details */}
+            <div 
+              className={`transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden ${
+                expandedCard === type.id ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="border-t border-gray-200">
+                {type.PaymentDetails?.map((detail) => (
+                  <div
+                    key={detail.id}
+                    className="p-4 space-y-2 border-b border-gray-100 last:border-b-0"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Value
+                      </span>
+                      <span className="text-sm text-gray-900">{detail.value}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Description
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {detail.description}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Max Limit
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {Number(detail.maxLimit).toLocaleString()} BDT
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Current Usage
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {Number(detail.currentUsage).toLocaleString()} BDT
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Status
+                      </span>
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          detail.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {detail.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600">
+                        Created At
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {formatDate(detail.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Details Modal */}
@@ -134,18 +203,29 @@ export const PaymentTypes = () => {
               />
               <div>
                 <h3 className="text-lg font-medium">{selectedType.name}</h3>
-                <p className="text-sm text-gray-500">
-                  Created on {formatDate(selectedType.createdAt)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-500">
+                    Created on {formatDate(selectedType.createdAt)}
+                  </p>
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      selectedType.status === "active"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {selectedType.status}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="space-y-4">
               <h4 className="font-medium">Payment Details</h4>
               <div className="grid grid-cols-1 gap-4">
-                {selectedType.details.map((detail, index) => (
+                {selectedType.PaymentDetails?.map((detail) => (
                   <div
-                    key={index}
+                    key={detail.id}
                     className="bg-gray-50 p-4 rounded-lg space-y-2"
                   >
                     <div className="flex justify-between">
@@ -159,7 +239,25 @@ export const PaymentTypes = () => {
                     <div className="flex justify-between">
                       <span className="text-sm font-medium">Max Limit</span>
                       <span className="text-sm">
-                        {detail.maxLimit.toLocaleString()} BDT
+                        {Number(detail.maxLimit).toLocaleString()} BDT
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">Current Usage</span>
+                      <span className="text-sm">
+                        {Number(detail.currentUsage).toLocaleString()} BDT
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium">Status</span>
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          detail.isActive
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {detail.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
                   </div>

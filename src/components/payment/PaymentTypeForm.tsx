@@ -7,9 +7,11 @@ import {
   PaymentType,
   createPaymentType,
   getPaymentMethods,
+  PaymentMethodType,
+  updatePaymentType,
 } from "../../network/services";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn, successToast, uploadFile } from "../../utils/utils";
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Input } from "../ui/Input";
@@ -28,6 +30,7 @@ export const PaymentTypeForm = ({
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodType | "">("");
 
   const { data: paymentMethods = [], isLoading: isLoadingMethods } = useQuery({
     queryKey: ["paymentMethods"],
@@ -39,12 +42,30 @@ export const PaymentTypeForm = ({
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CreatePaymentTypeData>({
-    defaultValues: initialData || {
-      details: [{ value: "", description: "", maxLimit: 0 }],
+    defaultValues: {
+      id:initialData?.id,
+      paymentMethodId: initialData?.paymentMethodId || 0,
+      name: initialData?.name || "",
+      image: initialData?.image || "",
+      details: initialData?.PaymentDetails?.map(detail => ({
+        id:detail.id,
+        value: detail.value,
+        description: detail.description || "",
+        maxLimit: detail.maxLimit,
+      })) || [{ value: "", description: "", maxLimit: "0" }],
     },
   });
+
+  // Set initial payment method when component mounts or initialData changes
+  useEffect(() => {
+    if (initialData?.paymentMethodId && paymentMethods.length > 0) {
+      const method = paymentMethods.find(m => m.id === initialData.paymentMethodId);
+      setSelectedPaymentMethod(method?.name || "");
+    }
+  }, [initialData, paymentMethods]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -84,7 +105,7 @@ export const PaymentTypeForm = ({
   };
 
   const mutation = useMutation({
-    mutationFn: createPaymentType,
+    mutationFn: initialData?.id? updatePaymentType: createPaymentType,
     onSuccess: (data) => {
       console.log({ data });
       if (data?.status) {
@@ -102,6 +123,12 @@ export const PaymentTypeForm = ({
   if (isLoadingMethods) {
     return <Loader2 className="w-8 h-8 animate-spin" />;
   }
+
+  const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const method = paymentMethods.find(m => m.id === Number(e.target.value));
+    setSelectedPaymentMethod(method?.name || "");
+    setValue("paymentMethodId", Number(e.target.value));
+  };
 
   return (
     <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
@@ -189,9 +216,8 @@ export const PaymentTypeForm = ({
               Payment Method
             </label>
             <select
-              {...register("paymentMethodId", {
-                required: "Payment method is required",
-              })}
+              value={watch("paymentMethodId")}
+              onChange={handlePaymentMethodChange}
               className={cn(
                 "mt-1 block w-full rounded-lg border shadow-sm py-2.5 px-3",
                 "bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
@@ -219,79 +245,83 @@ export const PaymentTypeForm = ({
           />
         </div>
 
-        {/* Details Section */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="text-lg font-medium text-gray-900">
-              Payment Details
-            </h4>
-            <button
-              type="button"
-              onClick={() =>
-                append({ value: "", description: "", maxLimit: 0 })
-              }
-              className={cn(
-                "inline-flex items-center px-4 py-2 rounded-lg",
-                "text-sm font-medium text-white bg-indigo-600",
-                "hover:bg-indigo-700 transition-colors duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              )}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Detail
-            </button>
-          </div>
-
+        {/* Details Section - Only show for MOBILE_BANKING */}
+        {selectedPaymentMethod === "MOBILE_BANKING" && (
           <div className="space-y-4">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-medium text-gray-900">
+                Payment Details
+              </h4>
+              <button
+                type="button"
+                onClick={() =>
+                  append({
+                    value: "",
+                    description: "",
+                    maxLimit: "0",
+                  })
+                }
                 className={cn(
-                  "grid grid-cols-3 gap-4 p-6 rounded-lg relative",
-                  "bg-gray-50 border border-gray-100",
-                  "transition-all duration-200 hover:shadow-md"
+                  "inline-flex items-center px-4 py-2 rounded-lg",
+                  "text-sm font-medium text-white bg-indigo-600",
+                  "hover:bg-indigo-700 transition-colors duration-200",
+                  "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 )}
               >
-                <Input
-                  label="Value"
-                  {...register(`details.${index}.value` as const, {
-                    required: "Value is required",
-                  })}
-                  error={errors.details?.[index]?.value?.message}
-                />
+                <Plus className="w-4 h-4 mr-2" />
+                Add Detail
+              </button>
+            </div>
 
-                <Input
-                  label="Description"
-                  {...register(`details.${index}.description` as const, {
-                    required: "Description is required",
-                  })}
-                  error={errors.details?.[index]?.description?.message}
-                />
+            <div className="space-y-4">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className={cn(
+                    "grid grid-cols-3 gap-4 p-6 rounded-lg relative",
+                    "bg-gray-50 border border-gray-100",
+                    "transition-all duration-200 hover:shadow-md"
+                  )}
+                >
+                  <Input
+                    label="Value"
+                    {...register(`details.${index}.value` as const, {
+                      required: "Value is required",
+                    })}
+                    error={errors.details?.[index]?.value?.message}
+                  />
 
-                <Input
-                  label="Max Limit"
-                  type="number"
-                  {...register(`details.${index}.maxLimit` as const, {
-                    required: "Max limit is required",
-                    min: { value: 0, message: "Must be positive" },
-                  })}
-                  error={errors.details?.[index]?.maxLimit?.message}
-                />
+                  <Input
+                    label="Description"
+                    {...register(`details.${index}.description` as const)}
+                    error={errors.details?.[index]?.description?.message}
+                  />
 
-                {fields.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="absolute -right-2 -top-2 p-2 bg-white rounded-full shadow-md 
-                             hover:bg-red-50 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </button>
-                )}
-              </div>
-            ))}
+                  <Input
+                    label="Max Limit"
+                    type="number"
+                    {...register(`details.${index}.maxLimit` as const, {
+                      required: "Max limit is required",
+                      min: { value: 0, message: "Must be positive" },
+                    })}
+                    error={errors.details?.[index]?.maxLimit?.message}
+                  />
+
+                  {fields.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute -right-2 -top-2 p-2 bg-white rounded-full shadow-md 
+                               hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex justify-end pt-4">
           <button
