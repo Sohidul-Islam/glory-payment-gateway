@@ -52,7 +52,7 @@ export const PaymentTypes = () => {
                 <img
                   src={type.image}
                   alt={type.name}
-                  className="h-16 w-16 rounded-lg object-cover"
+                  className="h-auto w-16 rounded-lg object-cover"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">

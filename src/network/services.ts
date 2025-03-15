@@ -186,3 +186,8 @@ export const updatePaymentType = async (data: CreatePaymentTypeData) => {
   const response = await AXIOS.post(`/payment/types/${data.id}`, data);
   return response;
 };
+
+export const deletePaymentType = async (typeId: number) => {
+  const response = await AXIOS.delete(`/payment/types/${typeId}`);
+  return response.data;
+};

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   CreatePaymentTypeData,
@@ -36,6 +36,8 @@ export const PaymentTypeForm = ({
     queryKey: ["paymentMethods"],
     queryFn: getPaymentMethods,
   });
+
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -107,9 +109,10 @@ export const PaymentTypeForm = ({
   const mutation = useMutation({
     mutationFn: initialData?.id? updatePaymentType: createPaymentType,
     onSuccess: (data) => {
-      console.log({ data });
+      
       if (data?.status) {
         successToast((data as any)?.message || "", "success");
+        queryClient.invalidateQueries({ queryKey: ["paymentTypes"] })
         onSuccess?.();
       } else {
         successToast((data as any)?.message, "error");
