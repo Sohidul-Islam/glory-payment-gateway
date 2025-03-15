@@ -257,3 +257,24 @@ export const updatePaymentAccount = async (id: number, data: CreateAccountData) 
   const response = await AXIOS.post(`/payment/account/update/${id}`, data);
   return response.data;
 };
+
+// Agent-specific API functions
+export const getAgentPaymentMethods = async (agentId: string) => {
+  const response = await AXIOS.get(`/payment/methods/${agentId}`);
+  return response.data as PaymentMethod[];
+};
+
+export const getAgentSinglePaymentMethod = async (methodId: number, agentId: string) => {
+  const response = await AXIOS.get(`/payment/methods/${methodId}/${agentId}`);
+  return response.data as PaymentMethod;
+};
+
+export const getAgentPaymentTypes = async (methodId: number, agentId: string) => {
+  const response = await AXIOS.get(`/payment/types/${methodId}/${agentId}`);
+  return response.data as PaymentType[];
+};
+
+export const getAgentSinglePaymentType = async (typeId: number, agentId: string) => {
+  const response = await AXIOS.get(`/payment/types/${typeId}/${agentId}`);
+  return response.data as PaymentType;
+};

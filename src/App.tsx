@@ -27,6 +27,8 @@ import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { PaymentTypes } from "./pages/PaymentTypes";
 import { PaymentDetails } from "./pages/PaymentDetails";
 import { Home } from "./pages/Home";
+import { AgentPaymentDetails } from "./pages/AgentPaymentDetails";
+import { AgentPaymentMethods } from "./pages/AgentPaymentMethods";
 
 
 const queryClient = new QueryClient();
@@ -73,6 +75,10 @@ const AppRoutes = () => {
       </Route>
 
       <Route path="/agent/:agentId" element={<Home />} />
+      <Route path="/payment/:agentId" element={<AgentPaymentMethods />} />
+      <Route path="/payment/:agentId/method/:methodId" element={<AgentPaymentMethods />} />
+      <Route path="/payment/:agentId/method/:methodId/type/:typeId" element={<AgentPaymentDetails />} />
+      <Route path="/payment/:agentId/method/:methodId/details/:detailsId" element={<AgentPaymentDetails />} />
     </Routes>
   );
 };

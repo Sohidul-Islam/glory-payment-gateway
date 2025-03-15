@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PaymentMethod, getPaymentMethods } from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import { Shield, CreditCard, Wallet, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Home = () => {
   const { agentId } = useParams();
+
+  const navigator = useNavigate();
 
   const { data: paymentMethods, isLoading } = useQuery<PaymentMethod[]>({
     queryKey: ["paymentMethods", agentId],
@@ -105,6 +107,9 @@ export const Home = () => {
                       )}
                     </div>
                     <button
+                    onClick={()=>{
+                      navigator(`/payment/${agentId}/method/${method.id}`)
+                    }}
                       className="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500"
                     >
                       Pay with {method.name}
