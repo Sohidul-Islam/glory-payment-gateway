@@ -158,7 +158,7 @@ export const PaymentTypeForm = ({
             }}
           >
             {imagePreview ? (
-              <div className="relative inline-block group">
+              <div className="relative flex item-center justify-center inline-block group">
                 <img
                   src={imagePreview}
                   alt="Preview"

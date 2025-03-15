@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { cn } from "../../utils/utils";
 import { X } from "lucide-react"; // Using lucide-react for icons
+import { Dialog } from "@headlessui/react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,17 +10,10 @@ interface ModalProps {
   children: ReactNode;
   className?: string;
   showCloseButton?: boolean;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "full";
   position?: "center" | "top";
   closeOnOutsideClick?: boolean;
 }
-
-const sizeClasses = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
-};
 
 const positionClasses = {
   center: "items-center",
@@ -29,53 +23,50 @@ const positionClasses = {
 export const Modal = ({
   isOpen,
   onClose,
-  title,
   children,
-  className,
-  showCloseButton = true,
+  title,
   size = "md",
-  position = "center",
-  closeOnOutsideClick = true,
 }: ModalProps) => {
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (closeOnOutsideClick && e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  const modalSize = {
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
+    "2xl": "max-w-2xl",
+    "3xl": "max-w-3xl",
+    "4xl": "max-w-4xl",
+    "5xl": "max-w-5xl",
+    full: "max-w-full",
+  }[size];
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50",
-        positionClasses[position]
-      )}
-      onClick={handleBackdropClick}
-    >
-      <div
-        className={cn(
-          "bg-white rounded-lg shadow-xl w-full mx-4",
-          "transform transition-all",
-          sizeClasses[size],
-          className
-        )}
-      >
-        {(title || showCloseButton) && (
-          <div className="flex justify-between items-center p-4 border-b">
-            {title && <h2 className="text-xl font-semibold">{title}</h2>}
-            {showCloseButton && (
-              <button
-                onClick={onClose}
-                className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            )}
+    <Dialog open={isOpen} onClose={onClose}>
+      <div className="fixed inset-0 bg-black/30 z-40" aria-hidden="true" />
+      <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+        <Dialog.Panel
+          className={cn(
+            "w-full bg-white rounded-xl shadow-xl transform transition-all",
+            "flex flex-col",
+            "max-h-[calc(100vh-2rem)]", // Account for padding
+            modalSize
+          )}
+        >
+          <div className="flex-none flex justify-between items-center px-4 sm:px-6 py-4 border-b">
+            <Dialog.Title className="text-lg sm:text-xl font-semibold text-gray-900">
+              {title}
+            </Dialog.Title>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
           </div>
-        )}
-        <div className="p-4">{children}</div>
+          <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            {children}
+          </div>
+        </Dialog.Panel>
       </div>
-    </div>
+    </Dialog>
   );
 };
