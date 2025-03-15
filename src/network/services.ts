@@ -115,11 +115,55 @@ export const uploadFile = async (file: File) => {
 
 export interface PaymentMethod {
   id: number;
+  userId: number;
   name: PaymentMethodType;
   image: string;
   status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PaymentTypeWithMethod {
+  id: number;
+  userId: number;
+  paymentMethodId: number;
+  name: string;
+  image: string;
+  status: "active" | "inactive";
+  createdAt: string;
+  updatedAt: string;
+  PaymentMethod: PaymentMethod;
+}
+
+export interface PaymentMethodDetail {
+  id: number;
+  paymentTypeId: number;
+  value: string;
+  description: string;
+  maxLimit: string;
+  currentUsage: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  PaymentType: PaymentTypeWithMethod;
+}
+
+export interface AccountInfo {
+  id: number;
+  userId: number;
+  paymentDetailId: number;
+  accountNumber: string;
+  maxLimit: string;
+  currentUsage: string;
+  isActive: boolean;
+  status: "active" | "inactive";
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface PaymentDetailResponse {
+  paymentMethod: PaymentMethodDetail;
+  accountInfo: AccountInfo[];
 }
 
 export const getPaymentMethods = async () => {
@@ -188,6 +232,11 @@ export const updatePaymentType = async (data: CreatePaymentTypeData) => {
 };
 
 export const deletePaymentType = async (typeId: number) => {
-  const response = await AXIOS.delete(`/payment/types/${typeId}`);
-  return response.data;
+  const response = await AXIOS.post(`/payment/types/delete/${typeId}`);
+  return response;
+};
+
+export const getPaymentDetailInfo = async (paymentDetailId: number) => {
+  const response = await AXIOS.get(`/payment/details/${paymentDetailId}`);
+  return response.data as PaymentDetailResponse;
 };

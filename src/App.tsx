@@ -24,6 +24,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { PaymentTypes } from "./pages/PaymentTypes";
+import { PaymentDetails } from "./pages/PaymentDetails";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
         <Route path="payment-methods" element={<PaymentMethods />} />
         <Route path="payment-types" element={<PaymentTypes />} />
+        <Route path="payment-details/:paymentDetailsId" element={<PaymentDetails />} />
         <Route path="mobile-banking" element={<MobileBanking />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />

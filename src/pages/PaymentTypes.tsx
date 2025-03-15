@@ -1,26 +1,61 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { PaymentType, getPaymentTypes } from "../network/services";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { PaymentType, getPaymentTypes, deletePaymentType } from "../network/services";
 import { Modal } from "../components/ui/Modal";
 import { Loader } from "../components/ui/Loader";
-import { PlusIcon, Eye, Pencil, ChevronDown, ChevronUp } from "lucide-react";
+import { PlusIcon, Eye, Pencil, Trash2, ChevronDown, ChevronUp, Loader2, Settings } from "lucide-react";
 import { formatDate } from "../utils/utils";
 import { PaymentTypeForm } from "../components/payment/PaymentTypeForm";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 export const PaymentTypes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<PaymentType | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const navigator = useNavigate();
 
   const { data: types = [], isLoading } = useQuery({
     queryKey: ["paymentTypes"],
     queryFn: getPaymentTypes,
   });
 
+  
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePaymentType,
+    onSuccess: (data) => {
+
+      if(data.status){
+        queryClient.invalidateQueries({ queryKey: ["paymentTypes"] });
+        toast.success("Payment type deleted successfully");
+        setIsDeleteModalOpen(false);
+        setSelectedType(null);
+      }
+      else{
+        toast.error("Payment type can't be deleted");
+      }
+     
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete payment type");
+    },
+  });
+
   if (isLoading) {
     return <Loader />;
   }
+
+  const handleDelete = () => {
+    if (selectedType?.id) {
+      deleteMutation.mutate(selectedType.id);
+    }
+  };
 
   const toggleExpand = (id: number) => {
     setExpandedCard(expandedCard === id ? null : id);
@@ -108,6 +143,15 @@ export const PaymentTypes = () => {
                 >
                   <Pencil className="w-5 h-5" />
                 </button>
+                <button
+                  onClick={() => {
+                    setSelectedType(type);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  className="p-1 text-red-600 hover:text-red-900 rounded-full hover:bg-red-50"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
@@ -173,6 +217,19 @@ export const PaymentTypes = () => {
                       </span>
                       <span className="text-sm text-gray-900">
                         {formatDate(detail.createdAt)}
+                      </span>
+                    </div>
+
+                    <div className="flex bg-gray-200 p-2 rounded-md justify-between items-center cursor-pointer" onClick={()=>{
+                      navigator(`/payment-details/${detail?.id}`)
+                    }}>
+                      <span className="text-sm font-medium text-gray-600">
+                        Configure
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        <button>
+                        <Settings className="w-5 h-5" />
+                        </button>
                       </span>
                     </div>
                   </div>
@@ -285,6 +342,48 @@ export const PaymentTypes = () => {
           }}
           initialData={selectedType}
         />
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedType(null);
+        }}
+        title="Delete Payment Type"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-700">
+            Are you sure you want to delete the payment type "{selectedType?.name}"? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setSelectedType(null);
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
