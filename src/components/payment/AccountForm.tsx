@@ -76,7 +76,7 @@ export const AccountForm = ({ onSuccess, paymentDetailId, initialData }: Account
         <label className="block text-sm font-medium text-gray-700">Status</label>
         <select
           {...register("status")}
-          className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          className="mt-1 block border p-2 w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
