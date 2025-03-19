@@ -19,12 +19,15 @@ export const AgentLink = ({ agentId }: AgentLinkProps) => {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       toast.error("Failed to copy link");
+      console.error(err);
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
-      <h3 className="text-sm font-medium text-gray-700 mb-2">Your Payment Link</h3>
+      <h3 className="text-sm font-medium text-gray-700 mb-2">
+        Your Payment Link
+      </h3>
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -48,4 +51,4 @@ export const AgentLink = ({ agentId }: AgentLinkProps) => {
       </p>
     </div>
   );
-}; 
+};

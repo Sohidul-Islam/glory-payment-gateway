@@ -29,16 +29,24 @@ import { PaymentDetails } from "./pages/PaymentDetails";
 import { Home } from "./pages/Home";
 import { AgentPaymentDetails } from "./pages/AgentPaymentDetails";
 import { AgentPaymentMethods } from "./pages/AgentPaymentMethods";
-
+import { Loader } from "./components/ui/Loader";
 
 const queryClient = new QueryClient();
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoaded, isAuthenicating } = useAuth();
   const location = useLocation();
 
-  if (!isAuthenticated) {
+  if (isAuthenicating) {
+    return (
+      <div className="flex items-center justify-center content-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && isLoaded) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
@@ -67,7 +75,10 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
         <Route path="payment-methods" element={<PaymentMethods />} />
         <Route path="payment-types" element={<PaymentTypes />} />
-        <Route path="payment-details/:paymentDetailsId" element={<PaymentDetails />} />
+        <Route
+          path="payment-details/:paymentDetailsId"
+          element={<PaymentDetails />}
+        />
         <Route path="mobile-banking" element={<MobileBanking />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />
@@ -76,9 +87,18 @@ const AppRoutes = () => {
 
       <Route path="/agent/:agentId" element={<Home />} />
       <Route path="/payment/:agentId" element={<AgentPaymentMethods />} />
-      <Route path="/payment/:agentId/method/:methodId" element={<AgentPaymentMethods />} />
-      <Route path="/payment/:agentId/method/:methodId/type/:typeId" element={<AgentPaymentDetails />} />
-      <Route path="/payment/:agentId/method/:methodId/details/:detailsId" element={<AgentPaymentDetails />} />
+      <Route
+        path="/payment/:agentId/method/:methodId"
+        element={<AgentPaymentMethods />}
+      />
+      <Route
+        path="/payment/:agentId/method/:methodId/type/:typeId"
+        element={<AgentPaymentDetails />}
+      />
+      <Route
+        path="/payment/:agentId/method/:methodId/details/:detailsId"
+        element={<AgentPaymentDetails />}
+      />
     </Routes>
   );
 };

@@ -11,6 +11,8 @@ interface AuthContextType {
   login: (userData: LoginResponse) => void;
   logout: () => void;
   refreshProfile: () => void;
+  isAuthenicating: boolean;
+  isLoaded: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -20,16 +22,26 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<LoginResponse["user"] | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  // Is verifying user.
+  const [isVerifying, setIsVerifying] = useState(true);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   // Profile fetch query
-  const { refetch: refreshProfile } = useQuery({
+  const {
+    refetch: refreshProfile,
+    isLoading,
+    isFetching,
+    error,
+    isSuccess,
+  } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
       if (!user?.email) return null;
       const response = await AXIOS.get(`/profile?email=${user.email}`);
       if (response.data.user) setUser(response.data.user);
+      setIsVerifying(false);
       return response.data;
     },
     enabled: !!user?.email, // Only run if we have an email
@@ -41,36 +53,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-    const publicPaths = [
-      "/login",
-      "/register",
-      "/forgot-password",
-      "/reset-password",
-    ];
-    const isPublicPath = publicPaths.includes(location.pathname);
+    // const publicPaths = [
+    //   "/login",
+    //   "/register",
+    //   "/forgot-password",
+    //   "/reset-password",
+    // ];
+    // const isPublicPath = publicPaths.includes(location.pathname);
+
+    if (!storedToken) {
+      setIsVerifying(false);
+    }
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-
-      // If user is authenticated and trying to access login/register, redirect to dashboard
-      if (isPublicPath) {
-        navigate("/", { replace: true });
-      }
-    } else {
-      // If no auth data and not on a public path, redirect to login
-      if (!isPublicPath) {
-        navigate("/login", {
-          replace: true,
-          state: { from: location?.pathname }, // Save the attempted URL
-        });
-      }
+      setUser(JSON.parse(storedUser)); // If user is authenticated and trying to access login/register, redirect to dashboard
     }
-  }, [navigate, location?.pathname]);
+
+    if (error) {
+      console.log({ error });
+    }
+  }, [navigate, location?.pathname, error]);
 
   const login = (userData: LoginResponse) => {
     setUser(userData.user);
     setToken(userData.token);
+    setIsVerifying(false);
 
     // Store in localStorage
     localStorage.setItem("token", userData.token);
@@ -87,6 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    setIsVerifying(true);
 
     // Clear localStorage
     localStorage.removeItem("token");
@@ -105,10 +114,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         token,
-        isAuthenticated: !!token,
+        isAuthenticated: Boolean(token),
         login,
         logout,
         refreshProfile,
+        isAuthenicating: isLoading || isFetching || isVerifying,
+        isLoaded: isSuccess || !token,
       }}
     >
       {children}

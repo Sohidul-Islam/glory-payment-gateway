@@ -17,6 +17,7 @@ import { ImagePlus, Loader2, X } from "lucide-react";
 const PAYMENT_METHODS: PaymentMethodType[] = [
   "MOBILE_BANKING",
   "VISA",
+  "BANK",
   "MASTERCARD",
   "CREDIT_CARD",
   "USDT",
@@ -44,6 +45,8 @@ export const PaymentMethodForm = ({
       status: "active",
     },
   });
+
+  console.log({ methodId });
 
   const { data, isLoading: isLoadingMethod } = useQuery({
     queryKey: ["paymentMethod", methodId],

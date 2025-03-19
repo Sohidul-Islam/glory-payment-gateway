@@ -4,7 +4,8 @@ import { LoginData, loginUser } from "../../network/services";
 import { cn, successToast } from "../../utils/utils";
 import { Input } from "../ui/Input";
 
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 export const Login = () => {
   const {
@@ -13,21 +14,12 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginData>();
 
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      // Store token in cookie
-      document.cookie = `access_token=${data.token}; path=/;`;
-
-      // Store user data in localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      successToast("Login successful!", "success");
-      // Redirect to dashboard using navigate
-      navigate("/");
+      login(data);
     },
     onError: (error: Error) => {
       successToast(error?.message || "Login failed", "error");

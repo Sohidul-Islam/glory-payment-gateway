@@ -62,7 +62,10 @@ AXIOS.interceptors.response.use(
         error?.response?.data?.message === "User not is not valid")
     ) {
       toast.error(error?.response?.data?.message);
-      // window.location.href = "/login";
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+      window.location.reload();
     }
 
     console.log("api error:", error);

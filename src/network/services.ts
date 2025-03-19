@@ -70,6 +70,7 @@ export type PaymentMethodType =
   | "VISA"
   | "MASTERCARD"
   | "CREDIT_CARD"
+  | "BANK"
   | "USDT";
 
 export interface PaymentMethodData {
@@ -202,7 +203,7 @@ export interface PaymentType {
 }
 
 export interface CreatePaymentTypeData {
-  id?:number;
+  id?: number;
   paymentMethodId: number;
   name: string;
   image: string;
@@ -224,8 +225,8 @@ export const createPaymentType = async (data: CreatePaymentTypeData) => {
 };
 
 export const updatePaymentType = async (data: CreatePaymentTypeData) => {
-  if(!data.id){
-    throw Error("Payment type is methods.")
+  if (!data.id) {
+    throw Error("Payment type is methods.");
   }
   const response = await AXIOS.post(`/payment/types/${data.id}`, data);
   return response;
@@ -253,7 +254,10 @@ export const createPaymentAccount = async (data: CreateAccountData) => {
   return response.data;
 };
 
-export const updatePaymentAccount = async (id: number, data: CreateAccountData) => {
+export const updatePaymentAccount = async (
+  id: number,
+  data: CreateAccountData
+) => {
   const response = await AXIOS.post(`/payment/account/update/${id}`, data);
   return response.data;
 };
@@ -264,17 +268,36 @@ export const getAgentPaymentMethods = async (agentId: string) => {
   return response.data as PaymentMethod[];
 };
 
-export const getAgentSinglePaymentMethod = async (methodId: number, agentId: string) => {
+export const getAgentSinglePaymentMethod = async (
+  methodId: number,
+  agentId: string
+) => {
   const response = await AXIOS.get(`/payment/methods/${methodId}/${agentId}`);
   return response.data as PaymentMethod;
 };
 
-export const getAgentPaymentTypes = async (methodId: number, agentId: string) => {
+export const getAgentPaymentTypes = async (
+  methodId: number,
+  agentId: string
+) => {
   const response = await AXIOS.get(`/payment/types/${methodId}/${agentId}`);
   return response.data as PaymentType[];
 };
 
-export const getAgentSinglePaymentType = async (typeId: number, agentId: string) => {
+export const getAgentSinglePaymentType = async (
+  typeId: number,
+  agentId: string
+) => {
   const response = await AXIOS.get(`/payment/types/${typeId}/${agentId}`);
   return response.data as PaymentType;
+};
+
+export const checkAgentIdAvailability = async (agentId: string) => {
+  const response = await AXIOS.get(`/check-agent-id/${agentId}`);
+  return response.data;
+};
+
+export const generateAgentId = async () => {
+  const response = await AXIOS.get("/generate-agent-id");
+  return response.data;
 };
