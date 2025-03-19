@@ -1,32 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   CreatePaymentTypeData,
   PaymentType,
   createPaymentType,
   getPaymentMethods,
-  PaymentMethodType,
-  updatePaymentType,
-  checkAgentIdAvailability,
-  generateAgentId,
+  uploadFile,
 } from "../../network/services";
 import { toast } from "react-hot-toast";
-import { useState, useEffect, useCallback } from "react";
-import { cn, successToast, uploadFile } from "../../utils/utils";
-import {
-  ImagePlus,
-  Loader2,
-  Plus,
-  Trash2,
-  X,
-  RefreshCw,
-  Check,
-} from "lucide-react";
+import { useState } from "react";
+import { cn } from "../../utils/utils";
+import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Input } from "../ui/Input";
-import { debounce } from "lodash";
 
 interface PaymentTypeFormProps {
   onSuccess?: () => void;
@@ -42,51 +29,23 @@ export const PaymentTypeForm = ({
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    PaymentMethodType | ""
-  >("");
-  const [isCheckingId, setIsCheckingId] = useState(false);
-  const [isGeneratingId, setIsGeneratingId] = useState(false);
-  const [isIdAvailable, setIsIdAvailable] = useState<boolean | null>(null);
 
   const { data: paymentMethods = [], isLoading: isLoadingMethods } = useQuery({
     queryKey: ["paymentMethods"],
     queryFn: getPaymentMethods,
   });
 
-  const queryClient = useQueryClient();
-
   const {
     register,
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<CreatePaymentTypeData>({
-    defaultValues: {
-      id: initialData?.id,
-      paymentMethodId: initialData?.paymentMethodId || 0,
-      name: initialData?.name || "",
-      image: initialData?.image || "",
-      details: initialData?.PaymentDetails?.map((detail) => ({
-        id: detail.id,
-        value: detail.value,
-        description: detail.description || "",
-        maxLimit: detail.maxLimit,
-      })) || [{ value: "", description: "", maxLimit: "0" }],
+    defaultValues: initialData || {
+      details: [{ value: "", description: "", maxLimit: "0" }],
     },
   });
-
-  // Set initial payment method when component mounts or initialData changes
-  useEffect(() => {
-    if (initialData?.paymentMethodId && paymentMethods.length > 0) {
-      const method = paymentMethods.find(
-        (m) => m.id === initialData.paymentMethodId
-      );
-      setSelectedPaymentMethod(method?.name || "");
-    }
-  }, [initialData, paymentMethods]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -126,67 +85,16 @@ export const PaymentTypeForm = ({
   };
 
   const mutation = useMutation({
-    mutationFn: initialData?.id ? updatePaymentType : createPaymentType,
-    onSuccess: (data) => {
-      if (data?.status) {
-        successToast((data as any)?.message || "", "success");
-        queryClient.invalidateQueries({ queryKey: ["paymentTypes"] });
-        onSuccess?.();
-      } else {
-        successToast((data as any)?.message, "error");
-      }
-    },
-    onError: (err) => {
-      successToast(err.message, "error");
+    mutationFn: createPaymentType,
+    onSuccess: () => {
+      toast.success("Payment type saved successfully!");
+      onSuccess?.();
     },
   });
-
-  // Add debounce function for ID checking
-  const debouncedCheckId = useCallback(
-    debounce(async (value: string) => {
-      if (!value) {
-        setIsIdAvailable(null);
-        return;
-      }
-      try {
-        setIsCheckingId(true);
-        const response = await checkAgentIdAvailability(value);
-        setIsIdAvailable(response.available);
-      } catch (error) {
-        toast.error("Failed to check ID availability");
-        setIsIdAvailable(null);
-      } finally {
-        setIsCheckingId(false);
-      }
-    }, 500),
-    []
-  );
-
-  // Handle agent ID generation
-  const handleGenerateId = async () => {
-    try {
-      setIsGeneratingId(true);
-      const response = await generateAgentId();
-      setValue("id", response.agentId); // Changed "value" to "id" based on the type error
-      setIsIdAvailable(true);
-    } catch (error) {
-      toast.error("Failed to generate agent ID");
-    } finally {
-      setIsGeneratingId(false);
-    }
-  };
 
   if (isLoadingMethods) {
     return <Loader2 className="w-8 h-8 animate-spin" />;
   }
-
-  const handlePaymentMethodChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const method = paymentMethods.find((m) => m.id === Number(e.target.value));
-    setSelectedPaymentMethod(method?.name || "");
-    setValue("paymentMethodId", Number(e.target.value));
-  };
 
   return (
     <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
@@ -216,7 +124,7 @@ export const PaymentTypeForm = ({
             }}
           >
             {imagePreview ? (
-              <div className="relative flex item-center justify-center inline-block group">
+              <div className="relative inline-block group">
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -274,10 +182,11 @@ export const PaymentTypeForm = ({
               Payment Method
             </label>
             <select
-              value={watch("paymentMethodId")}
-              onChange={handlePaymentMethodChange}
+              {...register("paymentMethodId", {
+                required: "Payment method is required",
+              })}
               className={cn(
-                "!mt-1 block w-full rounded-lg border shadow-sm py-2 px-3",
+                "mt-1 block w-full rounded-lg border shadow-sm py-2.5 px-3",
                 "bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
                 errors.paymentMethodId ? "border-red-300" : "border-gray-300"
               )}
@@ -303,123 +212,79 @@ export const PaymentTypeForm = ({
           />
         </div>
 
-        {/* Details Section - Only show for MOBILE_BANKING */}
-        {["MOBILE_BANKING", "BANK"].includes(selectedPaymentMethod) && (
+        {/* Details Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h4 className="text-lg font-medium text-gray-900">
+              Payment Details
+            </h4>
+            <button
+              type="button"
+              onClick={() =>
+                append({ value: "", description: "", maxLimit: "0" })
+              }
+              className={cn(
+                "inline-flex items-center px-4 py-2 rounded-lg",
+                "text-sm font-medium text-white bg-indigo-600",
+                "hover:bg-indigo-700 transition-colors duration-200",
+                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              )}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Detail
+            </button>
+          </div>
+
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="text-lg font-medium text-gray-900">
-                Payment Details
-              </h4>
-              <button
-                type="button"
-                onClick={() =>
-                  append({
-                    value: "",
-                    description: "",
-                    maxLimit: "0",
-                  })
-                }
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
                 className={cn(
-                  "inline-flex items-center px-4 py-2 rounded-lg",
-                  "text-sm font-medium text-white bg-indigo-600",
-                  "hover:bg-indigo-700 transition-colors duration-200",
-                  "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  "grid grid-cols-3 gap-4 p-6 rounded-lg relative",
+                  "bg-gray-50 border border-gray-100",
+                  "transition-all duration-200 hover:shadow-md"
                 )}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Detail
-              </button>
-            </div>
+                <Input
+                  label="Value"
+                  {...register(`details.${index}.value` as const, {
+                    required: "Value is required",
+                  })}
+                  error={errors.details?.[index]?.value?.message}
+                />
 
-            <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="grid grid-cols-3 gap-4 p-6 bg-gray-50 rounded-lg relative"
-                >
-                  {/* Value Input with Agent ID Generation */}
-                  <div className="relative">
-                    <Input
-                      label="Value (Agent ID)"
-                      {...register(`details.${index}.value` as const, {
-                        required: "Value is required",
-                        onChange: (e) => debouncedCheckId(e.target.value),
-                      })}
-                      error={errors.details?.[index]?.value?.message}
-                      className="pr-20" // Make room for the generate button
-                    />
-                    <div className="absolute right-2 top-[30px] flex items-center space-x-2">
-                      {isCheckingId ? (
-                        <RefreshCw className="w-4 h-4 animate-spin text-gray-400" />
-                      ) : isIdAvailable !== null ? (
-                        isIdAvailable ? (
-                          <Check className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <X className="w-4 h-4 text-red-500" />
-                        )
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => handleGenerateId()}
-                        disabled={isGeneratingId}
-                        className={cn(
-                          "text-xs px-2 py-1 rounded",
-                          "bg-indigo-50 text-indigo-600",
-                          "hover:bg-indigo-100 transition-colors",
-                          "focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500",
-                          isGeneratingId && "opacity-50 cursor-not-allowed"
-                        )}
-                      >
-                        {isGeneratingId ? (
-                          <RefreshCw className="w-3 h-3 animate-spin" />
-                        ) : (
-                          "Generate"
-                        )}
-                      </button>
-                    </div>
-                    {isIdAvailable === false && (
-                      <p className="mt-1 text-xs text-red-500">
-                        This agent ID is already taken
-                      </p>
-                    )}
-                  </div>
+                <Input
+                  label="Description"
+                  {...register(`details.${index}.description` as const, {
+                    required: "Description is required",
+                  })}
+                  error={errors.details?.[index]?.description?.message}
+                />
 
-                  {/* Description Input */}
-                  <Input
-                    label="Description"
-                    {...register(`details.${index}.description` as const, {
-                      required: "Description is required",
-                    })}
-                    error={errors.details?.[index]?.description?.message}
-                  />
+                <Input
+                  label="Max Limit"
+                  type="number"
+                  {...register(`details.${index}.maxLimit` as const, {
+                    required: "Max limit is required",
+                    min: { value: 0, message: "Must be positive" },
+                  })}
+                  error={errors.details?.[index]?.maxLimit?.message}
+                />
 
-                  {/* Max Limit Input */}
-                  <Input
-                    label="Max Limit"
-                    type="number"
-                    {...register(`details.${index}.maxLimit` as const, {
-                      required: "Max limit is required",
-                      min: { value: 0, message: "Must be positive" },
-                    })}
-                    error={errors.details?.[index]?.maxLimit?.message}
-                  />
-
-                  {/* Remove Button */}
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="absolute -right-2 -top-2 p-2 bg-white rounded-full shadow-md 
-                               hover:bg-red-50 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                {fields.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="absolute -right-2 -top-2 p-2 bg-white rounded-full shadow-md 
+                             hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
 
         <div className="flex justify-end pt-4">
           <button

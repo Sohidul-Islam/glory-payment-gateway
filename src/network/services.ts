@@ -32,6 +32,7 @@ export interface LoginResponse {
     isVerified: boolean;
     verificationToken: string;
     isLoggedIn: boolean;
+    agentId: string;
     createdAt: string;
     updatedAt: string;
   };

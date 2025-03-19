@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       if (!user?.email) return null;
       const response = await AXIOS.get(`/profile?email=${user.email}`);
-      if (response.data.user) setUser(response.data.user);
+
+      if (response.data) setUser(response.data);
       setIsVerifying(false);
       return response.data;
     },
@@ -53,6 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+
+    console.log({ storedUser });
     // const publicPaths = [
     //   "/login",
     //   "/register",
@@ -73,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) {
       console.log({ error });
     }
-  }, [navigate, location?.pathname, error]);
+  }, []);
 
   const login = (userData: LoginResponse) => {
     setUser(userData.user);
