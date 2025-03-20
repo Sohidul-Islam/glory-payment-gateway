@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { Modal } from "../components/ui/Modal";
 import { cn } from "../utils/utils";
 import { Loader } from "../components/ui/Loader";
+import { useAuth } from "../hooks/useAuth";
 
 const PaymentMethods = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +16,10 @@ const PaymentMethods = () => {
     number | undefined
   >();
   const queryClient = useQueryClient();
+
+  const { user } = useAuth();
+
+  console.log({ user });
 
   const { data: methods = [], isLoading } = useQuery({
     queryKey: ["paymentMethods"],
@@ -45,16 +50,18 @@ const PaymentMethods = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Payment Methods</h1>
-        <button
-          onClick={() => {
-            setSelectedMethodId(undefined);
-            setIsModalOpen(true);
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          <PlusIcon className="w-5 h-5" />
-          Add New Method
-        </button>
+        {user?.accountType === "super admin" && (
+          <button
+            onClick={() => {
+              setSelectedMethodId(undefined);
+              setIsModalOpen(true);
+            }}
+            className="btn-primary flex items-center gap-2"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Add New Method
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -87,17 +94,19 @@ const PaymentMethods = () => {
                 </span>
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => handleEdit(method.id)}
-                className="btn-primary text-sm"
-              >
-                Edit
-              </button>
-              {/* <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+            {user?.accountType === "super admin" && (
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={() => handleEdit(method.id)}
+                  className="btn-primary text-sm"
+                >
+                  Edit
+                </button>
+                {/* <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
                 Configure
               </button> */}
-            </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

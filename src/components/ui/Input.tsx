@@ -28,7 +28,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <div className="relative mt-1">
+        <div className="relative mt-2">
           <input
             ref={ref}
             type={inputType}

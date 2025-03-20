@@ -124,7 +124,7 @@ export const PaymentTypeForm = ({
             }}
           >
             {imagePreview ? (
-              <div className="relative inline-block group">
+              <div className="relative flex justify-center items-center group">
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -186,7 +186,7 @@ export const PaymentTypeForm = ({
                 required: "Payment method is required",
               })}
               className={cn(
-                "mt-1 block w-full rounded-lg border shadow-sm py-2.5 px-3",
+                "w-full text-sm rounded-lg border shadow-sm py-[10px] px-3",
                 "bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
                 errors.paymentMethodId ? "border-red-300" : "border-gray-300"
               )}
@@ -207,6 +207,7 @@ export const PaymentTypeForm = ({
 
           <Input
             label="Type Name"
+            className="py-2.5"
             {...register("name", { required: "Name is required" })}
             error={errors.name?.message}
           />
