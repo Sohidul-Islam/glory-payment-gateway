@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import {
   CreatePaymentTypeData,
@@ -9,7 +9,7 @@ import {
   getPaymentMethods,
   updatePaymentType,
 } from "../../network/services";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useState } from "react";
 import { cn, uploadFile } from "../../utils/utils";
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
@@ -29,6 +29,8 @@ export const PaymentTypeForm = ({
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data: paymentMethods = [], isLoading: isLoadingMethods } = useQuery({
     queryKey: ["paymentMethods"],
@@ -91,9 +93,14 @@ export const PaymentTypeForm = ({
 
   const mutation = useMutation({
     mutationFn: initialData?.id ? updatePaymentType : createPaymentType,
-    onSuccess: () => {
-      toast.success("Payment type saved successfully!");
-      onSuccess?.();
+    onSuccess: (data) => {
+      if (data.status) {
+        queryClient.invalidateQueries({
+          queryKey: ["paymentTypes"],
+        });
+        toast.success("Payment type saved successfully!");
+        onSuccess?.();
+      }
     },
   });
 
