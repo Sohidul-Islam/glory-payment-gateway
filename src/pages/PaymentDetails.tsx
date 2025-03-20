@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { PaymentDetailResponse, getPaymentDetailInfo, AccountInfo } from "../network/services";
+import {
+  PaymentDetailResponse,
+  getPaymentDetailInfo,
+  AccountInfo,
+  getPaymentDetailInfoByTypeId,
+} from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import { Modal } from "../components/ui/Modal";
 import { AccountForm } from "../components/payment/AccountForm";
 import {
   ArrowLeft,
   CreditCard,
-  DollarSign,
   Activity,
   Clock,
   CheckCircle2,
@@ -24,15 +28,20 @@ import { useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/utils";
 
 export const PaymentDetails = () => {
-  const { paymentDetailsId } = useParams();
+  const { paymentDetailsId, paymentTypeId } = useParams();
   const navigate = useNavigate();
   const [isAccountFormOpen, setIsAccountFormOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(
+    null
+  );
 
   const { data: response, isLoading } = useQuery<PaymentDetailResponse>({
-    queryKey: ["paymentDetail", paymentDetailsId],
-    queryFn: () => getPaymentDetailInfo(Number(paymentDetailsId)),
-    enabled: !!paymentDetailsId,
+    queryKey: ["paymentDetail", { paymentDetailsId, paymentTypeId }],
+    queryFn: () =>
+      paymentTypeId
+        ? getPaymentDetailInfoByTypeId(Number(paymentTypeId))
+        : getPaymentDetailInfo(Number(paymentDetailsId)),
+    enabled: !!paymentDetailsId || !!paymentTypeId,
   });
 
   if (isLoading) {
@@ -43,8 +52,12 @@ export const PaymentDetails = () => {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">Payment Detail Not Found</h2>
-          <p className="mt-2 text-gray-600">The payment detail you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Payment Detail Not Found
+          </h2>
+          <p className="mt-2 text-gray-600">
+            The payment detail you're looking for doesn't exist.
+          </p>
           <button
             onClick={() => navigate(-1)}
             className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
@@ -77,8 +90,12 @@ export const PaymentDetails = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-semibold">{PaymentType.name} Payment Details</h1>
-            <p className="text-sm text-gray-600">{paymentMethod.value} - {paymentMethod.description}</p>
+            <h1 className="text-2xl font-semibold">
+              {PaymentType.name} Payment Details
+            </h1>
+            <p className="text-sm text-gray-600">
+              {paymentMethod.value} - {paymentMethod.description}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -177,9 +194,11 @@ export const PaymentDetails = () => {
               <Landmark className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">Active Accounts</p>
+              <p className="text-sm font-medium text-gray-600">
+                Active Accounts
+              </p>
               <p className="text-xl font-semibold text-gray-900">
-                {accountInfo.filter(acc => acc.isActive).length}
+                {accountInfo.filter((acc) => acc.isActive).length}
               </p>
             </div>
           </div>
@@ -222,8 +241,13 @@ export const PaymentDetails = () => {
                       </span>
                     </div>
                     <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
-                      <span>Max: {Number(account.maxLimit).toLocaleString()} BDT</span>
-                      <span>Used: {Number(account.currentUsage).toLocaleString()} BDT</span>
+                      <span>
+                        Max: {Number(account.maxLimit).toLocaleString()} BDT
+                      </span>
+                      <span>
+                        Used: {Number(account.currentUsage).toLocaleString()}{" "}
+                        BDT
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -274,9 +298,8 @@ export const PaymentDetails = () => {
             <Plus className="w-4 h-4 mr-2" />
             Add New Account
           </button>
-   
         </div>
       </div>
     </div>
   );
-}; 
+};

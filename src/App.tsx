@@ -79,6 +79,10 @@ const AppRoutes = () => {
           path="payment-details/:paymentDetailsId"
           element={<PaymentDetails />}
         />
+        <Route
+          path="payment-details/:paymentType/:paymentTypeId"
+          element={<PaymentDetails />}
+        />
         <Route path="mobile-banking" element={<MobileBanking />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />

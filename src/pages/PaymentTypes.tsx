@@ -87,6 +87,11 @@ export const PaymentTypes = () => {
         {types.map((type: PaymentType) => (
           <div
             key={type.id}
+            onClick={() => {
+              if (type?.PaymentMethod?.name !== "MOBILE_BANKING") {
+                navigator(`/payment-details/${type.name}/${type.id}`);
+              }
+            }}
             className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100"
           >
             {/* Card Header */}
@@ -122,9 +127,16 @@ export const PaymentTypes = () => {
                       {type.status}
                     </span>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700">
-                    {type.paymentMethodId}
-                  </span>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                      {type.PaymentMethod?.name?.replace("_", " ")}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-purple-50 text-purple-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                      {type.paymentMethodId}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,7 +211,7 @@ export const PaymentTypes = () => {
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-gray-600">
-                          Value
+                          Name
                         </span>
                         <span className="text-sm font-semibold text-gray-900">
                           {detail.value}
@@ -219,6 +231,14 @@ export const PaymentTypes = () => {
                         </span>
                         <span className="text-sm font-semibold text-gray-900">
                           {Number(detail.maxLimit).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Charge
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {Number(detail.charge).toLocaleString()}%
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -292,9 +312,9 @@ export const PaymentTypes = () => {
                 alt={selectedType.name}
                 className="w-20 h-20 rounded-lg object-cover"
               />
-              <div>
+              <div className="flex-1">
                 <h3 className="text-lg font-medium">{selectedType.name}</h3>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-1">
                   <p className="text-sm text-gray-500">
                     Created on {formatDate(selectedType.createdAt)}
                   </p>
@@ -308,12 +328,36 @@ export const PaymentTypes = () => {
                     {selectedType.status}
                   </span>
                 </div>
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+                    <span className="text-sm font-medium text-indigo-700">
+                      {selectedType.PaymentMethod?.name?.replace("_", " ")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+                    <span className="text-sm font-medium text-purple-700">
+                      ID: {selectedType.paymentMethodId}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
             {selectedType.PaymentMethod.name === "MOBILE_BANKING" && (
               <div className="space-y-4">
-                <h4 className="font-medium">Payment Details</h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Payment Details</h4>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">
+                      Total Details:
+                    </span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {selectedType.PaymentDetails?.length || 0}
+                    </span>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 gap-4">
                   {selectedType.PaymentDetails?.map((detail) => (
                     <div
@@ -321,7 +365,7 @@ export const PaymentTypes = () => {
                       className="bg-gray-50 p-4 rounded-lg space-y-2"
                     >
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium">Value</span>
+                        <span className="text-sm font-medium">Name</span>
                         <span className="text-sm">{detail.value}</span>
                       </div>
                       <div className="flex justify-between">
@@ -332,6 +376,12 @@ export const PaymentTypes = () => {
                         <span className="text-sm font-medium">Max Limit</span>
                         <span className="text-sm">
                           {Number(detail.maxLimit).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Charge</span>
+                        <span className="text-sm">
+                          {Number(detail.charge).toLocaleString()}%
                         </span>
                       </div>
                       <div className="flex justify-between">

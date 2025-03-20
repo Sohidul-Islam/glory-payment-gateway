@@ -173,6 +173,7 @@ export interface PaymentTypeDetail {
   paymentTypeId: number;
   value: string;
   description: string;
+  charge: string;
   maxLimit: string;
   currentUsage: string;
   isActive: boolean;
@@ -232,6 +233,11 @@ export const deletePaymentType = async (typeId: number) => {
 
 export const getPaymentDetailInfo = async (paymentDetailId: number) => {
   const response = await AXIOS.get(`/payment/details/${paymentDetailId}`);
+  return response.data as PaymentDetailResponse;
+};
+
+export const getPaymentDetailInfoByTypeId = async (paymentTypeId: number) => {
+  const response = await AXIOS.get(`/payment/type/details/${paymentTypeId}`);
   return response.data as PaymentDetailResponse;
 };
 
