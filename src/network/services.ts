@@ -200,6 +200,7 @@ export interface CreatePaymentTypeData {
   details: {
     value: string;
     description: string;
+    charge: string;
     maxLimit: string;
   }[];
 }

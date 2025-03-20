@@ -7,6 +7,7 @@ import {
   PaymentType,
   createPaymentType,
   getPaymentMethods,
+  updatePaymentType,
 } from "../../network/services";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
@@ -41,8 +42,13 @@ export const PaymentTypeForm = ({
     setValue,
     formState: { errors },
   } = useForm<CreatePaymentTypeData>({
-    defaultValues: initialData || {
-      details: [{ value: "", description: "", maxLimit: "0" }],
+    defaultValues: (initialData
+      ? {
+          ...initialData,
+          details: initialData?.PaymentDetails || [],
+        }
+      : undefined) || {
+      details: [{ value: "", description: "", charge: "", maxLimit: "0" }],
     },
   });
 
@@ -84,7 +90,7 @@ export const PaymentTypeForm = ({
   };
 
   const mutation = useMutation({
-    mutationFn: createPaymentType,
+    mutationFn: initialData?.id ? updatePaymentType : createPaymentType,
     onSuccess: () => {
       toast.success("Payment type saved successfully!");
       onSuccess?.();
@@ -221,7 +227,12 @@ export const PaymentTypeForm = ({
             <button
               type="button"
               onClick={() =>
-                append({ value: "", description: "", maxLimit: "0" })
+                append({
+                  value: "",
+                  description: "",
+                  charge: "",
+                  maxLimit: "0",
+                })
               }
               className={cn(
                 "inline-flex items-center px-4 py-2 rounded-lg",
@@ -240,22 +251,25 @@ export const PaymentTypeForm = ({
               <div
                 key={field.id}
                 className={cn(
-                  "grid grid-cols-3 gap-4 p-6 rounded-lg relative",
-                  "bg-gray-50 border border-gray-100",
-                  "transition-all duration-200 hover:shadow-md"
+                  "grid grid-cols-2 gap-4 p-6 rounded-lg relative group",
+                  "bg-white border border-gray-100",
+                  "transition-all duration-300 hover:shadow-lg hover:border-indigo-100",
+                  "hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/30"
                 )}
               >
                 <Input
-                  label="Value"
+                  label="Name"
                   {...register(`details.${index}.value` as const, {
                     required: "Value is required",
                   })}
                   error={errors.details?.[index]?.value?.message}
+                  className="transition-all duration-200 focus:ring-indigo-500"
                 />
 
                 <Input
                   label="Description"
                   {...register(`details.${index}.description` as const)}
+                  className="transition-all duration-200 focus:ring-indigo-500"
                 />
 
                 <Input
@@ -266,16 +280,33 @@ export const PaymentTypeForm = ({
                     min: { value: 0, message: "Must be positive" },
                   })}
                   error={errors.details?.[index]?.maxLimit?.message}
+                  className="transition-all duration-200 focus:ring-indigo-500"
+                />
+
+                <Input
+                  label="Charge (%)"
+                  type="number"
+                  step="0.01"
+                  {...register(`details.${index}.charge` as const, {
+                    required: "Charge percentage is required",
+                    min: { value: 0, message: "Must be positive" },
+                    max: { value: 100, message: "Cannot exceed 100%" },
+                  })}
+                  error={errors.details?.[index]?.charge?.message}
+                  className="transition-all duration-200 focus:ring-indigo-500"
                 />
 
                 {fields.length > 1 && (
                   <button
                     type="button"
                     onClick={() => remove(index)}
-                    className="absolute -right-2 -top-2 p-2 bg-white rounded-full shadow-md 
-                             hover:bg-red-50 transition-colors"
+                    className="absolute -right-3 -top-3 p-2 bg-white rounded-full shadow-lg 
+                             hover:bg-red-50 hover:shadow-red-100 transition-all duration-300
+                             group-hover:scale-110 group-hover:rotate-12
+                             focus:outline-none focus:ring-2 focus:ring-red-200"
+                    title="Delete this payment type"
                   >
-                    <Trash2 className="w-4 h-4 text-red-500" />
+                    <Trash2 className="w-4 h-4 text-red-500 transition-colors duration-200 group-hover:text-red-600" />
                   </button>
                 )}
               </div>
