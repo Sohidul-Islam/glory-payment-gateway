@@ -275,6 +275,8 @@ export const PaymentDetails = () => {
       >
         <AccountForm
           paymentDetailId={Number(paymentDetailsId)}
+          paymentTypeId={Number(paymentTypeId)}
+          paymentMethod={PaymentType.PaymentMethod.name}
           initialData={selectedAccount}
           onSuccess={() => {
             setIsAccountFormOpen(false);

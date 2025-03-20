@@ -243,7 +243,10 @@ export const getPaymentDetailInfoByTypeId = async (paymentTypeId: number) => {
 
 export interface CreateAccountData {
   paymentDetailId: number;
+  paymentTypeId: number;
   accountNumber: string;
+  routingNumber: string;
+  branchName: string;
   maxLimit: string;
   status: "active" | "inactive";
 }
