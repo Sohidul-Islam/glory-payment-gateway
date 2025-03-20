@@ -1,9 +1,22 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PaymentType, getPaymentTypes, deletePaymentType } from "../network/services";
+import {
+  PaymentType,
+  getPaymentTypes,
+  deletePaymentType,
+} from "../network/services";
 import { Modal } from "../components/ui/Modal";
 import { Loader } from "../components/ui/Loader";
-import { PlusIcon, Eye, Pencil, Trash2, ChevronDown, ChevronUp, Loader2, Settings } from "lucide-react";
+import {
+  PlusIcon,
+  Eye,
+  Pencil,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  Settings,
+} from "lucide-react";
 import { formatDate } from "../utils/utils";
 import { PaymentTypeForm } from "../components/payment/PaymentTypeForm";
 import { toast } from "react-hot-toast";
@@ -25,22 +38,17 @@ export const PaymentTypes = () => {
     queryFn: getPaymentTypes,
   });
 
-  
-
   const deleteMutation = useMutation({
     mutationFn: deletePaymentType,
     onSuccess: (data) => {
-
-      if(data.status){
+      if (data.status) {
         queryClient.invalidateQueries({ queryKey: ["paymentTypes"] });
         toast.success("Payment type deleted successfully");
         setIsDeleteModalOpen(false);
         setSelectedType(null);
-      }
-      else{
+      } else {
         toast.error("Payment type can't be deleted");
       }
-     
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to delete payment type");
@@ -79,32 +87,42 @@ export const PaymentTypes = () => {
         {types.map((type: PaymentType) => (
           <div
             key={type.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden h-fit"
+            className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100"
           >
             {/* Card Header */}
-            <div className="p-4">
-              <div className="flex items-center space-x-4">
-                <img
-                  src={type.image}
-                  alt={type.name}
-                  className="h-auto w-16 rounded-lg object-cover"
-                />
+            <div className="p-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="flex items-center space-x-4 relative">
+                <div className="relative">
+                  <img
+                    src={type.image}
+                    alt={type.name}
+                    className="h-16 w-16 rounded-xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div
+                    className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${
+                      type.status === "active"
+                        ? "bg-green-400 ring-2 ring-white"
+                        : "bg-red-400 ring-2 ring-white"
+                    }`}
+                  />
+                </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors duration-200">
                       {type.name}
                     </h3>
                     <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors duration-200 ${
                         type.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          ? "bg-green-50 text-green-700"
+                          : "bg-red-50 text-red-700"
                       }`}
                     >
                       {type.status}
                     </span>
                   </div>
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-indigo-50 text-indigo-700">
                     {type.paymentMethodId}
                   </span>
                 </div>
@@ -112,17 +130,19 @@ export const PaymentTypes = () => {
             </div>
 
             {/* Card Actions */}
-            <div className="px-4 py-3 bg-gray-50 flex justify-between items-center">
+            <div className="px-6 py-4 bg-gray-50/50 flex justify-between items-center border-t border-gray-100">
               <button
                 onClick={() => toggleExpand(type.id)}
-                className="text-sm font-medium text-gray-600 flex items-center gap-1 hover:text-gray-900"
+                className="text-sm font-medium text-gray-600 flex items-center gap-1.5 hover:text-indigo-600 transition-colors duration-200"
               >
-                {type.PaymentDetails?.length || 0} Details
-                {expandedCard === type.id ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
+                <span className="flex items-center gap-1">
+                  {type.PaymentDetails?.length || 0} Details
+                  {expandedCard === type.id ? (
+                    <ChevronUp className="w-4 h-4 transition-transform duration-200" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                  )}
+                </span>
               </button>
               <div className="flex gap-2">
                 <button
@@ -130,7 +150,8 @@ export const PaymentTypes = () => {
                     setSelectedType(type);
                     setIsModalOpen(true);
                   }}
-                  className="p-1 text-indigo-600 hover:text-indigo-900 rounded-full hover:bg-indigo-50"
+                  className="p-2 text-indigo-600 hover:text-indigo-700 rounded-lg hover:bg-indigo-50 transition-all duration-200"
+                  title="View Details"
                 >
                   <Eye className="w-5 h-5" />
                 </button>
@@ -139,7 +160,8 @@ export const PaymentTypes = () => {
                     setSelectedType(type);
                     setIsFormModalOpen(true);
                   }}
-                  className="p-1 text-blue-600 hover:text-blue-900 rounded-full hover:bg-blue-50"
+                  className="p-2 text-blue-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                  title="Edit"
                 >
                   <Pencil className="w-5 h-5" />
                 </button>
@@ -148,7 +170,8 @@ export const PaymentTypes = () => {
                     setSelectedType(type);
                     setIsDeleteModalOpen(true);
                   }}
-                  className="p-1 text-red-600 hover:text-red-900 rounded-full hover:bg-red-50"
+                  className="p-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-all duration-200"
+                  title="Delete"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -156,22 +179,26 @@ export const PaymentTypes = () => {
             </div>
 
             {/* Expandable Details */}
-            <div 
-              className={`transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden ${
-                expandedCard === type.id ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedCard === type.id
+                  ? "max-h-[1000px] opacity-100"
+                  : "max-h-0 opacity-0"
               }`}
             >
-              <div className="border-t border-gray-200">
+              <div className="border-t border-gray-100">
                 {type.PaymentDetails?.map((detail) => (
                   <div
                     key={detail.id}
-                    className="p-4 space-y-2 border-b border-gray-100 last:border-b-0"
+                    className="p-4 space-y-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200"
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600">
                         Value
                       </span>
-                      <span className="text-sm text-gray-900">{detail.value}</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {detail.value}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600">
@@ -185,7 +212,7 @@ export const PaymentTypes = () => {
                       <span className="text-sm font-medium text-gray-600">
                         Max Limit
                       </span>
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm font-semibold text-gray-900">
                         {Number(detail.maxLimit).toLocaleString()} BDT
                       </span>
                     </div>
@@ -193,7 +220,7 @@ export const PaymentTypes = () => {
                       <span className="text-sm font-medium text-gray-600">
                         Current Usage
                       </span>
-                      <span className="text-sm text-gray-900">
+                      <span className="text-sm font-semibold text-gray-900">
                         {Number(detail.currentUsage).toLocaleString()} BDT
                       </span>
                     </div>
@@ -202,10 +229,10 @@ export const PaymentTypes = () => {
                         Status
                       </span>
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        className={`px-2.5 py-1 text-xs font-medium rounded-full ${
                           detail.isActive
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-green-50 text-green-700"
+                            : "bg-red-50 text-red-700"
                         }`}
                       >
                         {detail.isActive ? "Active" : "Inactive"}
@@ -220,16 +247,17 @@ export const PaymentTypes = () => {
                       </span>
                     </div>
 
-                    <div className="flex bg-gray-200 p-2 rounded-md justify-between items-center cursor-pointer" onClick={()=>{
-                      navigator(`/payment-details/${detail?.id}`)
-                    }}>
-                      <span className="text-sm font-medium text-gray-600">
+                    <div
+                      className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
+                      onClick={() =>
+                        navigator(`/payment-details/${detail?.id}`)
+                      }
+                    >
+                      <span className="text-sm font-medium text-gray-700">
                         Configure
                       </span>
-                      <span className="text-sm text-gray-900">
-                        <button>
+                      <span className="text-indigo-600">
                         <Settings className="w-5 h-5" />
-                        </button>
                       </span>
                     </div>
                   </div>
@@ -317,6 +345,20 @@ export const PaymentTypes = () => {
                         {detail.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
+
+                    <div
+                      className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
+                      onClick={() =>
+                        navigator(`/payment-details/${detail?.id}`)
+                      }
+                    >
+                      <span className="text-sm font-medium text-gray-700">
+                        Configure
+                      </span>
+                      <span className="text-indigo-600">
+                        <Settings className="w-5 h-5" />
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -356,7 +398,8 @@ export const PaymentTypes = () => {
       >
         <div className="space-y-4">
           <p className="text-gray-700">
-            Are you sure you want to delete the payment type "{selectedType?.name}"? This action cannot be undone.
+            Are you sure you want to delete the payment type "
+            {selectedType?.name}"? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
             <button

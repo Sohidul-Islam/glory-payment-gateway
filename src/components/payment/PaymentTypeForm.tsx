@@ -15,6 +15,17 @@ import { cn, uploadFile } from "../../utils/utils";
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Input } from "../ui/Input";
 
+const StatusType = [
+  {
+    label: "Active",
+    value: "active",
+  },
+  {
+    label: "Inactive",
+    value: "inactive",
+  },
+];
+
 interface PaymentTypeFormProps {
   onSuccess?: () => void;
   initialData?: PaymentType | null;
@@ -42,6 +53,7 @@ export const PaymentTypeForm = ({
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CreatePaymentTypeData>({
     defaultValues: (initialData
@@ -223,103 +235,133 @@ export const PaymentTypeForm = ({
             {...register("name", { required: "Name is required" })}
             error={errors.name?.message}
           />
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Status
+            </label>
+            <select
+              {...register("status")}
+              className={cn(
+                "w-full text-sm rounded-lg border shadow-sm py-[10px] px-3",
+                "bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500",
+                errors.paymentMethodId ? "border-red-300" : "border-gray-300"
+              )}
+            >
+              <option value="">Select a staus</option>
+              {StatusType.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+            {errors.paymentMethodId && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.paymentMethodId.message}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Details Section */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="text-lg font-medium text-gray-900">
-              Payment Details
-            </h4>
-            <button
-              type="button"
-              onClick={() =>
-                append({
-                  value: "",
-                  description: "",
-                  charge: "",
-                  maxLimit: "0",
-                })
-              }
-              className={cn(
-                "inline-flex items-center px-4 py-2 rounded-lg",
-                "text-sm font-medium text-white bg-indigo-600",
-                "hover:bg-indigo-700 transition-colors duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              )}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Detail
-            </button>
-          </div>
-
+        {paymentMethods.find(
+          (item) => item.id === Number(watch("paymentMethodId"))
+        )?.name === "MOBILE_BANKING" && (
           <div className="space-y-4">
-            {fields.map((field, index) => (
-              <div
-                key={field.id}
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-medium text-gray-900">
+                Payment Details
+              </h4>
+              <button
+                type="button"
+                onClick={() =>
+                  append({
+                    value: "",
+                    description: "",
+                    charge: "",
+                    maxLimit: "0",
+                  })
+                }
                 className={cn(
-                  "grid grid-cols-2 gap-4 p-6 rounded-lg relative group",
-                  "bg-white border border-gray-100",
-                  "transition-all duration-300 hover:shadow-lg hover:border-indigo-100",
-                  "hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/30"
+                  "inline-flex items-center px-4 py-2 rounded-lg",
+                  "text-sm font-medium text-white bg-indigo-600",
+                  "hover:bg-indigo-700 transition-colors duration-200",
+                  "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 )}
               >
-                <Input
-                  label="Name"
-                  {...register(`details.${index}.value` as const, {
-                    required: "Value is required",
-                  })}
-                  error={errors.details?.[index]?.value?.message}
-                  className="transition-all duration-200 focus:ring-indigo-500"
-                />
+                <Plus className="w-4 h-4 mr-2" />
+                Add Detail
+              </button>
+            </div>
 
-                <Input
-                  label="Description"
-                  {...register(`details.${index}.description` as const)}
-                  className="transition-all duration-200 focus:ring-indigo-500"
-                />
+            <div className="space-y-4">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className={cn(
+                    "grid grid-cols-2 gap-4 p-6 rounded-lg relative group",
+                    "bg-white border border-gray-100",
+                    "transition-all duration-300 hover:shadow-lg hover:border-indigo-100",
+                    "hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/30"
+                  )}
+                >
+                  <Input
+                    label="Name"
+                    {...register(`details.${index}.value` as const, {
+                      required: "Value is required",
+                    })}
+                    error={errors.details?.[index]?.value?.message}
+                    className="transition-all duration-200 focus:ring-indigo-500"
+                  />
 
-                <Input
-                  label="Max Limit"
-                  type="number"
-                  {...register(`details.${index}.maxLimit` as const, {
-                    required: "Max limit is required",
-                    min: { value: 0, message: "Must be positive" },
-                  })}
-                  error={errors.details?.[index]?.maxLimit?.message}
-                  className="transition-all duration-200 focus:ring-indigo-500"
-                />
+                  <Input
+                    label="Description"
+                    {...register(`details.${index}.description` as const)}
+                    className="transition-all duration-200 focus:ring-indigo-500"
+                  />
 
-                <Input
-                  label="Charge (%)"
-                  type="number"
-                  step="0.01"
-                  {...register(`details.${index}.charge` as const, {
-                    required: "Charge percentage is required",
-                    min: { value: 0, message: "Must be positive" },
-                    max: { value: 100, message: "Cannot exceed 100%" },
-                  })}
-                  error={errors.details?.[index]?.charge?.message}
-                  className="transition-all duration-200 focus:ring-indigo-500"
-                />
+                  <Input
+                    label="Max Limit"
+                    type="number"
+                    {...register(`details.${index}.maxLimit` as const, {
+                      required: "Max limit is required",
+                      min: { value: 0, message: "Must be positive" },
+                    })}
+                    error={errors.details?.[index]?.maxLimit?.message}
+                    className="transition-all duration-200 focus:ring-indigo-500"
+                  />
 
-                {fields.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="absolute -right-3 -top-3 p-2 bg-white rounded-full shadow-lg 
+                  <Input
+                    label="Charge (%)"
+                    type="number"
+                    step="0.01"
+                    {...register(`details.${index}.charge` as const, {
+                      required: "Charge percentage is required",
+                      min: { value: 0, message: "Must be positive" },
+                      max: { value: 100, message: "Cannot exceed 100%" },
+                    })}
+                    error={errors.details?.[index]?.charge?.message}
+                    className="transition-all duration-200 focus:ring-indigo-500"
+                  />
+
+                  {fields.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute -right-3 -top-3 p-2 bg-white rounded-full shadow-lg 
                              hover:bg-red-50 hover:shadow-red-100 transition-all duration-300
                              group-hover:scale-110 group-hover:rotate-12
                              focus:outline-none focus:ring-2 focus:ring-red-200"
-                    title="Delete this payment type"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500 transition-colors duration-200 group-hover:text-red-600" />
-                  </button>
-                )}
-              </div>
-            ))}
+                      title="Delete this payment type"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500 transition-colors duration-200 group-hover:text-red-600" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex justify-end pt-4">
           <button

@@ -197,6 +197,7 @@ export interface CreatePaymentTypeData {
   paymentMethodId: number;
   name: string;
   image: string;
+  status: string;
   details: {
     value: string;
     description: string;
