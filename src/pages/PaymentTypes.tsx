@@ -21,6 +21,7 @@ import { formatDate } from "../utils/utils";
 import { PaymentTypeForm } from "../components/payment/PaymentTypeForm";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 export const PaymentTypes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +29,8 @@ export const PaymentTypes = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+
+  const { user } = useAuth();
 
   const queryClient = useQueryClient();
 
@@ -72,14 +75,16 @@ export const PaymentTypes = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Payment Types</h1>
-        <button
-          onClick={() => setIsFormModalOpen(true)}
-          className="btn-primary flex items-center gap-2"
-        >
-          <PlusIcon className="w-5 h-5" />
-          Add New Type
-        </button>
+        <h1 className="text-lg md:text-2xl font-semibold">Payment Types</h1>
+        {user?.accountType === "super admin" && (
+          <button
+            onClick={() => setIsFormModalOpen(true)}
+            className="btn-primary px-2 py-1  flex items-center gap-2"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Add New Type
+          </button>
+        )}
       </div>
 
       {/* Grid of Cards */}
@@ -162,7 +167,8 @@ export const PaymentTypes = () => {
               )}
               <div className="flex gap-2">
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedType(type);
                     setIsModalOpen(true);
                   }}
@@ -171,26 +177,32 @@ export const PaymentTypes = () => {
                 >
                   <Eye className="w-5 h-5" />
                 </button>
-                <button
-                  onClick={() => {
-                    setSelectedType(type);
-                    setIsFormModalOpen(true);
-                  }}
-                  className="p-2 text-blue-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-200"
-                  title="Edit"
-                >
-                  <Pencil className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedType(type);
-                    setIsDeleteModalOpen(true);
-                  }}
-                  className="p-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-all duration-200"
-                  title="Delete"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+                {user?.accountType === "super admin" && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedType(type);
+                        setIsFormModalOpen(true);
+                      }}
+                      className="p-2 text-blue-600 hover:text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                      title="Edit"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedType(type);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="p-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-all duration-200"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 

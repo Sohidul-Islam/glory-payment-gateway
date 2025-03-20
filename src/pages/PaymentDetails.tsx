@@ -23,9 +23,11 @@ import {
   Settings,
   Landmark,
   Plus,
+  Copy,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../utils/utils";
+import { toast } from "react-hot-toast";
 
 export const PaymentDetails = () => {
   const { paymentDetailsId, paymentTypeId } = useParams();
@@ -73,10 +75,14 @@ export const PaymentDetails = () => {
   const { paymentMethod, accountInfo } = response;
   const { PaymentType } = paymentMethod;
 
+  const isActive = paymentMethod.isActive || PaymentType.status === "active";
+
   const handleAccountAction = (account?: AccountInfo) => {
     setSelectedAccount(account || null);
     setIsAccountFormOpen(true);
   };
+
+  console.log({ paymentMethod, PaymentType });
 
   return (
     <div className="space-y-6">
@@ -94,24 +100,24 @@ export const PaymentDetails = () => {
               {PaymentType.name} Payment Details
             </h1>
             <p className="text-sm text-gray-600">
-              {paymentMethod.value} - {paymentMethod.description}
+              Method: {PaymentType.PaymentMethod.name}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span
             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-              paymentMethod.isActive
+              isActive
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
             }`}
           >
-            {paymentMethod.isActive ? (
+            {isActive ? (
               <CheckCircle2 className="w-4 h-4 mr-1" />
             ) : (
               <XCircle className="w-4 h-4 mr-1" />
             )}
-            {paymentMethod.isActive ? "Active" : "Inactive"}
+            {isActive ? "Active" : "Inactive"}
           </span>
         </div>
       </div>
@@ -162,32 +168,40 @@ export const PaymentDetails = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-blue-100">
-              <Wallet className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Max Limit</p>
-              <p className="text-xl font-semibold text-gray-900">
-                {Number(paymentMethod.maxLimit).toLocaleString()} BDT
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-green-100">
-              <Activity className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Current Usage</p>
-              <p className="text-xl font-semibold text-gray-900">
-                {Number(paymentMethod.currentUsage).toLocaleString()} BDT
-              </p>
+        {Number(paymentMethod?.maxLimit) > 0 && (
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-blue-100">
+                <Wallet className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Max Limit</p>
+                <p className="text-xl font-semibold text-gray-900">
+                  {Number(paymentMethod.maxLimit).toLocaleString()} BDT
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {Number(paymentMethod.currentUsage) > 0 && (
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-green-100">
+                <Activity className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Current Usage
+                </p>
+                <p className="text-xl font-semibold text-gray-900">
+                  {Number(paymentMethod.currentUsage).toLocaleString()} BDT
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-lg bg-purple-100">
@@ -219,43 +233,160 @@ export const PaymentDetails = () => {
         </div>
         <div className="divide-y divide-gray-200">
           {accountInfo.map((account) => (
-            <div key={account.id} className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-lg bg-gray-100">
-                    <CreditCard className="w-6 h-6 text-gray-600" />
+            <div
+              key={account.id}
+              className="p-6 hover:bg-gray-50/50 transition-colors duration-200"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50">
+                    <CreditCard className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <div>
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-gray-900">
-                        Account: {account.accountNumber}
+                        {PaymentType.PaymentMethod.name === "MOBILE_BANKING"
+                          ? "Mobile Number"
+                          : "Bank Account"}
                       </p>
                       <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        className={`px-2.5 py-1 text-xs font-medium rounded-full ${
                           account.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-green-50 text-green-700"
+                            : "bg-red-50 text-red-700"
                         }`}
                       >
                         {account.status}
                       </span>
                     </div>
-                    <div className="mt-1 flex items-center gap-4 text-sm text-gray-600">
-                      <span>
-                        Max: {Number(account.maxLimit).toLocaleString()} BDT
-                      </span>
-                      <span>
-                        Used: {Number(account.currentUsage).toLocaleString()}{" "}
-                        BDT
-                      </span>
+
+                    {/* Bank Details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Account Number */}
+                      <div className="group">
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
+                          Account Number
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <code className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-mono text-gray-700">
+                            {account.accountNumber}
+                          </code>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                account.accountNumber
+                              );
+                              toast.success("Account number copied!");
+                            }}
+                            className="p-1.5 text-gray-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            title="Copy account number"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Routing Number */}
+                      {account.routingNumber && (
+                        <div className="group">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
+                            Routing Number
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <code className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-mono text-gray-700">
+                              {account.routingNumber}
+                            </code>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  account.routingNumber
+                                );
+                                toast.success("Routing number copied!");
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                              title="Copy routing number"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Branch Name */}
+                      {account.branchName && (
+                        <div className="group">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
+                            Branch Name
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <code className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-mono text-gray-700">
+                              {account.branchName}
+                            </code>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  account.branchName
+                                );
+                                toast.success("Branch name copied!");
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                              title="Copy branch name"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bank Name */}
+                      {PaymentType.name && (
+                        <div className="group">
+                          <label className="text-xs font-medium text-gray-500 mb-1 block">
+                            Bank Name
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <code className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-mono text-gray-700">
+                              {PaymentType.name}
+                            </code>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(account.bankName);
+                                toast.success("Bank name copied!");
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                              title="Copy bank name"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Usage Information */}
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Max Limit:</span>
+                        <span className="font-medium text-gray-900">
+                          {Number(account.maxLimit).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Used:</span>
+                        <span className="font-medium text-gray-900">
+                          {Number(account.currentUsage).toLocaleString()} BDT
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
+
                 <button
                   onClick={() => handleAccountAction(account)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 text-gray-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-all duration-200"
+                  title="Configure account"
                 >
-                  <Settings className="w-5 h-5 text-gray-600" />
+                  <Settings className="w-5 h-5" />
                 </button>
               </div>
             </div>

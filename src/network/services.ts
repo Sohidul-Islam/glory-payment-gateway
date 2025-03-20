@@ -144,8 +144,9 @@ export interface AccountInfo {
   userId: number;
   paymentDetailId: number;
   accountNumber: string;
-  branchName?: string;
-  routingNumber?: string;
+  bankName: string;
+  branchName: string;
+  routingNumber: string;
   maxLimit: string;
   currentUsage: string;
   isActive: boolean;
