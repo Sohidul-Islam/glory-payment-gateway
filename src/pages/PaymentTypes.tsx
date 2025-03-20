@@ -311,64 +311,68 @@ export const PaymentTypes = () => {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h4 className="font-medium">Payment Details</h4>
-              <div className="grid grid-cols-1 gap-4">
-                {selectedType.PaymentDetails?.map((detail) => (
-                  <div
-                    key={detail.id}
-                    className="bg-gray-50 p-4 rounded-lg space-y-2"
-                  >
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium">Value</span>
-                      <span className="text-sm">{detail.value}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium">Description</span>
-                      <span className="text-sm">{detail.description}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium">Max Limit</span>
-                      <span className="text-sm">
-                        {Number(detail.maxLimit).toLocaleString()} BDT
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium">Current Usage</span>
-                      <span className="text-sm">
-                        {Number(detail.currentUsage).toLocaleString()} BDT
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium">Status</span>
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          detail.isActive
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {detail.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-
+            {selectedType.PaymentMethod.name === "MOBILE_BANKING" && (
+              <div className="space-y-4">
+                <h4 className="font-medium">Payment Details</h4>
+                <div className="grid grid-cols-1 gap-4">
+                  {selectedType.PaymentDetails?.map((detail) => (
                     <div
-                      className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
-                      onClick={() =>
-                        navigator(`/payment-details/${detail?.id}`)
-                      }
+                      key={detail.id}
+                      className="bg-gray-50 p-4 rounded-lg space-y-2"
                     >
-                      <span className="text-sm font-medium text-gray-700">
-                        Configure
-                      </span>
-                      <span className="text-indigo-600">
-                        <Settings className="w-5 h-5" />
-                      </span>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Value</span>
+                        <span className="text-sm">{detail.value}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Description</span>
+                        <span className="text-sm">{detail.description}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Max Limit</span>
+                        <span className="text-sm">
+                          {Number(detail.maxLimit).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">
+                          Current Usage
+                        </span>
+                        <span className="text-sm">
+                          {Number(detail.currentUsage).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium">Status</span>
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            detail.isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {detail.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+
+                      <div
+                        className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
+                        onClick={() =>
+                          navigator(`/payment-details/${detail?.id}`)
+                        }
+                      >
+                        <span className="text-sm font-medium text-gray-700">
+                          Configure
+                        </span>
+                        <span className="text-indigo-600">
+                          <Settings className="w-5 h-5" />
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </Modal>
