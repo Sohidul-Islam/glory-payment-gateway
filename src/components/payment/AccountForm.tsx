@@ -19,6 +19,8 @@ interface AccountFormProps {
   initialData?: {
     id: number;
     accountNumber: string;
+    branchName?: string;
+    routingNumber?: string;
     maxLimit: string;
     status: "active" | "inactive";
   } | null;
@@ -42,6 +44,8 @@ export const AccountForm = ({
       paymentDetailId,
       paymentTypeId,
       accountNumber: initialData?.accountNumber || "",
+      routingNumber: initialData?.routingNumber || "",
+      branchName: initialData?.branchName || "",
       maxLimit: initialData?.maxLimit || "",
       status: initialData?.status || "active",
     },
