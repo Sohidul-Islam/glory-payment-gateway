@@ -7,11 +7,10 @@ import {
   PaymentType,
   createPaymentType,
   getPaymentMethods,
-  uploadFile,
 } from "../../network/services";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
-import { cn } from "../../utils/utils";
+import { cn, uploadFile } from "../../utils/utils";
 import { ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { Input } from "../ui/Input";
 
@@ -256,10 +255,7 @@ export const PaymentTypeForm = ({
 
                 <Input
                   label="Description"
-                  {...register(`details.${index}.description` as const, {
-                    required: "Description is required",
-                  })}
-                  error={errors.details?.[index]?.description?.message}
+                  {...register(`details.${index}.description` as const)}
                 />
 
                 <Input

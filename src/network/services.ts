@@ -104,17 +104,6 @@ export const createPaymentMethod = async (
   return response.data;
 };
 
-export const uploadFile = async (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const response = await AXIOS.post("/upload", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data.url;
-};
-
 export interface PaymentMethod {
   id: number;
   userId: number;
