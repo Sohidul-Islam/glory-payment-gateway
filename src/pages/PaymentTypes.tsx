@@ -131,19 +131,23 @@ export const PaymentTypes = () => {
 
             {/* Card Actions */}
             <div className="px-6 py-4 bg-gray-50/50 flex justify-between items-center border-t border-gray-100">
-              <button
-                onClick={() => toggleExpand(type.id)}
-                className="text-sm font-medium text-gray-600 flex items-center gap-1.5 hover:text-indigo-600 transition-colors duration-200"
-              >
-                <span className="flex items-center gap-1">
-                  {type.PaymentDetails?.length || 0} Details
-                  {expandedCard === type.id ? (
-                    <ChevronUp className="w-4 h-4 transition-transform duration-200" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 transition-transform duration-200" />
-                  )}
-                </span>
-              </button>
+              {type?.PaymentMethod?.name === "MOBILE_BANKING" ? (
+                <button
+                  onClick={() => toggleExpand(type.id)}
+                  className="text-sm font-medium text-gray-600 flex items-center gap-1.5 hover:text-indigo-600 transition-colors duration-200"
+                >
+                  <span className="flex items-center gap-1">
+                    {type.PaymentDetails?.length || 0} Details
+                    {expandedCard === type.id ? (
+                      <ChevronUp className="w-4 h-4 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 transition-transform duration-200" />
+                    )}
+                  </span>
+                </button>
+              ) : (
+                <span></span>
+              )}
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -179,91 +183,93 @@ export const PaymentTypes = () => {
             </div>
 
             {/* Expandable Details */}
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedCard === type.id
-                  ? "max-h-[1000px] opacity-100"
-                  : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="border-t border-gray-100">
-                {type.PaymentDetails?.map((detail) => (
-                  <div
-                    key={detail.id}
-                    className="p-4 space-y-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Value
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {detail.value}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Description
-                      </span>
-                      <span className="text-sm text-gray-900">
-                        {detail.description}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Max Limit
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {Number(detail.maxLimit).toLocaleString()} BDT
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Current Usage
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {Number(detail.currentUsage).toLocaleString()} BDT
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Status
-                      </span>
-                      <span
-                        className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                          detail.isActive
-                            ? "bg-green-50 text-green-700"
-                            : "bg-red-50 text-red-700"
-                        }`}
-                      >
-                        {detail.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600">
-                        Created At
-                      </span>
-                      <span className="text-sm text-gray-900">
-                        {formatDate(detail.createdAt)}
-                      </span>
-                    </div>
-
+            {type?.PaymentMethod.name === "MOBILE_BANKING" && (
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedCard === type.id
+                    ? "max-h-[1000px] opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <div className="border-t border-gray-100">
+                  {type.PaymentDetails?.map((detail) => (
                     <div
-                      className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
-                      onClick={() =>
-                        navigator(`/payment-details/${detail?.id}`)
-                      }
+                      key={detail.id}
+                      className="p-4 space-y-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors duration-200"
                     >
-                      <span className="text-sm font-medium text-gray-700">
-                        Configure
-                      </span>
-                      <span className="text-indigo-600">
-                        <Settings className="w-5 h-5" />
-                      </span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Value
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {detail.value}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Description
+                        </span>
+                        <span className="text-sm text-gray-900">
+                          {detail.description}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Max Limit
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {Number(detail.maxLimit).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Current Usage
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {Number(detail.currentUsage).toLocaleString()} BDT
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Status
+                        </span>
+                        <span
+                          className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                            detail.isActive
+                              ? "bg-green-50 text-green-700"
+                              : "bg-red-50 text-red-700"
+                          }`}
+                        >
+                          {detail.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Created At
+                        </span>
+                        <span className="text-sm text-gray-900">
+                          {formatDate(detail.createdAt)}
+                        </span>
+                      </div>
+
+                      <div
+                        className="flex bg-white p-3 rounded-lg justify-between items-center cursor-pointer hover:bg-indigo-50/50 transition-colors duration-200 border border-gray-100"
+                        onClick={() =>
+                          navigator(`/payment-details/${detail?.id}`)
+                        }
+                      >
+                        <span className="text-sm font-medium text-gray-700">
+                          Configure
+                        </span>
+                        <span className="text-indigo-600">
+                          <Settings className="w-5 h-5" />
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>

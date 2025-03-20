@@ -188,6 +188,7 @@ export interface PaymentType {
   image: string;
   status: "active" | "inactive";
   PaymentDetails: PaymentTypeDetail[];
+  PaymentMethod: PaymentMethod;
   createdAt: string;
   updatedAt: string;
 }
