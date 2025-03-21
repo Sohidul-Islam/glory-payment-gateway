@@ -533,3 +533,21 @@ export const approveTransaction = async (transactionId: number) => {
   );
   return response.data;
 };
+
+export type TransactionStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface UpdateTransactionStatusData {
+  status: TransactionStatus;
+  remarks?: string;
+}
+
+export const updateTransactionStatus = async (
+  transactionId: number,
+  data: UpdateTransactionStatusData
+) => {
+  const response = await AXIOS.post(
+    `/payment/transactions/status/${transactionId}`,
+    data
+  );
+  return response.data;
+};
