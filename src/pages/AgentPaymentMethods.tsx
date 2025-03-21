@@ -3,22 +3,36 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAgentPaymentMethods,
   getAgentPaymentTypes,
+  getAgentInfo,
   PaymentMethod,
   PaymentType,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import { ArrowLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  CheckCircle2,
+  XCircle,
+  User,
+  Phone,
+  Mail,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-
+import noImage from "../assets/no-image-overlay.webp";
 export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
     null
   );
-
   const [selectedType, setSelectedType] = useState<PaymentType | null>(null);
+
+  const { data: agentInfo, isLoading: isLoadingAgent } = useQuery({
+    queryKey: ["agentInfo", agentId],
+    queryFn: () => getAgentInfo(agentId!),
+    enabled: !!agentId,
+  });
 
   const { data: methods, isLoading: isLoadingMethods } = useQuery({
     queryKey: ["agentPaymentMethods", agentId],
@@ -32,7 +46,7 @@ export const AgentPaymentMethods = () => {
     enabled: !!agentId,
   });
 
-  if (isLoadingMethods || isLoadingTypes) {
+  if (isLoadingMethods || isLoadingTypes || isLoadingAgent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <Loader />
@@ -42,6 +56,70 @@ export const AgentPaymentMethods = () => {
 
   const renderMethods = () => (
     <div className="space-y-6">
+      {/* Agent Info Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl border border-gray-200 p-4 mb-8"
+      >
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center overflow-hidden">
+              <img
+                src={agentInfo?.image || noImage}
+                alt={agentInfo?.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <motion.div
+              className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                agentInfo?.status === "active" ? "bg-green-500" : "bg-red-500"
+              }`}
+              animate={{
+                scale: [1, 1.2, 1],
+                transition: { duration: 1.5, repeat: Infinity },
+              }}
+            >
+              {agentInfo?.status === "active" ? (
+                <CheckCircle2 className="w-3 h-3 text-white" />
+              ) : (
+                <XCircle className="w-3 h-3 text-white" />
+              )}
+            </motion.div>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {agentInfo?.fullName}
+              </h2>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  agentInfo?.status === "active"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }`}
+              >
+                {agentInfo?.status}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-1">
+                <Phone className="w-4 h-4" />
+                <span>{agentInfo?.phone}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Mail className="w-4 h-4" />
+                <span>{agentInfo?.email}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <User className="w-4 h-4" />
+                <span>ID: {agentInfo?.agentId}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Select Payment Method

@@ -29,6 +29,8 @@ import {
 import { formatDate } from "../utils/utils";
 import { useParams, Link } from "react-router";
 
+import noImage from "../assets/no-image-overlay.webp";
+
 export const AgentHome = () => {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const { agentId } = useParams();
@@ -93,7 +95,7 @@ export const AgentHome = () => {
             className="absolute inset-0"
           >
             <img
-              src={agent.Banners[currentBannerIndex].image}
+              src={agent.Banners[currentBannerIndex].image || noImage}
               alt={agent.Banners[currentBannerIndex].title}
               className="w-full h-full object-cover"
             />
