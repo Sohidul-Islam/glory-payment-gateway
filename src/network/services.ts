@@ -269,7 +269,7 @@ export const updatePaymentAccount = async (
 
 // Agent-specific API functions
 export const getAgentPaymentMethods = async (agentId: string) => {
-  const response = await AXIOS.get(`/payment/methods/${agentId}`);
+  const response = await AXIOS.get(`/payment/methods/agent/${agentId}`);
   return response.data as PaymentMethod[];
 };
 
@@ -304,5 +304,51 @@ export const checkAgentIdAvailability = async (agentId: string) => {
 
 export const generateAgentId = async () => {
   const response = await AXIOS.get("/generate-agent-id");
+  return response.data;
+};
+
+export interface Banner {
+  id: number;
+  userId: number;
+  title: string;
+  image: string;
+  description: string;
+  status: "active" | "inactive";
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AgentInfo {
+  id: number;
+  fullName: string;
+  email: string;
+  image: string | null;
+  phoneNumber: string;
+  location: string;
+  businessName: string | null;
+  businessType: string | null;
+  accountStatus: string;
+  accountType: string;
+  isVerified: boolean;
+  verificationToken: string;
+  agentId: string;
+  resetTokenExpiry: string | null;
+  resetToken: string | null;
+  isLoggedIn: boolean;
+  createdAt: string;
+  updatedAt: string;
+  Banners: Banner[];
+}
+
+export interface AgentInfoResponse {
+  status: boolean;
+  message: string;
+  data: AgentInfo;
+}
+
+export const getAgentInfo = async (agentId: string) => {
+  const response = await AXIOS.get(`/role/agent/${agentId}`);
   return response.data;
 };

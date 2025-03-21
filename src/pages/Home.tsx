@@ -2,7 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { PaymentMethod, getPaymentMethods } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import { Shield, CreditCard, Wallet, ArrowRight, CheckCircle2 } from "lucide-react";
+import {
+  Shield,
+  CreditCard,
+  Wallet,
+  ArrowRight,
+  CheckCircle2,
+} from "lucide-react";
 
 export const Home = () => {
   const { agentId } = useParams();
@@ -29,7 +35,8 @@ export const Home = () => {
               Secure Payment Gateway
             </h1>
             <p className="mt-6 text-xl text-indigo-100 max-w-3xl mx-auto">
-              Make secure payments through our trusted agent network. Fast, reliable, and protected transactions.
+              Make secure payments through our trusted agent network. Fast,
+              reliable, and protected transactions.
             </p>
           </div>
         </div>
@@ -45,7 +52,9 @@ export const Home = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Secure Payments</h3>
-                <p className="text-sm text-gray-600">Protected by industry-leading security</p>
+                <p className="text-sm text-gray-600">
+                  Protected by industry-leading security
+                </p>
               </div>
             </div>
           </div>
@@ -55,8 +64,12 @@ export const Home = () => {
                 <CreditCard className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Multiple Methods</h3>
-                <p className="text-sm text-gray-600">Choose your preferred payment option</p>
+                <h3 className="font-semibold text-gray-900">
+                  Multiple Methods
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Choose your preferred payment option
+                </p>
               </div>
             </div>
           </div>
@@ -66,8 +79,12 @@ export const Home = () => {
                 <Wallet className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Instant Processing</h3>
-                <p className="text-sm text-gray-600">Quick and efficient transactions</p>
+                <h3 className="font-semibold text-gray-900">
+                  Instant Processing
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Quick and efficient transactions
+                </p>
               </div>
             </div>
           </div>
@@ -77,7 +94,9 @@ export const Home = () => {
       {/* Payment Methods */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">Available Payment Methods</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Available Payment Methods
+          </h2>
           <p className="mt-4 text-lg text-gray-600">
             Choose from our wide range of secure payment options
           </p>
@@ -98,7 +117,9 @@ export const Home = () => {
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{method.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {method.name}
+                      </h3>
                       {method.status === "active" && (
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -107,9 +128,9 @@ export const Home = () => {
                       )}
                     </div>
                     <button
-                    onClick={()=>{
-                      navigator(`/payment/${agentId}/method/${method.id}`)
-                    }}
+                      onClick={() => {
+                        navigator(`/payment/${agentId}/method/${method.id}`);
+                      }}
                       className="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500"
                     >
                       Pay with {method.name}
@@ -127,11 +148,14 @@ export const Home = () => {
       <footer className="bg-white border-t border-gray-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center text-gray-500 text-sm">
-            <p>&copy; {new Date().getFullYear()} Glory Payment Gateway. All rights reserved.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Glory Payment Gateway. All
+              rights reserved.
+            </p>
             <p className="mt-2">Secure • Reliable • Fast</p>
           </div>
         </div>
       </footer>
     </div>
   );
-}; 
+};

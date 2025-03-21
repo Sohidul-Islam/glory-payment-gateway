@@ -26,10 +26,11 @@ import { useAuth } from "./hooks/useAuth";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { PaymentTypes } from "./pages/PaymentTypes";
 import { PaymentDetails } from "./pages/PaymentDetails";
-import { Home } from "./pages/Home";
+// import { Home } from "./pages/Home";
 import { AgentPaymentDetails } from "./pages/AgentPaymentDetails";
 import { AgentPaymentMethods } from "./pages/AgentPaymentMethods";
 import { Loader } from "./components/ui/Loader";
+import { AgentHome } from "./pages/AgentHome";
 
 const queryClient = new QueryClient();
 
@@ -89,7 +90,7 @@ const AppRoutes = () => {
         <Route path="notifications" element={<Notifications />} />
       </Route>
 
-      <Route path="/agent/:agentId" element={<Home />} />
+      <Route path="/agent/:agentId" element={<AgentHome />} />
       <Route path="/payment/:agentId" element={<AgentPaymentMethods />} />
       <Route
         path="/payment/:agentId/method/:methodId"
