@@ -179,23 +179,63 @@ export const AgentPaymentMethods = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.02 }}
-                    className="bg-white rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300"
+                    className={`group relative bg-white rounded-xl border p-4 hover:shadow-lg transition-all duration-300 ${
+                      selectedType?.id === type.id
+                        ? "border-indigo-500 shadow-lg"
+                        : "border-gray-200 hover:border-indigo-500"
+                    }`}
                   >
+                    {/* Decorative background elements */}
                     <div
-                      className="flex items-center gap-4 mb-4"
+                      className={`absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 transition-opacity duration-300 rounded-xl ${
+                        selectedType?.id === type.id
+                          ? "opacity-100"
+                          : "group-hover:opacity-100"
+                      }`}
+                    />
+                    <div className="absolute -top-1 -right-1 w-8 h-8 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+
+                    <div
+                      className="relative flex items-center gap-4 cursor-pointer"
                       onClick={() => {
                         if (type) setSelectedType(type);
                       }}
                     >
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-2">
-                        <img
-                          src={type.image}
-                          alt={type.name}
-                          className="w-full h-full object-contain"
-                        />
+                      <div className="relative">
+                        <motion.div
+                          className="w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 flex items-center justify-center overflow-hidden p-2.5 shadow-sm"
+                          whileHover={{
+                            scale: 1.1,
+                            rotate: [0, -5, 5, 0],
+                            transition: { duration: 0.3 },
+                          }}
+                        >
+                          <img
+                            src={type.image}
+                            alt={type.name}
+                            className="w-full h-full object-contain"
+                          />
+                        </motion.div>
+                        <motion.div
+                          className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                            type.status === "active"
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                          animate={{
+                            scale: [1, 1.2, 1],
+                            transition: { duration: 1.5, repeat: Infinity },
+                          }}
+                        >
+                          {type.status === "active" ? (
+                            <CheckCircle2 className="w-3 h-3 text-white" />
+                          ) : (
+                            <XCircle className="w-3 h-3 text-white" />
+                          )}
+                        </motion.div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 mb-1">
                           {type.name}
                         </h4>
                         <span
@@ -209,103 +249,117 @@ export const AgentPaymentMethods = () => {
                         </span>
                       </div>
                     </div>
-                    {/*  */}
                   </motion.div>
                 ))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Payment Details Section */}
       {selectedType && (
         <AnimatePresence>
-          <div className="space-y-3">
-            {selectedType?.PaymentDetails.map((detail, detailIndex) => (
-              <motion.button
-                key={detail.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: detailIndex * 0.1 }}
-                whileHover={{
-                  scale: 1.02,
-                  transition: { type: "spring", stiffness: 300 },
-                }}
-                onClick={() =>
-                  navigate(
-                    `/payment/${agentId}/method/${selectedMethod?.id}/type/${detail.paymentTypeId}`
-                  )
-                }
-                className="w-full group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"
-              >
-                {/* Decorative background elements */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute -top-1 -right-1 w-8 h-8 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="mt-8"
+          >
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Payment Options
+              </h3>
+              <p className="text-gray-500">
+                Choose your preferred payment option
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedType?.PaymentDetails.map((detail, detailIndex) => (
+                <motion.button
+                  key={detail.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: detailIndex * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() =>
+                    navigate(
+                      `/payment/${agentId}/method/${selectedMethod?.id}/type/${detail.paymentTypeId}`
+                    )
+                  }
+                  className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                >
+                  {/* Decorative background elements */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute -top-1 -right-1 w-8 h-8 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
 
-                <div className="relative flex items-center gap-4">
-                  {/* Payment Type Icon */}
-                  <div className="relative">
-                    <motion.div
-                      className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-100 flex items-center justify-center overflow-hidden p-2 shadow-sm"
-                      whileHover={{
-                        scale: 1.1,
-                        rotate: [0, -5, 5, 0],
-                        transition: { duration: 0.3 },
-                      }}
-                    >
-                      <img
-                        src={selectedType.image}
-                        alt={selectedType.name}
-                        className="w-full h-full object-contain"
-                      />
-                    </motion.div>
-                    {detail.charge && (
+                  <div className="relative flex items-center gap-4">
+                    {/* Payment Type Icon */}
+                    <div className="relative">
                       <motion.div
-                        className="absolute -bottom-1 -right-1 bg-indigo-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          transition: {
-                            duration: 1.5,
-                            repeat: Infinity,
-                          },
+                        className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-100 flex items-center justify-center overflow-hidden p-2 shadow-sm"
+                        whileHover={{
+                          scale: 1.1,
+                          rotate: [0, -5, 5, 0],
+                          transition: { duration: 0.3 },
                         }}
                       >
-                        {detail.charge}%
+                        <img
+                          src={selectedType.image}
+                          alt={selectedType.name}
+                          className="w-full h-full object-contain"
+                        />
                       </motion.div>
-                    )}
-                  </div>
+                      {detail.charge && (
+                        <motion.div
+                          className="absolute -bottom-1 -right-1 bg-indigo-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                          animate={{
+                            scale: [1, 1.1, 1],
+                            transition: {
+                              duration: 1.5,
+                              repeat: Infinity,
+                            },
+                          }}
+                        >
+                          {detail.charge}%
+                        </motion.div>
+                      )}
+                    </div>
 
-                  {/* Payment Type Details */}
-                  <div className="flex-1 text-left">
-                    <motion.h4
-                      className="font-medium text-gray-900 mb-1"
-                      whileHover={{ scale: 1.02 }}
+                    {/* Payment Type Details */}
+                    <div className="flex-1 text-left">
+                      <motion.h4
+                        className="font-medium text-gray-900 mb-1"
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        {detail.value || "Default"}
+                      </motion.h4>
+                      {detail.maxLimit && (
+                        <p className="text-xs text-gray-500">
+                          Max Limit: {Number(detail.maxLimit).toLocaleString()}{" "}
+                          BDT
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Arrow Icon */}
+                    <motion.div
+                      className="text-gray-400"
+                      animate={{
+                        x: [0, 5, 0],
+                        transition: { duration: 1.5, repeat: Infinity },
+                      }}
                     >
-                      {detail.value || "Default"}
-                    </motion.h4>
-                    {detail.maxLimit && (
-                      <p className="text-xs text-gray-500">
-                        Max Limit: {Number(detail.maxLimit).toLocaleString()}{" "}
-                        BDT
-                      </p>
-                    )}
+                      <ChevronRight className="w-5 h-5" />
+                    </motion.div>
                   </div>
 
-                  {/* Arrow Icon */}
-                  <motion.div
-                    className="text-gray-400"
-                    animate={{
-                      x: [0, 5, 0],
-                      transition: { duration: 1.5, repeat: Infinity },
-                    }}
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </motion.div>
-                </div>
-
-                {/* Hover effect overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
-            ))}
-          </div>
+                  {/* Hover effect overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
         </AnimatePresence>
       )}
     </div>
