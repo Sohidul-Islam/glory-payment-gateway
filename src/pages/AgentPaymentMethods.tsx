@@ -198,29 +198,92 @@ export const AgentPaymentMethods = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      {type.PaymentDetails.map((detail) => (
-                        <button
+                    <div className="space-y-3">
+                      {type.PaymentDetails.map((detail, detailIndex) => (
+                        <motion.button
                           key={detail.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: detailIndex * 0.1 }}
+                          whileHover={{
+                            scale: 1.02,
+                            transition: { type: "spring", stiffness: 300 },
+                          }}
                           onClick={() =>
                             navigate(
                               `/payment/${agentId}/method/${selectedMethod.id}/type/${type.id}`
                             )
                           }
-                          className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                          className="w-full group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-900">
-                              {detail.value || "Default"}
-                            </span>
-                            {detail.charge && (
-                              <span className="text-xs text-gray-500">
-                                ({detail.charge}% charge)
-                              </span>
-                            )}
+                          {/* Decorative background elements */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute -top-1 -right-1 w-8 h-8 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+
+                          <div className="relative flex items-center gap-4">
+                            {/* Payment Type Icon */}
+                            <div className="relative">
+                              <motion.div
+                                className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-100 flex items-center justify-center overflow-hidden p-2 shadow-sm"
+                                whileHover={{
+                                  scale: 1.1,
+                                  rotate: [0, -5, 5, 0],
+                                  transition: { duration: 0.3 },
+                                }}
+                              >
+                                <img
+                                  src={type.image}
+                                  alt={type.name}
+                                  className="w-full h-full object-contain"
+                                />
+                              </motion.div>
+                              {detail.charge && (
+                                <motion.div
+                                  className="absolute -bottom-1 -right-1 bg-indigo-500 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                                  animate={{
+                                    scale: [1, 1.1, 1],
+                                    transition: {
+                                      duration: 1.5,
+                                      repeat: Infinity,
+                                    },
+                                  }}
+                                >
+                                  {detail.charge}%
+                                </motion.div>
+                              )}
+                            </div>
+
+                            {/* Payment Type Details */}
+                            <div className="flex-1 text-left">
+                              <motion.h4
+                                className="font-medium text-gray-900 mb-1"
+                                whileHover={{ scale: 1.02 }}
+                              >
+                                {detail.value || "Default"}
+                              </motion.h4>
+                              {detail.maxLimit && (
+                                <p className="text-xs text-gray-500">
+                                  Max Limit:{" "}
+                                  {Number(detail.maxLimit).toLocaleString()} BDT
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Arrow Icon */}
+                            <motion.div
+                              className="text-gray-400"
+                              animate={{
+                                x: [0, 5, 0],
+                                transition: { duration: 1.5, repeat: Infinity },
+                              }}
+                            >
+                              <ChevronRight className="w-5 h-5" />
+                            </motion.div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-400" />
-                        </button>
+
+                          {/* Hover effect overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        </motion.button>
                       ))}
                     </div>
                   </motion.div>
