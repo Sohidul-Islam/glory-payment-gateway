@@ -159,26 +159,37 @@ export interface PaymentDetailResponse {
   status: boolean;
   message: string;
   data: {
-    agent: { id: number; fullName: string; agentId: string; image: string };
-    paymentMethod: { id: number; name: string; image: string };
-    paymentType: { id: number; name: string; image: string };
-    paymentDetail: {
+    agent: {
       id: number;
-      value: string;
-      description: string;
-      charge: number;
-      maxLimit: number;
-      currentUsage: number;
-      availableLimit: number | string;
+      fullName: string;
+      phone: string;
+      email: string;
+      status: string;
+      agentId: string;
+      image: string;
+    };
+    paymentMethod: {
+      id: number;
+      name: string;
+      image: string;
+    };
+    paymentType: {
+      id: number;
+      name: string;
+      image: string;
+    };
+    paymentDetail: {
+      availableLimit: number | null;
     };
     account: {
       id: number;
       accountNumber: string;
       accountName: string;
       branchName: string;
-      maxLimit: number;
-      currentUsage: number;
-      availableLimit: number | string;
+      maxLimit: string;
+      currentUsage: string;
+      availableLimit: number;
+      routingNumber?: string;
     };
   };
 }

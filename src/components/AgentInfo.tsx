@@ -68,15 +68,15 @@ export const AgentInfo = ({
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <div className="flex items-center gap-1">
               <Phone className="w-4 h-4" />
-              <span>{phone}</span>
+              <span>{phone || "N/A"}</span>
             </div>
             <div className="flex items-center gap-1">
               <Mail className="w-4 h-4" />
-              <span>{email}</span>
+              <span>{email || "N/A"}</span>
             </div>
             <div className="flex items-center gap-1">
               <User className="w-4 h-4" />
-              <span>ID: {agentId}</span>
+              <span>ID: {agentId || "N/A"}</span>
             </div>
           </div>
         </div>

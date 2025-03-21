@@ -6,8 +6,18 @@ import {
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import { motion } from "framer-motion";
-import { CreditCard, User, Building2, ArrowRight, Wallet } from "lucide-react";
+import {
+  CreditCard,
+  Building2,
+  ArrowRight,
+  Wallet,
+  Copy,
+  Check,
+  Upload,
+  X,
+} from "lucide-react";
 import { useState } from "react";
+import { AgentInfo } from "../components/AgentInfo";
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
@@ -16,6 +26,14 @@ const AgentPaymentDetails = () => {
   const [searchParams] = useSearchParams();
   const paymentTypeId = searchParams.get("type");
   const detailsId = searchParams.get("detailsId");
+  const [copiedAccount, setCopiedAccount] = useState(false);
+  const [copiedRouting, setCopiedRouting] = useState(false);
+  const [transactionNumber, setTransactionNumber] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>(
+    null
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["paymentDetails", agentId, paymentTypeId],
@@ -30,6 +48,39 @@ const AgentPaymentDetails = () => {
 
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
+
+  const handleCopyAccountNumber = async () => {
+    if (data?.data?.account.accountNumber) {
+      await navigator.clipboard.writeText(data.data.account.accountNumber);
+      setCopiedAccount(true);
+      setTimeout(() => setCopiedAccount(false), 2000);
+    }
+  };
+
+  const handleCopyRoutingNumber = async () => {
+    if (data?.data?.account.routingNumber) {
+      await navigator.clipboard.writeText(data.data.account.routingNumber);
+      setCopiedRouting(true);
+      setTimeout(() => setCopiedRouting(false), 2000);
+    }
+  };
+
+  const handleAttachmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAttachment(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAttachmentPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAttachment = () => {
+    setAttachment(null);
+    setAttachmentPreview(null);
+  };
 
   if (isLoading) {
     return (
@@ -65,26 +116,22 @@ const AgentPaymentDetails = () => {
 
           <div className="p-6 space-y-8">
             {/* Agent and Payment Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1">
               {/* Agent Info */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+                className="rounded-xl"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center">
-                    <User className="w-8 h-8 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {paymentDetails?.agent.fullName}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Agent ID: {paymentDetails?.agent.agentId}
-                    </p>
-                  </div>
-                </div>
+                <AgentInfo
+                  name={paymentDetails?.agent?.fullName || ""}
+                  status={paymentDetails?.agent?.status || ""}
+                  phone={paymentDetails?.agent?.phone || ""}
+                  email={paymentDetails?.agent?.email || ""}
+                  agentId={paymentDetails?.agent?.agentId || ""}
+                  image={paymentDetails?.agent?.image}
+                  className="mb-8"
+                />
               </motion.div>
 
               {/* Payment Method Info */}
@@ -115,28 +162,185 @@ const AgentPaymentDetails = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 shadow-sm"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shadow-sm">
                     <Building2 className="w-6 h-6 text-blue-600" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Account Details
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {paymentDetails?.account.accountNumber} -{" "}
-                      {paymentDetails?.account.branchName}
-                    </p>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        Account Details
+                        <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
+                          Active
+                        </span>
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Branch: {paymentDetails?.account.branchName}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {/* Account Number */}
+                      <div className="bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-medium text-gray-500">
+                              Account Number
+                            </p>
+                            <p className="text-sm font-medium text-gray-900 mt-0.5">
+                              {paymentDetails?.account.accountNumber}
+                            </p>
+                          </div>
+                          <button
+                            onClick={handleCopyAccountNumber}
+                            className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+                            title="Copy account number"
+                          >
+                            {copiedAccount ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-gray-500" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Routing Number */}
+                      {paymentDetails?.account.routingNumber && (
+                        <div className="bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-xs font-medium text-gray-500">
+                                Routing Number
+                              </p>
+                              <p className="text-sm font-medium text-gray-900 mt-0.5">
+                                {paymentDetails.account.routingNumber}
+                              </p>
+                            </div>
+                            <button
+                              onClick={handleCopyRoutingNumber}
+                              className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+                              title="Copy routing number"
+                            >
+                              {copiedRouting ? (
+                                <Check className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-gray-500" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Available Limit</p>
-                  <p className="text-lg font-semibold text-green-600">
+
+                {/* Available Limit */}
+                <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
+                  <p className="text-sm font-medium text-gray-500">
+                    Available Limit
+                  </p>
+                  <p className="text-xl font-semibold text-green-600 mt-1">
                     ৳{paymentDetails?.account.availableLimit}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Max: ৳{paymentDetails?.account.maxLimit}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Transaction Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Transaction Details
+                </h3>
+              </div>
+
+              {/* Transaction Number */}
+              <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Transaction Number
+                </label>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={transactionNumber}
+                    onChange={(e) => setTransactionNumber(e.target.value)}
+                    placeholder="Enter transaction number"
+                    className="flex-1 p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(transactionNumber);
+                      // You can add a toast notification here
+                    }}
+                    className="p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                    title="Copy transaction number"
+                  >
+                    <Copy className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Attachment Upload */}
+              <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Payment Receipt
+                </label>
+                <div className="space-y-3">
+                  {attachmentPreview ? (
+                    <div className="relative group">
+                      <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={attachmentPreview}
+                          alt="Receipt preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <button
+                        onClick={removeAttachment}
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-500 transition-colors">
+                      <input
+                        type="file"
+                        id="attachment"
+                        accept="image/*,.pdf"
+                        onChange={handleAttachmentChange}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="attachment"
+                        className="cursor-pointer flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
+                          <Upload className="w-6 h-6 text-indigo-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            Upload Receipt
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Drag and drop or click to upload
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
