@@ -10,6 +10,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   XMarkIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 
 interface SidebarProps {
@@ -24,6 +25,11 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     { name: "Dashboard", icon: HomeIcon, path: "/" },
     { name: "Payment Methods", icon: CreditCardIcon, path: "/payment-methods" },
     { name: "Payment Types", icon: CreditCardIcon, path: "/payment-types" },
+    {
+      name: "Payment Notes",
+      icon: ClipboardDocumentListIcon,
+      path: "/payment-notes",
+    },
     { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
     { name: "Transactions", icon: ChartBarIcon, path: "/transactions" },
     { name: "User Management", icon: UserGroupIcon, path: "/users" },
@@ -68,16 +74,19 @@ const Sidebar = ({ onClose }: SidebarProps) => {
         ))}
       </nav>
 
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="hidden lg:block absolute bottom-4 left-4 p-2 rounded-full hover:bg-gray-100"
-      >
-        {collapsed ? (
-          <ChevronRightIcon className="w-5 h-5" />
-        ) : (
-          <ChevronLeftIcon className="w-5 h-5" />
-        )}
-      </button>
+      <div className="p-4 border-t">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-primary-600 w-full"
+        >
+          {collapsed ? (
+            <ChevronRightIcon className="w-6 h-6" />
+          ) : (
+            <ChevronLeftIcon className="w-6 h-6" />
+          )}
+          {!collapsed && <span>Collapse</span>}
+        </button>
+      </div>
     </div>
   );
 };

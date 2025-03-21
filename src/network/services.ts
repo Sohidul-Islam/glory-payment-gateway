@@ -186,15 +186,12 @@ export interface PaymentTypeDetail {
 
 export interface PaymentType {
   id: number;
-  userId: number;
-  paymentMethodId: number;
   name: string;
   image: string;
-  status: "active" | "inactive";
+  status: string;
+  paymentMethodId: number;
+  description?: string;
   PaymentDetails: PaymentTypeDetail[];
-  PaymentMethod: PaymentMethod;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface CreatePaymentTypeData {
@@ -350,5 +347,15 @@ export interface AgentInfoResponse {
 
 export const getAgentInfo = async (agentId: string) => {
   const response = await AXIOS.get(`/role/agent/${agentId}`);
+  return response.data;
+};
+
+export const updatePaymentTypeDescription = async (
+  typeId: number,
+  description: string
+) => {
+  const response = await AXIOS.patch(`/payment-types/${typeId}`, {
+    description,
+  });
   return response.data;
 };

@@ -1,12 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { AgentLink } from "./AgentLink";
-import {
-  Home,
-  CreditCard,
-  Bell,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Home, CreditCard, Bell, Settings, LogOut } from "lucide-react";
 
 export const Sidebar = () => {
   const location = useLocation();
@@ -92,4 +86,4 @@ export const Sidebar = () => {
       </div>
     </div>
   );
-}; 
+};

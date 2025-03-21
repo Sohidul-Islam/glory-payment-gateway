@@ -31,6 +31,7 @@ import { AgentPaymentDetails } from "./pages/AgentPaymentDetails";
 import { AgentPaymentMethods } from "./pages/AgentPaymentMethods";
 import { Loader } from "./components/ui/Loader";
 import { AgentHome } from "./pages/AgentHome";
+import PaymentNotes from "./pages/PaymentNotes";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const AppRoutes = () => {
         <Route index element={<Dashboard />} />
         <Route path="payment-methods" element={<PaymentMethods />} />
         <Route path="payment-types" element={<PaymentTypes />} />
+        <Route path="payment-notes" element={<PaymentNotes />} />
         <Route
           path="payment-details/:paymentDetailsId"
           element={<PaymentDetails />}
