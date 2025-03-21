@@ -179,7 +179,13 @@ export interface PaymentDetailResponse {
       image: string;
     };
     paymentDetail: {
-      availableLimit: number | null;
+      id: number;
+      value: string;
+      description: string;
+      charge: string;
+      maxLimit: string;
+      currentUsage: string;
+      availableLimit: number;
     };
     account: {
       id: number;
