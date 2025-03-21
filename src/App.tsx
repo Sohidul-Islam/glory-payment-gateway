@@ -27,11 +27,12 @@ import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { PaymentTypes } from "./pages/PaymentTypes";
 import { PaymentDetails } from "./pages/PaymentDetails";
 // import { Home } from "./pages/Home";
-import { AgentPaymentDetails } from "./pages/AgentPaymentDetails";
+
 import { AgentPaymentMethods } from "./pages/AgentPaymentMethods";
 import { Loader } from "./components/ui/Loader";
 import { AgentHome } from "./pages/AgentHome";
 import PaymentNotes from "./pages/PaymentNotes";
+import AgentPaymentDetails from "./pages/AgentPaymentDetails";
 
 const queryClient = new QueryClient();
 

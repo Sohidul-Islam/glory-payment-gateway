@@ -156,8 +156,31 @@ export interface AccountInfo {
 }
 
 export interface PaymentDetailResponse {
-  paymentMethod: PaymentMethodDetail;
-  accountInfo: AccountInfo[];
+  status: boolean;
+  message: string;
+  data: {
+    agent: { id: number; fullName: string; agentId: string; image: string };
+    paymentMethod: { id: number; name: string; image: string };
+    paymentType: { id: number; name: string; image: string };
+    paymentDetail: {
+      id: number;
+      value: string;
+      description: string;
+      charge: number;
+      maxLimit: number;
+      currentUsage: number;
+      availableLimit: number | string;
+    };
+    account: {
+      id: number;
+      accountNumber: string;
+      accountName: string;
+      branchName: string;
+      maxLimit: number;
+      currentUsage: number;
+      availableLimit: number | string;
+    };
+  };
 }
 
 export const getPaymentMethods = async () => {
@@ -239,6 +262,25 @@ export const getPaymentDetailInfo = async (paymentDetailId: number) => {
 export const getPaymentDetailInfoByTypeId = async (paymentTypeId: number) => {
   const response = await AXIOS.get(`/payment/type/details/${paymentTypeId}`);
   return response.data as PaymentDetailResponse;
+};
+
+export const getAgentPaymentDetails = async ({
+  agentId,
+  paymentTypeId,
+  detailsId,
+}: {
+  agentId: string;
+  paymentTypeId?: number;
+  detailsId?: number;
+}) => {
+  const response = await AXIOS.get(`payment/agent-payment-details`, {
+    params: {
+      agentId,
+      paymentTypeId,
+      paymentDetailId: detailsId,
+    },
+  });
+  return response.data;
 };
 
 export interface CreateAccountData {

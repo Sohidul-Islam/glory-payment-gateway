@@ -1,39 +1,35 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getAgentSinglePaymentType,
-  getPaymentDetailInfo,
+  getAgentPaymentDetails,
+  PaymentDetailResponse,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import {
-  ArrowLeft,
-  DollarSign,
-  Info,
-  CheckCircle2,
-  XCircle,
-  Phone,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { CreditCard, User, Building2, ArrowRight, Wallet } from "lucide-react";
+import { useState } from "react";
 
-export const AgentPaymentDetails = () => {
-  const { agentId, typeId, detailsId } = useParams();
+const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
-  const navigate = useNavigate();
+const AgentPaymentDetails = () => {
+  const { agentId } = useParams();
+  const [searchParams] = useSearchParams();
+  const paymentTypeId = searchParams.get("type");
+  const detailsId = searchParams.get("detailsId");
 
-  // Query for payment type details
-  const { data: paymentType, isLoading: isLoadingType } = useQuery({
-    queryKey: ["agentPaymentType", typeId, agentId],
-    queryFn: () => getAgentSinglePaymentType(Number(typeId), agentId!),
-    enabled: !!typeId && !!agentId && !detailsId,
+  const { data, isLoading } = useQuery({
+    queryKey: ["paymentDetails", agentId, paymentTypeId],
+    queryFn: () =>
+      getAgentPaymentDetails({
+        agentId: agentId as string,
+        paymentTypeId: detailsId ? Number(paymentTypeId) : undefined,
+        detailsId: Number(detailsId) || undefined,
+      }),
+    enabled: !!agentId,
   });
 
-  // Query for payment details when detailsId is available
-  const { data: paymentDetails, isLoading: isLoadingDetails } = useQuery({
-    queryKey: ["paymentDetails", detailsId],
-    queryFn: () => getPaymentDetailInfo(Number(detailsId)),
-    enabled: !!detailsId,
-  });
-
-  const isLoading = isLoadingType || isLoadingDetails;
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState("");
 
   if (isLoading) {
     return (
@@ -43,235 +39,164 @@ export const AgentPaymentDetails = () => {
     );
   }
 
-  // Handle not found cases
-  if ((!paymentType && !detailsId) || (!paymentDetails && detailsId)) {
+  if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Payment Details Not Found
-          </h2>
-          <p className="mt-2 text-gray-600">
-            The payment information you're looking for doesn't exist.
-          </p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Back
-          </button>
-        </div>
+        <div className="text-gray-500">No payment details found</div>
       </div>
     );
   }
 
-  // Get the appropriate payment detail based on the available data
-  const paymentDetail = detailsId
-    ? paymentDetails?.paymentMethod
-    : paymentType?.PaymentDetails && paymentType.PaymentDetails.length > 0
-    ? paymentType.PaymentDetails[0]
-    : undefined;
-
-  // Get the payment type information
-  const currentPaymentType = detailsId
-    ? paymentDetails?.paymentMethod.PaymentType
-    : paymentType;
-
-  // Get available account numbers that are active and haven't exceeded their limit
-  const availableAccounts =
-    paymentDetails?.accountInfo?.filter(
-      (account) =>
-        account.isActive &&
-        account.status === "active" &&
-        Number(account.currentUsage) < Number(account.maxLimit)
-    ) || [];
-
-  const selectedAccount =
-    availableAccounts.length > 0 ? availableAccounts[0] : null;
+  const paymentDetails = data as PaymentDetailResponse["data"];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2.5 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Payment Details
-              </h1>
-              <p className="text-sm text-gray-500">
-                Complete your payment securely
-              </p>
-            </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+          {/* Header Section */}
+          <div className="p-6 border-b border-gray-200">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Payment Details
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Complete your payment transaction
+            </p>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Payment Type Info */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-          <div className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-3">
-                <img
-                  src={currentPaymentType?.image}
-                  alt={currentPaymentType?.name}
-                  className="w-full h-full object-contain"
-                />
+          <div className="p-6 space-y-8">
+            {/* Agent and Payment Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Agent Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center">
+                    <User className="w-8 h-8 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {paymentDetails?.agent.fullName}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Agent ID: {paymentDetails?.agent.agentId}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Payment Method Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
+                    <CreditCard className="w-8 h-8 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {paymentDetails?.paymentMethod.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {paymentDetails?.paymentType.name}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Account Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Account Details
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {paymentDetails?.account.accountNumber} -{" "}
+                      {paymentDetails?.account.branchName}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Available Limit</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    ৳{paymentDetails?.account.availableLimit}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {currentPaymentType?.name}
-                  </h2>
-                  <span
-                    className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                      currentPaymentType?.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
+            </motion.div>
+
+            {/* Amount Selection */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Select Amount
+                </h3>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Wallet className="w-4 h-4" />
+                  <span>Max: ৳{paymentDetails?.account.maxLimit}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {QUICK_AMOUNTS.map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => {
+                      setSelectedAmount(amount);
+                      setCustomAmount("");
+                    }}
+                    className={`p-3 rounded-lg border transition-all duration-200 ${
+                      selectedAmount === amount
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                        : "border-gray-200 hover:border-indigo-300"
                     }`}
                   >
-                    {currentPaymentType?.status === "active" ? (
-                      <CheckCircle2 className="w-3 h-3 mr-1 inline" />
-                    ) : (
-                      <XCircle className="w-3 h-3 mr-1 inline" />
-                    )}
-                    {currentPaymentType?.status}
-                  </span>
-                </div>
-                {paymentDetail?.value && (
-                  <div className="mt-2">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
-                      {paymentDetail.value}
-                    </span>
-                  </div>
-                )}
-                {paymentDetail?.description && (
-                  <p className="mt-2 text-gray-600">
-                    {paymentDetail.description}
-                  </p>
-                )}
+                    ৳{amount}
+                  </button>
+                ))}
               </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Max Limit</dt>
-                <dd className="mt-1 text-lg font-semibold text-gray-900">
-                  {Number(paymentDetail?.maxLimit).toLocaleString()} BDT
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">
-                  Current Usage
-                </dt>
-                <dd className="mt-1 text-lg font-semibold text-gray-900">
-                  {Number(paymentDetail?.currentUsage).toLocaleString()} BDT
-                </dd>
-              </div>
-            </dl>
-          </div>
-        </div>
-
-        {/* Payment Form */}
-        <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Make Payment</h3>
-          <form className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Amount
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
-                </div>
+              <div className="flex gap-3">
                 <input
                   type="number"
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 pr-12 sm:text-sm border-gray-300 rounded-md"
-                  placeholder="0.00"
+                  value={customAmount}
+                  onChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setSelectedAmount(null);
+                  }}
+                  placeholder="Enter custom amount"
+                  className="flex-1 p-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">BDT</span>
-                </div>
+                <button className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center gap-2">
+                  Pay Now
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Account Number
-              </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  value={selectedAccount?.accountNumber || ""}
-                  readOnly
-                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50"
-                />
-              </div>
-              {selectedAccount && (
-                <p className="mt-2 text-sm text-gray-500">
-                  Max Limit: {Number(selectedAccount.maxLimit).toLocaleString()}{" "}
-                  BDT | Current Usage:{" "}
-                  {Number(selectedAccount.currentUsage).toLocaleString()} BDT
-                </p>
-              )}
-              {!selectedAccount && (
-                <p className="mt-2 text-sm text-red-500">
-                  No available account numbers found or all accounts have
-                  reached their limits.
-                </p>
-              )}
-            </div>
-
-            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <Info className="h-5 w-5 text-yellow-400" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    Payment Information
-                  </h3>
-                  <div className="mt-2 text-sm text-yellow-700">
-                    <ul className="list-disc pl-5 space-y-1">
-                      <li>Minimum amount: 10 BDT</li>
-                      <li>
-                        Maximum amount:{" "}
-                        {Number(paymentDetail?.maxLimit).toLocaleString()} BDT
-                      </li>
-                      <li>
-                        {paymentDetail?.description ||
-                          "Transaction fee may apply"}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-              >
-                Proceed to Payment
-              </button>
-            </div>
-          </form>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default AgentPaymentDetails;
