@@ -103,7 +103,7 @@ const AppRoutes = () => {
         element={<AgentPaymentDetails />}
       />
       <Route
-        path="/payment/:agentId/method/:methodId/details/:detailsId"
+        path="/payment/:agentId/make-payment"
         element={<AgentPaymentDetails />}
       />
     </Routes>

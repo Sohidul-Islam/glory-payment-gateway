@@ -41,8 +41,8 @@ export const AccountForm = ({
     formState: { errors },
   } = useForm<CreateAccountData>({
     defaultValues: {
-      paymentDetailId,
-      paymentTypeId,
+      paymentDetailId: paymentDetailId || undefined,
+      paymentTypeId: paymentTypeId || undefined,
       accountNumber: initialData?.accountNumber || "",
       routingNumber: initialData?.routingNumber || "",
       branchName: initialData?.branchName || "",

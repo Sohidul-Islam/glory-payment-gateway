@@ -95,8 +95,8 @@ export const AgentHome = () => {
             className="absolute inset-0"
           >
             <img
-              src={agent.Banners[currentBannerIndex].image || noImage}
-              alt={agent.Banners[currentBannerIndex].title}
+              src={agent?.Banners[currentBannerIndex]?.image || noImage}
+              alt={agent?.Banners[currentBannerIndex]?.title}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
@@ -108,7 +108,7 @@ export const AgentHome = () => {
                   transition={{ delay: 0.2 }}
                   className="text-5xl font-bold mb-4"
                 >
-                  {agent.Banners[currentBannerIndex].title}
+                  {agent?.Banners[currentBannerIndex]?.title}
                 </motion.h2>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
@@ -116,7 +116,7 @@ export const AgentHome = () => {
                   transition={{ delay: 0.3 }}
                   className="text-xl opacity-90 max-w-2xl mb-8"
                 >
-                  {agent.Banners[currentBannerIndex].description}
+                  {agent?.Banners[currentBannerIndex]?.description}
                 </motion.p>
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
@@ -138,7 +138,7 @@ export const AgentHome = () => {
 
         {/* Banner Navigation Dots */}
         <div className="absolute bottom-8 right-8 flex gap-2">
-          {agent.Banners.map((_, index) => (
+          {agent?.Banners?.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentBannerIndex(index)}
@@ -393,7 +393,7 @@ export const AgentHome = () => {
               transition={{ delay: 0.5 }}
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
-              {agent.Banners.map((banner, index) => (
+              {agent?.Banners?.map((banner, index) => (
                 <motion.div
                   key={banner.id}
                   initial={{ scale: 0.9, opacity: 0 }}

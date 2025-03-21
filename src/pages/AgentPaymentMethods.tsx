@@ -216,7 +216,14 @@ export const AgentPaymentMethods = () => {
                     <div
                       className="relative flex items-center gap-4 cursor-pointer"
                       onClick={() => {
-                        if (type) setSelectedType(type);
+                        if (type) {
+                          setSelectedType(type);
+                          if (type?.PaymentDetails?.length <= 0) {
+                            navigate(
+                              `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${type.id}`
+                            );
+                          }
+                        }
                       }}
                     >
                       <div className="relative">
@@ -302,7 +309,7 @@ export const AgentPaymentMethods = () => {
                   whileHover={{ scale: 1.02 }}
                   onClick={() =>
                     navigate(
-                      `/payment/${agentId}/method/${selectedMethod?.id}/type/${detail.paymentTypeId}`
+                      `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${detail.paymentTypeId}&detailsId=${detail.id}`
                     )
                   }
                   className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"

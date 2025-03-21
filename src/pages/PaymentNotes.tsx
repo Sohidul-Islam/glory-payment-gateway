@@ -5,7 +5,7 @@ import {
   PaymentType,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Editor from "react-simple-wysiwyg";
 import { motion } from "framer-motion";
 import { CheckCircle2, XCircle, Save } from "lucide-react";
@@ -54,6 +54,13 @@ const PaymentNotes = () => {
     setSelectedType(type);
     setContent(type.description || "");
   };
+
+  // Initialize editor with default content when type is selected
+  useEffect(() => {
+    if (selectedType?.description) {
+      setContent(selectedType.description);
+    }
+  }, [selectedType]);
 
   if (isLoading) {
     return (
@@ -160,11 +167,16 @@ const PaymentNotes = () => {
                     <Editor
                       value={content}
                       onChange={(e) => {
-                        console.log({ value: e.target.value });
                         setContent(e.target.value);
                       }}
                       title=""
-                      className="min-h-[400px] p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="min-h-[400px] p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+                      containerProps={{
+                        style: {
+                          height: "400px",
+                          overflow: "auto",
+                        },
+                      }}
                     />
                   </div>
                 </div>
@@ -173,8 +185,6 @@ const PaymentNotes = () => {
                   Select a payment type to edit its notes
                 </div>
               )}
-
-              <div dangerouslySetInnerHTML={{ __html: content }} />
             </div>
           </div>
         </div>

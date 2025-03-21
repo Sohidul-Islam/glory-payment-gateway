@@ -1,20 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getAgentSinglePaymentType, getPaymentDetailInfo } from "../network/services";
+import {
+  getAgentSinglePaymentType,
+  getPaymentDetailInfo,
+} from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import {
   ArrowLeft,
-  CreditCard,
   DollarSign,
   Info,
   CheckCircle2,
   XCircle,
-  Building,
   Phone,
 } from "lucide-react";
 
 export const AgentPaymentDetails = () => {
-  const { agentId, methodId, typeId, detailsId } = useParams();
+  const { agentId, typeId, detailsId } = useParams();
+
   const navigate = useNavigate();
 
   // Query for payment type details
@@ -46,8 +48,12 @@ export const AgentPaymentDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">Payment Details Not Found</h2>
-          <p className="mt-2 text-gray-600">The payment information you're looking for doesn't exist.</p>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Payment Details Not Found
+          </h2>
+          <p className="mt-2 text-gray-600">
+            The payment information you're looking for doesn't exist.
+          </p>
           <button
             onClick={() => navigate(-1)}
             className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -61,25 +67,28 @@ export const AgentPaymentDetails = () => {
   }
 
   // Get the appropriate payment detail based on the available data
-  const paymentDetail = detailsId 
+  const paymentDetail = detailsId
     ? paymentDetails?.paymentMethod
-    : paymentType?.PaymentDetails && paymentType.PaymentDetails.length > 0 
-      ? paymentType.PaymentDetails[0] 
-      : undefined;
+    : paymentType?.PaymentDetails && paymentType.PaymentDetails.length > 0
+    ? paymentType.PaymentDetails[0]
+    : undefined;
 
   // Get the payment type information
-  const currentPaymentType = detailsId 
+  const currentPaymentType = detailsId
     ? paymentDetails?.paymentMethod.PaymentType
     : paymentType;
 
   // Get available account numbers that are active and haven't exceeded their limit
-  const availableAccounts = paymentDetails?.accountInfo?.filter(
-    account => account.isActive && 
-    account.status === "active" && 
-    Number(account.currentUsage) < Number(account.maxLimit)
-  ) || [];
+  const availableAccounts =
+    paymentDetails?.accountInfo?.filter(
+      (account) =>
+        account.isActive &&
+        account.status === "active" &&
+        Number(account.currentUsage) < Number(account.maxLimit)
+    ) || [];
 
-  const selectedAccount = availableAccounts.length > 0 ? availableAccounts[0] : null;
+  const selectedAccount =
+    availableAccounts.length > 0 ? availableAccounts[0] : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -94,8 +103,12 @@ export const AgentPaymentDetails = () => {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Payment Details</h1>
-              <p className="text-sm text-gray-500">Complete your payment securely</p>
+              <h1 className="text-xl font-bold text-gray-900">
+                Payment Details
+              </h1>
+              <p className="text-sm text-gray-500">
+                Complete your payment securely
+              </p>
             </div>
           </div>
         </div>
@@ -107,15 +120,17 @@ export const AgentPaymentDetails = () => {
           <div className="p-6">
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-3">
-                <img 
-                  src={currentPaymentType?.image} 
+                <img
+                  src={currentPaymentType?.image}
                   alt={currentPaymentType?.name}
                   className="w-full h-full object-contain"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold text-gray-900">{currentPaymentType?.name}</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {currentPaymentType?.name}
+                  </h2>
                   <span
                     className={`px-2.5 py-1 text-xs font-medium rounded-full ${
                       currentPaymentType?.status === "active"
@@ -139,7 +154,9 @@ export const AgentPaymentDetails = () => {
                   </div>
                 )}
                 {paymentDetail?.description && (
-                  <p className="mt-2 text-gray-600">{paymentDetail.description}</p>
+                  <p className="mt-2 text-gray-600">
+                    {paymentDetail.description}
+                  </p>
                 )}
               </div>
             </div>
@@ -154,7 +171,9 @@ export const AgentPaymentDetails = () => {
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Current Usage</dt>
+                <dt className="text-sm font-medium text-gray-500">
+                  Current Usage
+                </dt>
                 <dd className="mt-1 text-lg font-semibold text-gray-900">
                   {Number(paymentDetail?.currentUsage).toLocaleString()} BDT
                 </dd>
@@ -168,7 +187,9 @@ export const AgentPaymentDetails = () => {
           <h3 className="text-xl font-bold text-gray-900 mb-6">Make Payment</h3>
           <form className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Amount</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Amount
+              </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <DollarSign className="h-5 w-5 text-gray-400" />
@@ -185,27 +206,31 @@ export const AgentPaymentDetails = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Account Number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Account Number
+              </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Phone className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
-                  value={selectedAccount?.accountNumber || ''}
+                  value={selectedAccount?.accountNumber || ""}
                   readOnly
                   className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50"
                 />
               </div>
               {selectedAccount && (
                 <p className="mt-2 text-sm text-gray-500">
-                  Max Limit: {Number(selectedAccount.maxLimit).toLocaleString()} BDT | 
-                  Current Usage: {Number(selectedAccount.currentUsage).toLocaleString()} BDT
+                  Max Limit: {Number(selectedAccount.maxLimit).toLocaleString()}{" "}
+                  BDT | Current Usage:{" "}
+                  {Number(selectedAccount.currentUsage).toLocaleString()} BDT
                 </p>
               )}
               {!selectedAccount && (
                 <p className="mt-2 text-sm text-red-500">
-                  No available account numbers found or all accounts have reached their limits.
+                  No available account numbers found or all accounts have
+                  reached their limits.
                 </p>
               )}
             </div>
@@ -216,12 +241,20 @@ export const AgentPaymentDetails = () => {
                   <Info className="h-5 w-5 text-yellow-400" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">Payment Information</h3>
+                  <h3 className="text-sm font-medium text-yellow-800">
+                    Payment Information
+                  </h3>
                   <div className="mt-2 text-sm text-yellow-700">
                     <ul className="list-disc pl-5 space-y-1">
                       <li>Minimum amount: 10 BDT</li>
-                      <li>Maximum amount: {Number(paymentDetail?.maxLimit).toLocaleString()} BDT</li>
-                      <li>{paymentDetail?.description || "Transaction fee may apply"}</li>
+                      <li>
+                        Maximum amount:{" "}
+                        {Number(paymentDetail?.maxLimit).toLocaleString()} BDT
+                      </li>
+                      <li>
+                        {paymentDetail?.description ||
+                          "Transaction fee may apply"}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -241,4 +274,4 @@ export const AgentPaymentDetails = () => {
       </div>
     </div>
   );
-}; 
+};

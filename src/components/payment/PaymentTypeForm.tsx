@@ -62,7 +62,7 @@ export const PaymentTypeForm = ({
           details: initialData?.PaymentDetails || [],
         }
       : undefined) || {
-      details: [{ value: "", description: "", charge: "", maxLimit: "0" }],
+      details: [],
     },
   });
 
