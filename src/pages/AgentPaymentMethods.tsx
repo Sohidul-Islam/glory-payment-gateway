@@ -4,21 +4,18 @@ import {
   getAgentPaymentMethods,
   getAgentPaymentTypes,
   PaymentMethod,
-  PaymentType,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import {
-  ArrowLeft,
-  ChevronRight,
-  Info,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
   const navigate = useNavigate();
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
+    null
+  );
 
   const { data: methods, isLoading: isLoadingMethods } = useQuery({
     queryKey: ["agentPaymentMethods", agentId],
@@ -68,11 +65,21 @@ export const AgentPaymentMethods = () => {
               rotate: [0, -2, 2, -1, 1, 0],
               transition: { duration: 0.3 },
             }}
-            onClick={() => navigate(`/payment/${agentId}/method/${method.id}`)}
-            className="group relative bg-white rounded-lg border border-gray-200 p-3 transition-all duration-300 hover:border-indigo-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            onClick={() => setSelectedMethod(method)}
+            className={`group relative bg-white rounded-lg border p-3 transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              selectedMethod?.id === method.id
+                ? "border-indigo-500 shadow-lg"
+                : "border-gray-200 hover:border-indigo-500"
+            }`}
           >
             {/* Decorative background elements */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+            <div
+              className={`absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 transition-opacity duration-300 rounded-lg ${
+                selectedMethod?.id === method.id
+                  ? "opacity-100"
+                  : "group-hover:opacity-100"
+              }`}
+            />
             <div className="absolute -top-0.5 -right-0.5 w-6 h-6 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
 
             <div className="relative flex flex-col items-center text-center">
@@ -137,106 +144,91 @@ export const AgentPaymentMethods = () => {
           </motion.button>
         ))}
       </div>
-    </div>
-  );
 
-  const renderTypes = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Select Payment Type
-        </h2>
-        <p className="text-gray-500">
-          Choose the specific payment type for your transaction
-        </p>
-      </div>
-      <div className="grid grid-cols-1 gap-6">
-        {types?.map((type: PaymentType) => (
-          <div
-            key={type.id}
-            className="bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-indigo-500 hover:shadow-xl"
+      {/* Associated Types Section */}
+      <AnimatePresence>
+        {selectedMethod && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="mt-8"
           >
-            <div className="p-6">
-              <div className="flex items-center gap-5">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-3">
-                  <img
-                    src={type.image}
-                    alt={type.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {type.name}
-                    </h3>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        type.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {type.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Available {selectedMethod.name.replace("_", " ")} Options
+              </h3>
+              <p className="text-gray-500">
+                Select a payment type to proceed with your transaction
+              </p>
             </div>
-
-            <div className="border-t border-gray-100">
-              <div className="grid grid-cols-1 divide-y divide-gray-100">
-                {type.PaymentDetails.map((detail) => (
-                  <button
-                    key={detail.id}
-                    onClick={() => {
-                      if (type?.PaymentDetails?.length) {
-                        navigate(
-                          `/payment/${agentId}/method/${methodId}/details/${detail.id}`
-                        );
-                        return;
-                      }
-                      navigate(
-                        `/payment/${agentId}/method/${methodId}/type/${type.id}`
-                      );
-                    }}
-                    className="group p-4 hover:bg-gray-50 transition-colors duration-200"
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {types
+                ?.filter((type) => type.paymentMethodId === selectedMethod.id)
+                .map((type, index) => (
+                  <motion.div
+                    key={type.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-white rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-gray-900">
-                            {detail.value}
-                          </h4>
-                          {detail.description && (
-                            <span className="inline-flex items-center text-xs text-gray-500">
-                              <Info className="w-3.5 h-3.5 mr-1" />
-                              {detail.description}
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1 flex items-center gap-4 text-sm text-gray-500">
-                          <span>
-                            Max Limit:{" "}
-                            {Number(detail.maxLimit).toLocaleString()} BDT
-                          </span>
-                          {Number(detail.currentUsage) > 0 && (
-                            <span>
-                              Usage:{" "}
-                              {Number(detail.currentUsage).toLocaleString()} BDT
-                            </span>
-                          )}
-                        </div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-2">
+                        <img
+                          src={type.image}
+                          alt={type.name}
+                          className="w-full h-full object-contain"
+                        />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 transition-transform duration-300 group-hover:translate-x-1" />
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {type.name}
+                        </h4>
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            type.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {type.status}
+                        </span>
+                      </div>
                     </div>
-                  </button>
+                    <div className="space-y-2">
+                      {type.PaymentDetails.map((detail) => (
+                        <button
+                          key={detail.id}
+                          onClick={() =>
+                            navigate(
+                              `/payment/${agentId}/method/${selectedMethod.id}/type/${type.id}`
+                            )
+                          }
+                          className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900">
+                              {detail.value || "Default"}
+                            </span>
+                            {detail.charge && (
+                              <span className="text-xs text-gray-500">
+                                ({detail.charge}% charge)
+                              </span>
+                            )}
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
                 ))}
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 
@@ -247,21 +239,17 @@ export const AgentPaymentMethods = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <button
-              onClick={() =>
-                methodId ? navigate(`/payment/${agentId}`) : navigate(-1)
-              }
+              onClick={() => navigate(-1)}
               className="p-2.5 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
               <h1 className="text-xl font-bold text-gray-900">
-                {methodId ? "Payment Types" : "Payment Methods"}
+                Payment Methods
               </h1>
               <p className="text-sm text-gray-500">
-                {methodId
-                  ? "Select a payment type to proceed"
-                  : "Choose your payment method"}
+                Choose your payment method and type
               </p>
             </div>
           </div>
@@ -270,7 +258,7 @@ export const AgentPaymentMethods = () => {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
-          {methodId ? renderTypes() : renderMethods()}
+          {renderMethods()}
         </div>
       </div>
     </div>
