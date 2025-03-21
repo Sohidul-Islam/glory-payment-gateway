@@ -444,14 +444,12 @@ export interface PaymentSubmissionResponse {
   };
 }
 
-export const submitPayment = async (
-  data: PaymentSubmissionData
-): Promise<PaymentSubmissionResponse> => {
+export const submitPayment = async (data: PaymentSubmissionData) => {
   const response = await AXIOS.post(
     `payment/transactions/${data.agentId}`,
     data
   );
-  return response.data;
+  return response;
 };
 
 export interface Transaction {
@@ -462,6 +460,8 @@ export interface Transaction {
   status: string;
   paymentSource: string;
   paymentSourceId: number;
+  givenTransactionId: string;
+  attachment: string;
   createdAt: string;
   updatedAt: string;
   PaymentMethod: {
@@ -524,5 +524,12 @@ export const getTransactions = async (filters: TransactionFilters = {}) => {
   const response = await AXIOS.get("/payment/transactions", {
     params: filters,
   });
+  return response.data;
+};
+
+export const approveTransaction = async (transactionId: number) => {
+  const response = await AXIOS.post(
+    `/payment/transactions/${transactionId}/approve`
+  );
   return response.data;
 };

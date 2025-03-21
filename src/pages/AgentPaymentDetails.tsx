@@ -126,6 +126,7 @@ const AgentPaymentDetails = () => {
           toast.success(
             "Payment submitted successfully. Please wait for approval."
           );
+          window.location.reload();
         } else {
           toast.error("Payment submission failed");
         }

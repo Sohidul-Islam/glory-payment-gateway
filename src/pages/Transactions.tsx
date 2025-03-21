@@ -6,14 +6,17 @@ import {
   ArrowDownTrayIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getTransactions,
   Transaction,
   TransactionFilters,
+  approveTransaction,
 } from "../network/services";
 import { format } from "date-fns";
+import TransactionPreviewModal from "../components/TransactionPreviewModal";
 
 const Transactions = () => {
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -28,11 +31,26 @@ const Transactions = () => {
     startDate: "",
     endDate: "",
   });
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["transactions", filters],
     queryFn: () => getTransactions(filters),
   });
+
+  const { mutate: approveTransactionMutation, isPending: isApproving } =
+    useMutation({
+      mutationFn: approveTransaction,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        setIsPreviewOpen(false);
+        setSelectedTransaction(null);
+      },
+    });
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -54,6 +72,15 @@ const Transactions = () => {
 
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
+  };
+
+  const handlePreview = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsPreviewOpen(true);
+  };
+
+  const handleApprove = (transactionId: number) => {
+    approveTransactionMutation(transactionId);
   };
 
   const formatDate = (dateString: string) => {
@@ -160,13 +187,16 @@ const Transactions = () => {
           <div className="overflow-x-auto">
             <div className="min-w-full divide-y divide-gray-200">
               <div className="bg-gray-50">
-                <div className="grid grid-cols-6 gap-4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="grid grid-cols-9 gap-4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <div className="col-span-1">Transaction ID</div>
+                  <div className="col-span-1">Given ID</div>
                   <div className="col-span-1">Date</div>
                   <div className="col-span-1">Amount</div>
                   <div className="col-span-1">Method</div>
                   <div className="col-span-1">Status</div>
                   <div className="col-span-1">Source</div>
+                  <div className="col-span-1">Attachment</div>
+                  <div className="col-span-1">Actions</div>
                 </div>
               </div>
               <div className="bg-white divide-y divide-gray-200">
@@ -180,10 +210,13 @@ const Transactions = () => {
                   data?.transactions.map((transaction: Transaction) => (
                     <div
                       key={transaction.id}
-                      className="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50"
+                      className="grid grid-cols-9 gap-4 px-6 py-4 hover:bg-gray-50"
                     >
                       <div className="col-span-1 text-sm font-medium text-gray-900 truncate">
                         {transaction.transactionId}
+                      </div>
+                      <div className="col-span-1 text-sm text-gray-900 truncate">
+                        {transaction.givenTransactionId}
                       </div>
                       <div className="col-span-1 text-sm text-gray-500">
                         {formatDate(transaction.createdAt)}
@@ -209,6 +242,31 @@ const Transactions = () => {
                       </div>
                       <div className="col-span-1 text-sm text-gray-500 capitalize">
                         {transaction.paymentSource}
+                      </div>
+                      <div className="col-span-1">
+                        {transaction.attachment ? (
+                          <a
+                            href={transaction.attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-indigo-600 hover:text-indigo-900"
+                          >
+                            View
+                          </a>
+                        ) : (
+                          <span className="text-sm text-gray-400">
+                            No attachment
+                          </span>
+                        )}
+                      </div>
+                      <div className="col-span-1">
+                        <button
+                          onClick={() => handlePreview(transaction)}
+                          className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-900"
+                        >
+                          <EyeIcon className="h-4 w-4" />
+                          Preview
+                        </button>
                       </div>
                     </div>
                   ))
@@ -296,6 +354,18 @@ const Transactions = () => {
           )}
         </div>
       </Card>
+
+      {/* Transaction Preview Modal */}
+      <TransactionPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => {
+          setIsPreviewOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onApprove={handleApprove}
+        isApproving={isApproving}
+      />
     </div>
   );
 };
