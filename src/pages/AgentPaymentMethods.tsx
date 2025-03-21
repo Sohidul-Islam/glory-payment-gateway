@@ -7,7 +7,14 @@ import {
   PaymentType,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import { ArrowLeft, ChevronRight, Info } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  Info,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
@@ -16,16 +23,16 @@ export const AgentPaymentMethods = () => {
   const { data: methods, isLoading: isLoadingMethods } = useQuery({
     queryKey: ["agentPaymentMethods", agentId],
     queryFn: () => getAgentPaymentMethods(agentId!),
-    enabled: !!agentId && !methodId,
+    enabled: !!agentId,
   });
 
   const { data: types, isLoading: isLoadingTypes } = useQuery({
     queryKey: ["agentPaymentTypes", methodId, agentId],
     queryFn: () => getAgentPaymentTypes(Number(methodId), agentId!),
-    enabled: !!methodId && !!agentId,
+    enabled: !!agentId,
   });
 
-  console.log({ methods, types });
+  console.log({ types, methods });
 
   if (isLoadingMethods || isLoadingTypes) {
     return (
@@ -45,43 +52,89 @@ export const AgentPaymentMethods = () => {
           Choose your preferred payment method to proceed
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {(methods || [])?.map((method: PaymentMethod) => (
-          <button
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        {(methods || [])?.map((method: PaymentMethod, index: number) => (
+          <motion.button
             key={method.id}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              delay: index * 0.05,
+              type: "spring",
+              stiffness: 100,
+            }}
+            whileHover={{
+              scale: 1.05,
+              rotate: [0, -2, 2, -1, 1, 0],
+              transition: { duration: 0.3 },
+            }}
             onClick={() => navigate(`/payment/${agentId}/method/${method.id}`)}
-            className="group relative w-full bg-white rounded-2xl border border-gray-200 p-6 transition-all duration-300 hover:border-indigo-500 hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="group relative bg-white rounded-lg border border-gray-200 p-3 transition-all duration-300 hover:border-indigo-500 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            <div className="flex items-center gap-5">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden p-3 transition-transform duration-300 group-hover:scale-110">
-                <img
-                  src={method.image}
-                  alt={method.name}
-                  className="w-full h-full object-contain"
-                />
+            {/* Decorative background elements */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+            <div className="absolute -top-0.5 -right-0.5 w-6 h-6 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+
+            <div className="relative flex flex-col items-center text-center">
+              {/* Payment Method Icon */}
+              <div className="relative mb-2">
+                <motion.div
+                  className="w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center overflow-hidden p-2 transition-transform duration-300 group-hover:scale-110 shadow-sm"
+                  whileHover={{
+                    scale: 1.1,
+                    transition: { type: "spring", stiffness: 300 },
+                  }}
+                >
+                  <img
+                    src={method.image}
+                    alt={method.name}
+                    className="w-full h-full object-contain"
+                  />
+                </motion.div>
+                <motion.div
+                  className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+                    method.status === "active" ? "bg-green-500" : "bg-red-500"
+                  }`}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    transition: { duration: 1.5, repeat: Infinity },
+                  }}
+                >
+                  {method.status === "active" ? (
+                    <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                  ) : (
+                    <XCircle className="w-2.5 h-2.5 text-white" />
+                  )}
+                </motion.div>
               </div>
-              <div className="flex-1 text-left">
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                  {method.name}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Select for available payment options
-                </p>
-                <div className="mt-2">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      method.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {method.status}
-                  </span>
-                </div>
+
+              {/* Payment Method Details */}
+              <div className="space-y-1">
+                <motion.h3
+                  className="text-xs font-medium text-gray-900 truncate max-w-[100px]"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  {method.name.replace("_", " ")}
+                </motion.h3>
+                <motion.span
+                  className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium ${
+                    method.status === "active"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                  animate={{
+                    scale: [1, 1.05, 1],
+                    transition: { duration: 2, repeat: Infinity },
+                  }}
+                >
+                  {method.status}
+                </motion.span>
               </div>
-              <ChevronRight className="w-5 h-5 text-gray-400 transition-transform duration-300 group-hover:translate-x-1" />
+
+              {/* Hover effect overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>

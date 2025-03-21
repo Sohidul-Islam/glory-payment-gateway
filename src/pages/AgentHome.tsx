@@ -307,10 +307,15 @@ export const AgentHome = () => {
               className="bg-white rounded-2xl shadow-lg overflow-hidden"
             >
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold">
-                    Available Payment Methods
-                  </h2>
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                      Available Payment Methods
+                    </h2>
+                    <p className="text-gray-500 mt-1">
+                      Choose your preferred payment option
+                    </p>
+                  </div>
                   <Link
                     to={`/payment/${agentId}`}
                     className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2"
@@ -319,7 +324,7 @@ export const AgentHome = () => {
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {paymentMethods?.map((method, index) => (
                     <motion.div
                       key={method.id}
@@ -328,31 +333,50 @@ export const AgentHome = () => {
                       transition={{ delay: 0.1 * index }}
                       className="group cursor-pointer"
                     >
-                      <div className="bg-gray-50 rounded-xl p-4 transition-all duration-300 group-hover:bg-indigo-50">
-                        <div className="w-16 h-16 mx-auto mb-3 rounded-lg bg-white p-2 shadow-sm">
-                          <img
-                            src={method.image}
-                            alt={method.name}
-                            className="w-full h-full object-contain"
-                          />
+                      <div className="relative bg-white rounded-xl border border-gray-200 p-4 transition-all duration-300 hover:border-indigo-500 hover:shadow-lg hover:scale-[1.02]">
+                        {/* Decorative background elements */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-indigo-100 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+
+                        {/* Payment method content */}
+                        <div className="relative">
+                          <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-gradient-to-br from-white to-gray-50 p-2.5 shadow-sm flex items-center justify-center">
+                            <img
+                              src={method.image}
+                              alt={method.name}
+                              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+
+                          <div className="text-center">
+                            <p className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 mb-2">
+                              {method.name.replace("_", " ")}
+                            </p>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                  method.status === "active"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {method.status === "active" ? (
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                ) : (
+                                  <XCircle className="w-3 h-3 mr-1" />
+                                )}
+                                {method.status}
+                              </span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-500">
+                                Instant
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Hover effect overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
                         </div>
-                        <p className="text-center text-sm font-medium text-gray-700 group-hover:text-indigo-600">
-                          {method.name.replace("_", " ")}
-                        </p>
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            method.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {method.status === "active" ? (
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                          ) : (
-                            <XCircle className="w-3 h-3 mr-1" />
-                          )}
-                          {method.status}
-                        </span>
                       </div>
                     </motion.div>
                   ))}

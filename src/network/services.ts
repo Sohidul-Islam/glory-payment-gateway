@@ -285,7 +285,7 @@ export const getAgentPaymentTypes = async (
   methodId: number,
   agentId: string
 ) => {
-  const response = await AXIOS.get(`/payment/types/${methodId}/${agentId}`);
+  const response = await AXIOS.get(`/payment/types-agent/${agentId}`);
   return response.data as PaymentType[];
 };
 
