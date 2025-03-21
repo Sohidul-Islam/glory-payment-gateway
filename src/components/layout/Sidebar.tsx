@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   HomeIcon,
   CreditCardIcon,
-  CogIcon,
+  // CogIcon,
   ChartBarIcon,
   UserGroupIcon,
   BellIcon,
@@ -30,7 +30,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
       icon: ClipboardDocumentListIcon,
       path: "/payment-notes",
     },
-    { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
+    // { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
     { name: "Transactions", icon: ChartBarIcon, path: "/transactions" },
     { name: "User Management", icon: UserGroupIcon, path: "/users" },
     { name: "Notifications", icon: BellIcon, path: "/notifications" },

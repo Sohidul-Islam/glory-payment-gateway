@@ -418,3 +418,111 @@ export const updatePaymentTypeDescription = async (
   });
   return response.data;
 };
+
+export interface PaymentSubmissionData {
+  agentId: string;
+  paymentMethodId?: number;
+  paymentTypeId?: number;
+  paymentDetailId?: number;
+  paymentAccountId?: number;
+  transactionId: string;
+  attachment: string;
+  paymentSource: string;
+  paymentSourceId: number;
+  type: string;
+  amount: number;
+  status: string;
+}
+
+export interface PaymentSubmissionResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    id: number;
+    status: string;
+    // Add other response fields as needed
+  };
+}
+
+export const submitPayment = async (
+  data: PaymentSubmissionData
+): Promise<PaymentSubmissionResponse> => {
+  const response = await AXIOS.post(
+    `payment/transactions/${data.agentId}`,
+    data
+  );
+  return response.data;
+};
+
+export interface Transaction {
+  id: number;
+  transactionId: string;
+  type: string;
+  amount: string;
+  status: string;
+  paymentSource: string;
+  paymentSourceId: number;
+  createdAt: string;
+  updatedAt: string;
+  PaymentMethod: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  PaymentType: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  PaymentDetail: {
+    id: number;
+    value: string;
+    description: string;
+    charge: string;
+  };
+  PaymentAccount: {
+    id: number;
+    accountNumber: string;
+    accountName: string;
+    branchName: string;
+    routingNumber: string;
+  };
+}
+
+export interface PaginationInfo {
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface TransactionResponse {
+  status: boolean;
+  message: string;
+  data: {
+    transactions: Transaction[];
+    pagination: PaginationInfo;
+  };
+}
+
+export interface TransactionFilters {
+  paymentDetailId?: number;
+  paymentAccountId?: number;
+  type?: string;
+  transactionId?: string;
+  source?: string;
+  sourceId?: number;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const getTransactions = async (filters: TransactionFilters = {}) => {
+  const response = await AXIOS.get("/payment/transactions", {
+    params: filters,
+  });
+  return response.data;
+};
