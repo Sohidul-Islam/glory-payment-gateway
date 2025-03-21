@@ -8,18 +8,11 @@ import {
   PaymentType,
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
-import {
-  ArrowLeft,
-  ChevronRight,
-  CheckCircle2,
-  XCircle,
-  User,
-  Phone,
-  Mail,
-} from "lucide-react";
+import { ArrowLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import noImage from "../assets/no-image-overlay.webp";
+import { AgentInfo } from "../components/AgentInfo";
+
 export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
   const navigate = useNavigate();
@@ -57,68 +50,15 @@ export const AgentPaymentMethods = () => {
   const renderMethods = () => (
     <div className="space-y-6">
       {/* Agent Info Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl border border-gray-200 p-4 mb-8"
-      >
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center overflow-hidden">
-              <img
-                src={agentInfo?.image || noImage}
-                alt={agentInfo?.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <motion.div
-              className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                agentInfo?.status === "active" ? "bg-green-500" : "bg-red-500"
-              }`}
-              animate={{
-                scale: [1, 1.2, 1],
-                transition: { duration: 1.5, repeat: Infinity },
-              }}
-            >
-              {agentInfo?.status === "active" ? (
-                <CheckCircle2 className="w-3 h-3 text-white" />
-              ) : (
-                <XCircle className="w-3 h-3 text-white" />
-              )}
-            </motion.div>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {agentInfo?.fullName}
-              </h2>
-              <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                  agentInfo?.status === "active"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {agentInfo?.status}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
-                <Phone className="w-4 h-4" />
-                <span>{agentInfo?.phone}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Mail className="w-4 h-4" />
-                <span>{agentInfo?.email}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <User className="w-4 h-4" />
-                <span>ID: {agentInfo?.agentId}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <AgentInfo
+        name={agentInfo?.fullName || ""}
+        status={agentInfo?.status || ""}
+        phone={agentInfo?.phone || ""}
+        email={agentInfo?.email || ""}
+        agentId={agentInfo?.agentId || ""}
+        image={agentInfo?.image}
+        className="mb-8"
+      />
 
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -202,7 +142,7 @@ export const AgentPaymentMethods = () => {
               {/* Payment Method Details */}
               <div className="space-y-1">
                 <motion.h3
-                  className="text-xs font-medium text-gray-900 truncate max-w-[100px]"
+                  className="text-xs font-medium text-wrap text-gray-900 truncate max-w-[100px]"
                   whileHover={{ scale: 1.05 }}
                 >
                   {method.name.replace("_", " ")}
