@@ -1,4 +1,3 @@
-import React from 'react';
 import type { ChangeEvent, FC, HTMLAttributes } from 'react';
 import { EditorState, useEditorState } from '../editor/EditorContext';
 

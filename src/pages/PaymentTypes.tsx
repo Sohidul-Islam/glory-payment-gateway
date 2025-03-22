@@ -207,7 +207,7 @@ export const PaymentTypes = () => {
             </div>
 
             {/* Expandable Details */}
-            {type?.PaymentMethod.name === "MOBILE_BANKING" && (
+            {type?.PaymentMethod?.name === "MOBILE_BANKING" && (
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   expandedCard === type.id
@@ -328,7 +328,7 @@ export const PaymentTypes = () => {
                 <h3 className="text-lg font-medium">{selectedType.name}</h3>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-sm text-gray-500">
-                    Created on {formatDate(selectedType.createdAt)}
+                    Created on {formatDate(selectedType?.createdAt)}
                   </p>
                   <span
                     className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -357,7 +357,7 @@ export const PaymentTypes = () => {
               </div>
             </div>
 
-            {selectedType.PaymentMethod.name === "MOBILE_BANKING" && (
+            {selectedType?.PaymentMethod?.name === "MOBILE_BANKING" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium">Payment Details</h4>

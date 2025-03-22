@@ -15,10 +15,6 @@ interface ModalProps {
   closeOnOutsideClick?: boolean;
 }
 
-const positionClasses = {
-  center: "items-center",
-  top: "items-start pt-20",
-};
 
 export const Modal = ({
   isOpen,

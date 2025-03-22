@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { HTMLAttributes, MouseEvent, ReactNode } from 'react';
 import { EditorState, useEditorState } from '../editor/EditorContext';
 import OrderedListIcon from './icons/OrderedListIcon';

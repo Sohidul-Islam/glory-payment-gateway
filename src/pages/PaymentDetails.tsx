@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import {
-  PaymentDetailResponse,
   getPaymentDetailInfo,
   AccountInfo,
   getPaymentDetailInfoByTypeId,
@@ -37,7 +36,7 @@ export const PaymentDetails = () => {
     null
   );
 
-  const { data: response, isLoading } = useQuery<PaymentDetailResponse>({
+  const { data: response, isLoading } = useQuery({
     queryKey: ["paymentDetail", { paymentDetailsId, paymentTypeId }],
     queryFn: () =>
       paymentTypeId
@@ -212,7 +211,7 @@ export const PaymentDetails = () => {
                 Active Accounts
               </p>
               <p className="text-xl font-semibold text-gray-900">
-                {accountInfo.filter((acc) => acc.isActive).length}
+                {accountInfo.filter((acc:any) => acc.isActive).length}
               </p>
             </div>
           </div>
@@ -232,7 +231,7 @@ export const PaymentDetails = () => {
           </button>
         </div>
         <div className="divide-y divide-gray-200">
-          {accountInfo.map((account) => (
+          {accountInfo.map((account:any) => (
             <div
               key={account.id}
               className="p-6 hover:bg-gray-50/50 transition-colors duration-200"

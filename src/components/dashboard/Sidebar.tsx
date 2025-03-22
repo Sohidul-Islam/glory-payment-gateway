@@ -1,10 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { AgentLink } from "./AgentLink";
 import { Home, CreditCard, Bell, Settings, LogOut } from "lucide-react";
 
 export const Sidebar = () => {
   const location = useLocation();
-  const userId = 1; // Replace with actual user ID from auth context
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -71,9 +69,9 @@ export const Sidebar = () => {
           </div>
 
           {/* Agent Link Section */}
-          <div className="px-4 py-4 border-t border-gray-200">
+          {/* <div className="px-4 py-4 border-t border-gray-200">
             <AgentLink agentId={userId} />
-          </div>
+          </div> */}
 
           {/* Logout Section */}
           <div className="px-4 py-4 border-t border-gray-200">
