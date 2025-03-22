@@ -136,7 +136,7 @@ const TransactionPreviewModal = ({
                       <p className="text-sm font-medium text-gray-500">
                         Status
                       </p>
-                      <span className={getStatusColor(transaction.status)}>
+                      <span className={`${getStatusColor(transaction.status)} mt-2 p-1 rounded-md`}>
                         {transaction.status}
                       </span>
                     </div>
@@ -243,14 +243,26 @@ const TransactionPreviewModal = ({
                       </p>
                       <div className="mt-2 space-y-1">
                         <p className="text-sm text-gray-900">
-                          Value: {transaction.PaymentDetail.value}
+                          Value: {transaction?.PaymentDetail?.value}
                         </p>
                         <p className="text-sm text-gray-900">
-                          Description: {transaction.PaymentDetail.description}
+                          Description: {transaction?.PaymentDetail?.description}
                         </p>
                         <p className="text-sm text-gray-900">
-                          Charge: ৳{transaction.PaymentDetail.charge}
+                          Charge: ৳{transaction?.PaymentDetail?.charge}
                         </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">
+                        Remark
+                      </p>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-sm text-gray-900">
+                          {transaction?.remarks||"N/A"}
+                        </p>
+                        
                       </div>
                     </div>
 
@@ -262,7 +274,7 @@ const TransactionPreviewModal = ({
                       {transaction.attachment ? (
                         <div className="mt-2">
                           <a
-                            href={transaction.attachment}
+                            href={transaction?.attachment}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-900"
@@ -299,6 +311,8 @@ const TransactionPreviewModal = ({
                         <p>Updated: {formatDate(transaction.updatedAt)}</p>
                       </div>
                     </div>
+
+                    
 
                     {/* Status Update Section */}
                     {transaction.status === "PENDING" && (

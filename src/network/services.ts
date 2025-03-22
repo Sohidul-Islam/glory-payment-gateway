@@ -464,6 +464,7 @@ export interface Transaction {
   attachment: string;
   createdAt: string;
   updatedAt: string;
+  remarks:string;
   PaymentMethod: {
     id: number;
     name: string;
