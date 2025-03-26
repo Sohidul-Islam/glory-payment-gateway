@@ -2,8 +2,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
-  useLocation,
+  // Navigate,
+  // useLocation,
 } from "react-router-dom";
 import MainLayout from "./components/layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -33,13 +33,14 @@ import { Loader } from "./components/ui/Loader";
 import { AgentHome } from "./pages/AgentHome";
 import PaymentNotes from "./pages/PaymentNotes";
 import AgentPaymentDetails from "./pages/AgentPaymentDetails";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoaded, isAuthenicating } = useAuth();
-  const location = useLocation();
+  // const location = useLocation();
 
   if (isAuthenicating) {
     return (
@@ -50,7 +51,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isAuthenticated && isLoaded) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Home />;
+    // return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   return <>{children}</>;
