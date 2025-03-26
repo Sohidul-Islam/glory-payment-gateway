@@ -4,14 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import {
   getAgentPaymentMethods,
   getAgentPaymentTypes,
-  PaymentMethod,
-  PaymentType,
+
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import {
   ArrowLeft,
   CreditCard,
-  Wallet,
   ChevronRight,
   CheckCircle2,
   XCircle,

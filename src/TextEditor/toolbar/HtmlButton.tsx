@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useEditorState } from '../editor/EditorContext';
 
 export function HtmlButton({ ...rest }) {

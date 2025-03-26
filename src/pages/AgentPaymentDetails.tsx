@@ -154,11 +154,11 @@ const AgentPaymentDetails = () => {
       return;
     }
 
-    if (!attachment) {
-      // Show error message for no attachment
-      toast.error("Please upload a receipt");
-      return;
-    }
+    // if (!attachment) {
+    //   // Show error message for no attachment
+    //   toast.error("Please upload a receipt");
+    //   return;
+    // }
 
     if (!selectedOption || !optionId) {
       // Show error message for no option selected
@@ -168,7 +168,7 @@ const AgentPaymentDetails = () => {
 
     const amount = selectedAmount || parseFloat(customAmount);
 
-    const imageUrl = await uploadFile(attachment);
+    const imageUrl =attachment ?  await uploadFile(attachment):"";
 
     // Create payment data object
     const paymentData: PaymentSubmissionData = {
@@ -616,7 +616,7 @@ const AgentPaymentDetails = () => {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <input
                   type="number"
-                  value={customAmount}
+                  value={customAmount || selectedAmount?.toString()}
                   onChange={(e) => {
                     setCustomAmount(e.target.value);
                     setSelectedAmount(null);
