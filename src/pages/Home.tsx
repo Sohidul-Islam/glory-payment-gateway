@@ -37,6 +37,8 @@ import client1 from "../../src/assets/client/Petapixel-Article-Images-5-800x600.
 import client2 from "../../src/assets/client/Ryan Kirk Surexdirect.jpg";
 import client3 from "../../src/assets/client/client.jpeg";
 
+import logo from "../../src/assets/logo.png";
+
 // Add interfaces for our data types
 interface PaymentMethod {
   name: string;
@@ -70,9 +72,9 @@ const Home = () => {
             transition={{ duration: 0.5 }}
             className="flex items-center gap-2"
           >
-            <div className="h-8 w-8 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="h-[80px] rounded-lg flex items-center justify-center overflow-hidden">
               <img
-                src="/logo.png"
+                src={logo}
                 alt="Logo"
                 className="h-8 w-auto object-cover"
                 onError={(e) => {
@@ -81,9 +83,6 @@ const Home = () => {
                 }}
               />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              LENDENPAY BD
-            </span>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
