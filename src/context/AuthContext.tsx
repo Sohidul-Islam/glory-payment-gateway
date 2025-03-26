@@ -28,6 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log({ token });
+
   // Profile fetch query
   const {
     refetch: refreshProfile,
@@ -42,6 +44,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await AXIOS.get(`/profile?email=${user.email}`);
 
       if (response.data) setUser(response.data);
+      else {
+        navigate("/login", { replace: true });
+      }
       setIsVerifying(false);
       return response.data;
     },
@@ -55,7 +60,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    console.log({ storedUser });
     // const publicPaths = [
     //   "/login",
     //   "/register",
@@ -64,13 +68,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // ];
     // const isPublicPath = publicPaths.includes(location.pathname);
 
-    if (!storedToken) {
-      setIsVerifying(false);
-    }
-
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser)); // If user is authenticated and trying to access login/register, redirect to dashboard
+    } else {
+      // navigate("/login", { replace: true });
+      setIsVerifying(false);
     }
 
     if (error) {
