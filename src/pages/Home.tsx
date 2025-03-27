@@ -19,9 +19,10 @@ import {
   CommandLineIcon,
   CreditCardIcon,
   ArrowPathIcon,
+  // ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-
+import { FaTelegram, FaWhatsapp } from "react-icons/fa";
 import heroIlustration from "../../src/assets/payment-illustration.png";
 import bkash from "../../src/assets/gateway/Bkash-Logo.png";
 import rocket from "../../src/assets/gateway/rocket.jpeg";
@@ -678,6 +679,8 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      <FloatingContactButton />
     </div>
   );
 };
@@ -1227,6 +1230,93 @@ const AnimatedHeroImage: React.FC = () => {
         />
       </motion.div>
     </motion.div>
+  );
+};
+
+// Add this new component before the Home component
+const FloatingContactButton: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="fixed bottom-8 right-8 z-50">
+      <motion.div
+        initial={false}
+        animate={isOpen ? "open" : "closed"}
+        className="relative"
+      >
+        {/* Contact Options */}
+        <motion.div
+          variants={{
+            open: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              },
+            },
+            closed: {
+              opacity: 0,
+              y: 20,
+              transition: {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              },
+            },
+          }}
+          className="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl p-4 space-y-3 min-w-[200px]"
+        >
+          <a
+            href="https://t.me/your_telegram_username"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
+          >
+            <FaTelegram className="w-5 h-5" />
+            <span>Telegram</span>
+          </a>
+          <a
+            href="https://wa.me/+8801934732943"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-700 hover:text-green-600 transition-colors"
+          >
+            <FaWhatsapp className="w-5 h-5" />
+            <span>WhatsApp</span>
+          </a>
+        </motion.div>
+
+        {/* Main Button */}
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-colors"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <motion.div
+            animate={{ rotate: isOpen ? 45 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </motion.div>
+        </motion.button>
+      </motion.div>
+    </div>
   );
 };
 
