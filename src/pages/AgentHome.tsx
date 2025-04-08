@@ -7,6 +7,7 @@ import {
 } from "../network/services";
 import { Loader } from "../components/ui/Loader";
 import { motion, AnimatePresence } from "framer-motion";
+import banner from "../assets/banner.jpg";
 import {
   User,
   Mail,
@@ -95,7 +96,9 @@ export const AgentHome = () => {
             className="absolute inset-0"
           >
             <img
-              src={agent?.Banners[currentBannerIndex]?.image || noImage}
+              src={
+                agent?.Banners[currentBannerIndex]?.image || banner || noImage
+              }
               alt={agent?.Banners[currentBannerIndex]?.title}
               className="w-full h-full object-cover"
             />
