@@ -618,8 +618,33 @@ export interface UserResponse {
 }
 
 // User API Functions
-export const getUsers = async (page = 1, limit = 10) => {
-  const response = await AXIOS.get(`/users?page=${page}&limit=${limit}`);
+export interface UserFilters {
+  page?: number;
+  pageSize?: number;
+  searchKey?: string;
+  accountStatus?: string;
+  accountType?: string;
+}
+
+export const getUsers = async (filters: UserFilters = {}) => {
+  const {
+    page = 1,
+    pageSize = 10,
+    searchKey,
+    accountStatus,
+    accountType,
+  } = filters;
+
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+
+  if (searchKey) queryParams.append("searchKey", searchKey);
+  if (accountStatus) queryParams.append("accountStatus", accountStatus);
+  if (accountType) queryParams.append("accountType", accountType);
+
+  const response = await AXIOS.get(`/users?${queryParams.toString()}`);
   return response.data;
 };
 

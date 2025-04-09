@@ -7,7 +7,7 @@ import {
   FunnelIcon,
 } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsers, deleteUser, User } from "../network/services";
+import { getUsers, deleteUser, User, UserFilters } from "../network/services";
 import { format } from "date-fns";
 
 const UserManagement = () => {
@@ -18,12 +18,19 @@ const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const queryClient = useQueryClient();
 
-  const { data: usersData, isLoading } = useQuery({
-    queryKey: ["users", page, pageSize],
-    queryFn: () => getUsers(page, pageSize),
-  });
+  // Create filters object
+  const filters: UserFilters = {
+    page,
+    pageSize,
+    searchKey: searchTerm || undefined,
+    accountStatus: statusFilter || undefined,
+    accountType: accountTypeFilter || undefined,
+  };
 
-  console.log({ usersData });
+  const { data: usersData, isLoading } = useQuery({
+    queryKey: ["users", filters],
+    queryFn: () => getUsers(filters),
+  });
 
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
@@ -42,29 +49,9 @@ const UserManagement = () => {
     return format(new Date(dateString), "MMM dd, yyyy HH:mm");
   };
 
-  const filteredUsers = usersData?.users.filter((user: User) => {
-    const matchesSearch =
-      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesAccountType = accountTypeFilter
-      ? user.accountType === accountTypeFilter
-      : true;
-    const matchesStatus = statusFilter
-      ? user.accountStatus === statusFilter
-      : true;
-
-    return matchesSearch && matchesAccountType && matchesStatus;
-  });
-
-  const accountTypes = Array.from(
-    new Set(usersData?.users.map((user: User) => user.accountType) || [])
-  ) as string[];
-
-  const statuses = Array.from(
-    new Set(usersData?.users.map((user: User) => user.accountStatus) || [])
-  ) as string[];
+  // Get unique account types and statuses for filter dropdowns
+  const accountTypes = ["super admin", "agent", "default"];
+  const statuses = ["active", "inactive"];
 
   return (
     <div className="space-y-6">
@@ -97,7 +84,7 @@ const UserManagement = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">All Account Types</option>
-                {accountTypes.map((type: string) => (
+                {accountTypes.map((type) => (
                   <option key={type} value={type}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </option>
@@ -153,7 +140,7 @@ const UserManagement = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsers?.map((user: User) => (
+                  {usersData?.users.map((user: User) => (
                     <tr key={user.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
