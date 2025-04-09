@@ -231,9 +231,9 @@ export interface PaymentType {
   status: string;
   paymentMethodId: number;
   description?: string;
-  PaymentMethod?:PaymentMethod;
+  PaymentMethod?: PaymentMethod;
   PaymentDetails: PaymentTypeDetail[];
-  createdAt:string;
+  createdAt: string;
 }
 
 export interface CreatePaymentTypeData {
@@ -287,16 +287,19 @@ export const getAgentPaymentDetails = async ({
   agentId,
   paymentTypeId,
   detailsId,
+  transactionType,
 }: {
   agentId: string;
   paymentTypeId?: number;
   detailsId?: number;
+  transactionType?: string;
 }) => {
   const response = await AXIOS.get(`payment/agent-payment-details`, {
     params: {
       agentId,
       paymentTypeId,
       paymentDetailId: detailsId,
+      transactionType,
     },
   });
   return response.data;
@@ -343,7 +346,7 @@ export const getAgentPaymentTypes = async (
   methodId: number,
   agentId: string
 ) => {
-  console.log({methodId})
+  console.log({ methodId });
   const response = await AXIOS.get(`/payment/types-agent/${agentId}`);
   return response.data as PaymentType[];
 };
@@ -431,7 +434,7 @@ export interface PaymentSubmissionData {
   transactionId: string;
   attachment: string;
   paymentSource: string;
-  paymentSourceId: number;
+  paymentSourceId: string;
   type: string;
   amount: number;
   status: string;
@@ -467,7 +470,9 @@ export interface Transaction {
   attachment: string;
   createdAt: string;
   updatedAt: string;
-  remarks:string;
+  remarks: string;
+  withdrawAccountNumber?: string;
+  withdrawDescription?: string;
   PaymentMethod: {
     id: number;
     name: string;

@@ -151,23 +151,75 @@ const TransactionTypeSelector: React.FC<{
   );
 };
 
-const AccountNumberInput: React.FC<{
-  value: string;
-  onChange: (value: string) => void;
-}> = ({ value, onChange }) => {
-  return (
-    <div className="relative group">
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Enter your account number"
-        className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
-      />
-      <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-    </div>
-  );
-};
+// const WithdrawDetailsSection: React.FC<{
+//   accountNumber: string;
+//   description: string;
+//   onAccountNumberChange: (value: string) => void;
+//   onDescriptionChange: (value: string) => void;
+// }> = ({
+//   accountNumber,
+//   description,
+//   onAccountNumberChange,
+//   onDescriptionChange,
+// }) => {
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: 20 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       className="mb-8 max-w-2xl mx-auto"
+//     >
+//       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+//         <div className="p-4 sm:p-6 space-y-4">
+//           <div className="flex items-center gap-3 text-blue-600 mb-2">
+//             <ArrowUpTrayIcon className="w-5 h-5" />
+//             <h3 className="font-semibold">Withdrawal Details</h3>
+//           </div>
+
+//           {/* Account Number Input */}
+//           <div className="space-y-2">
+//             <label className="block text-sm font-medium text-gray-700">
+//               Account Number *
+//             </label>
+//             <div className="relative group">
+//               <input
+//                 type="text"
+//                 value={accountNumber}
+//                 onChange={(e) => onAccountNumberChange(e.target.value)}
+//                 placeholder="Enter your account number"
+//                 className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+//                 required
+//               />
+//               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+//             </div>
+//             <p className="text-xs text-gray-500">
+//               This account number will be used to receive your funds
+//             </p>
+//           </div>
+
+//           {/* Description Input */}
+//           <div className="space-y-2">
+//             <label className="block text-sm font-medium text-gray-700">
+//               Description
+//             </label>
+//             <div className="relative group">
+//               <textarea
+//                 value={description}
+//                 onChange={(e) => onDescriptionChange(e.target.value)}
+//                 placeholder="Add any additional information about this withdrawal"
+//                 rows={3}
+//                 className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm resize-none"
+//               />
+//               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+//             </div>
+//             <p className="text-xs text-gray-500">
+//               Optional: Add any notes or special instructions
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+//     </motion.div>
+//   );
+// };
 
 export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
@@ -183,7 +235,9 @@ export const AgentPaymentMethods = () => {
     (searchParams.get("transactionType") as "withdraw" | "deposit" | null) ||
       null
   );
-  const [accountNumber, setAccountNumber] = useState<string>("");
+
+  // const [accountNumber, setAccountNumber] = useState("");
+  // const [withdrawDescription, setWithdrawDescription] = useState("");
 
   const { data: agentInfo, isLoading: isLoadingAgent } = useQuery({
     queryKey: ["agentInfo", agentId],
@@ -245,6 +299,16 @@ export const AgentPaymentMethods = () => {
               className="mb-8"
             />
           </motion.div>
+
+          {/* Withdraw Details Section */}
+          {/* {transactionType === "withdraw" && (
+            <WithdrawDetailsSection
+              accountNumber={accountNumber}
+              description={withdrawDescription}
+              onAccountNumberChange={setAccountNumber}
+              onDescriptionChange={setWithdrawDescription}
+            />
+          )} */}
 
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -490,29 +554,6 @@ export const AgentPaymentMethods = () => {
                   </p>
                 </div>
 
-                {/* Account Number Input for Withdraw */}
-                {transactionType === "withdraw" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 max-w-md mx-auto"
-                  >
-                    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Your Account Number
-                      </label>
-                      <AccountNumberInput
-                        value={accountNumber}
-                        onChange={setAccountNumber}
-                      />
-                      <p className="mt-2 text-xs text-gray-500">
-                        Please enter the account number where you want to
-                        receive the funds
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {selectedType?.PaymentDetails.map((detail, detailIndex) => (
                     <motion.button
@@ -522,24 +563,8 @@ export const AgentPaymentMethods = () => {
                       transition={{ delay: detailIndex * 0.1 }}
                       whileHover={{ scale: 1.02 }}
                       onClick={() => {
-                        if (
-                          transactionType === "withdraw" &&
-                          !accountNumber.trim()
-                        ) {
-                          // Show error or alert that account number is required
-                          alert("Please enter your account number");
-                          return;
-                        }
                         navigate(
-                          `/payment/${agentId}/make-payment?method=${
-                            selectedMethod?.id
-                          }&type=${detail.paymentTypeId}&detailsId=${
-                            detail.id
-                          }&transactionType=${transactionType}${
-                            transactionType === "withdraw"
-                              ? `&accountNumber=${accountNumber}`
-                              : ""
-                          }`
+                          `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${detail.paymentTypeId}&detailsId=${detail.id}&transactionType=${transactionType}`
                         );
                       }}
                       className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"

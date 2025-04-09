@@ -136,7 +136,11 @@ const TransactionPreviewModal = ({
                       <p className="text-sm font-medium text-gray-500">
                         Status
                       </p>
-                      <span className={`${getStatusColor(transaction.status)} mt-2 p-1 rounded-md`}>
+                      <span
+                        className={`${getStatusColor(
+                          transaction.status
+                        )} mt-2 p-1 rounded-md`}
+                      >
                         {transaction.status}
                       </span>
                     </div>
@@ -206,35 +210,56 @@ const TransactionPreviewModal = ({
                       </p>
                     </div>
 
-                    {/* Account Details */}
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Account Details
-                      </p>
-                      <div className="mt-2 space-y-1">
-                        <p className="text-sm text-gray-900">
-                          Account Number:{" "}
-                          {transaction.PaymentAccount.accountNumber}
+                    {/* Withdrawal Details */}
+                    {transaction.type === "withdraw" && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Withdrawal Details
                         </p>
-                        {transaction.PaymentAccount.accountName && (
+                        <div className="mt-2 space-y-1">
                           <p className="text-sm text-gray-900">
-                            Account Name:{" "}
-                            {transaction.PaymentAccount.accountName}
+                            Withdrawal Account:{" "}
+                            {transaction.withdrawAccountNumber || "N/A"}
                           </p>
-                        )}
-                        {transaction.PaymentAccount.branchName && (
                           <p className="text-sm text-gray-900">
-                            Branch: {transaction.PaymentAccount.branchName}
+                            Description:{" "}
+                            {transaction.withdrawDescription || "N/A"}
                           </p>
-                        )}
-                        {transaction.PaymentAccount.routingNumber && (
-                          <p className="text-sm text-gray-900">
-                            Routing Number:{" "}
-                            {transaction.PaymentAccount.routingNumber}
-                          </p>
-                        )}
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {/* Account Details */}
+                    {transaction.type === "deposit" && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Account Details
+                        </p>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-sm text-gray-900">
+                            Account Number:{" "}
+                            {transaction.PaymentAccount.accountNumber}
+                          </p>
+                          {transaction.PaymentAccount.accountName && (
+                            <p className="text-sm text-gray-900">
+                              Account Name:{" "}
+                              {transaction.PaymentAccount.accountName}
+                            </p>
+                          )}
+                          {transaction.PaymentAccount.branchName && (
+                            <p className="text-sm text-gray-900">
+                              Branch: {transaction.PaymentAccount.branchName}
+                            </p>
+                          )}
+                          {transaction.PaymentAccount.routingNumber && (
+                            <p className="text-sm text-gray-900">
+                              Routing Number:{" "}
+                              {transaction.PaymentAccount.routingNumber}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Payment Detail */}
                     <div>
@@ -260,9 +285,8 @@ const TransactionPreviewModal = ({
                       </p>
                       <div className="mt-2 space-y-1">
                         <p className="text-sm text-gray-900">
-                          {transaction?.remarks||"N/A"}
+                          {transaction?.remarks || "N/A"}
                         </p>
-                        
                       </div>
                     </div>
 
@@ -271,7 +295,8 @@ const TransactionPreviewModal = ({
                       <p className="text-sm font-medium text-gray-500">
                         Attachment
                       </p>
-                      {transaction.attachment ? (
+                      {transaction.type === "withdraw" &&
+                      transaction.attachment ? (
                         <div className="mt-2">
                           <a
                             href={transaction?.attachment}
@@ -312,8 +337,6 @@ const TransactionPreviewModal = ({
                       </div>
                     </div>
 
-                    
-
                     {/* Status Update Section */}
                     {transaction.status === "PENDING" && (
                       <div className="border-t pt-4">
@@ -325,7 +348,9 @@ const TransactionPreviewModal = ({
                             onClick={() => handleStatusUpdate("APPROVED")}
                             className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                           >
-                            Approve
+                            {transaction.type === "withdraw"
+                              ? "Approve Withdrawal"
+                              : "Approve Deposit"}
                           </button>
                           <button
                             onClick={() => handleStatusUpdate("REJECTED")}
