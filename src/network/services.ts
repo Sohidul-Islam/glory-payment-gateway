@@ -562,3 +562,80 @@ export const updateTransactionStatus = async (
   );
   return response.data;
 };
+
+// User Types
+export interface UserSubscription {
+  id: number;
+  userId: number;
+  subscriptionId: number;
+  status: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  image: string | null;
+  phoneNumber: string;
+  location: string;
+  businessName: string | null;
+  businessType: string | null;
+  password: string;
+  accountStatus: string;
+  accountType: string;
+  isVerified: boolean;
+  verificationToken: string;
+  agentId: string;
+  reference: string | null;
+  resetTokenExpiry: string | null;
+  resetToken: string | null;
+  commission: string;
+  commissionType: string;
+  isLoggedIn: boolean;
+  createdAt: string;
+  updatedAt: string;
+  UserSubscriptions: UserSubscription[];
+}
+
+export interface UserResponse {
+  status: boolean;
+  message: string;
+  data: {
+    users: User[];
+    pagination: {
+      page: number;
+      pageSize: number;
+      totalPages: number;
+      totalItems: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    };
+  };
+}
+
+// User API Functions
+export const getUsers = async (page = 1, limit = 10) => {
+  const response = await AXIOS.get(`/users?page=${page}&limit=${limit}`);
+  return response.data;
+};
+
+export const createUser = async (userData: Partial<User>): Promise<User> => {
+  const response = await AXIOS.post("/users", userData);
+  return response.data;
+};
+
+export const updateUser = async (
+  id: number,
+  userData: Partial<User>
+): Promise<User> => {
+  const response = await AXIOS.put(`/users/${id}`, userData);
+  return response.data;
+};
+
+export const deleteUser = async (id: number): Promise<void> => {
+  await AXIOS.delete(`/users/${id}`);
+};
