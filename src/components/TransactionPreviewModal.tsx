@@ -7,6 +7,9 @@ import {
 } from "../network/services";
 import { format } from "date-fns";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Copy, Upload } from "lucide-react";
+import { X } from "lucide-react";
+import { uploadFile } from "../utils/utils";
 
 interface TransactionPreviewModalProps {
   isOpen: boolean;
@@ -27,6 +30,9 @@ const TransactionPreviewModal = ({
   isUpdating,
 }: TransactionPreviewModalProps) => {
   const [remarks, setRemarks] = useState("");
+  const [transactionNumber, setTransactionNumber] = useState("");
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedStatus, setSelectedStatus] =
     useState<TransactionStatus | null>(null);
@@ -47,12 +53,36 @@ const TransactionPreviewModal = ({
       onStatusUpdate(transaction.id, {
         status: selectedStatus,
         remarks: remarks.trim() || undefined,
+        attachment: attachmentUrl || undefined,
+        transactionId: transactionNumber || undefined,
       });
       setShowStatusDialog(false);
       setSelectedStatus(null);
       setRemarks("");
     }
   };
+
+  const handleTransactionNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setTransactionNumber(e.target.value);
+  };
+
+  const handleAttachmentChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAttachment(file);
+
+      const fileUrl = await uploadFile(file);
+
+      // Create a URL for the file preview
+      setAttachmentUrl(fileUrl);
+    }
+  };
+
+  // Clean up the object URL when component unmounts or file changes
 
   const getStatusColor = (status: string) => {
     switch (status.toUpperCase()) {
@@ -130,6 +160,33 @@ const TransactionPreviewModal = ({
                         </p>
                       </div>
                     </div>
+
+                    {/* Transaction Number for Withdrawal */}
+                    {transaction.type === "withdraw" && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Transaction Number
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={transactionNumber}
+                            onChange={handleTransactionNumberChange}
+                            placeholder="Enter transaction number"
+                            className="flex-1 p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:border-indigo-300 transition-colors text-sm"
+                          />
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(transactionNumber);
+                            }}
+                            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                            title="Copy transaction number"
+                          >
+                            <Copy className="w-4 h-4 text-gray-500" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Status */}
                     <div>
@@ -295,11 +352,88 @@ const TransactionPreviewModal = ({
                       <p className="text-sm font-medium text-gray-500">
                         Attachment
                       </p>
-                      {transaction.type === "withdraw" &&
-                      transaction.attachment ? (
+                      {transaction.type === "withdraw" ? (
+                        <div className="mt-2">
+                          {attachmentUrl ? (
+                            <div className="relative group">
+                              <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 shadow-sm">
+                                {attachment?.type.startsWith("image/") ? (
+                                  <img
+                                    src={attachmentUrl}
+                                    alt="Receipt preview"
+                                    className="w-full h-full object-contain"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <div className="text-center p-4">
+                                      <svg
+                                        className="mx-auto h-12 w-12 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                      </svg>
+                                      <p className="mt-2 text-sm font-medium text-gray-900">
+                                        {attachment?.name}
+                                      </p>
+                                      <p className="mt-1 text-xs text-gray-500">
+                                        PDF Document
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setAttachment(null);
+                                  if (attachmentUrl) {
+                                    URL.revokeObjectURL(attachmentUrl);
+                                    setAttachmentUrl(null);
+                                  }
+                                }}
+                                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-500 transition-colors hover:bg-gray-50">
+                              <input
+                                type="file"
+                                id="attachment"
+                                accept="image/*,.pdf"
+                                onChange={handleAttachmentChange}
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor="attachment"
+                                className="cursor-pointer flex flex-col items-center gap-2"
+                              >
+                                <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
+                                  <Upload className="w-5 h-5 text-indigo-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    Upload Receipt
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Drag and drop or click to upload
+                                  </p>
+                                </div>
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      ) : transaction.attachment ? (
                         <div className="mt-2">
                           <a
-                            href={transaction?.attachment}
+                            href={transaction.attachment}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-900"

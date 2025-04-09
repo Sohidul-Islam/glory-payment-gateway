@@ -548,6 +548,8 @@ export type TransactionStatus = "PENDING" | "APPROVED" | "REJECTED";
 export interface UpdateTransactionStatusData {
   status: TransactionStatus;
   remarks?: string;
+  attachment?: string;
+  transactionId?: string;
 }
 
 export const updateTransactionStatus = async (
