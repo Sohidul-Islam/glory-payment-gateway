@@ -13,7 +13,7 @@ import Transactions from "./pages/Transactions";
 import UserManagement from "./pages/UserManagement";
 import Notifications from "./pages/Notifications";
 import { Login } from "./components/auth/Login";
-import { Register } from "./components/auth/Register";
+// import { Register } from "./components/auth/Register";
 import { ResetPassword } from "./components/auth/ResetPassword";
 import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
@@ -34,6 +34,7 @@ import { AgentHome } from "./pages/AgentHome";
 import PaymentNotes from "./pages/PaymentNotes";
 import AgentPaymentDetails from "./pages/AgentPaymentDetails";
 import Home from "./pages/Home";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 

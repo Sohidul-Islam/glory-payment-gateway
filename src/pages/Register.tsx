@@ -1,12 +1,12 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser, RegisterData } from "../network/services";
 import { Link, useNavigate } from "react-router-dom";
-import { PhotoIcon } from "@heroicons/react/24/outline";
-
+// import { PhotoIcon } from "@heroicons/react/24/outline";
+// import { uploadFile } from "../utils/utils";
 const Register = () => {
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  //   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -19,7 +19,7 @@ const Register = () => {
     accountType: "default", // default or agent
     image: null as string | null,
   });
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  //   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -49,26 +49,26 @@ const Register = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Create a preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+  //   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const file = e.target.files?.[0];
+  //     if (file) {
+  //       // Create a preview URL
+  //       const previewUrl = await uploadFile(file);
+  //       setImagePreview(previewUrl);
 
-      // Convert image to base64 for API submission
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData((prev) => ({ ...prev, image: base64String }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  //       // Convert image to base64 for API submission
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => {
+  //         const base64String = reader.result as string;
+  //         setFormData((prev) => ({ ...prev, image: base64String }));
+  //       };
+  //       reader.readAsDataURL(file);
+  //     }
+  //   };
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
+  //   const handleImageClick = () => {
+  //     fileInputRef.current?.click();
+  //   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +138,7 @@ const Register = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Profile Picture Section */}
-            <div className="flex flex-col items-center mb-6">
+            {/* <div className="flex flex-col items-center mb-6">
               <div
                 className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 cursor-pointer group"
                 onClick={handleImageClick}
@@ -170,7 +170,7 @@ const Register = () => {
               <p className="mt-2 text-sm text-gray-500">
                 Click to add profile picture
               </p>
-            </div>
+            </div> */}
 
             <div>
               <label
