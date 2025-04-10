@@ -118,8 +118,7 @@ const ForgotPassword = () => {
         </div>
 
         <div className="relative z-10 text-sm opacity-80">
-          &copy; {new Date().getFullYear()} Glory Payment Gateway. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} LendenPay All rights reserved.
         </div>
       </div>
 

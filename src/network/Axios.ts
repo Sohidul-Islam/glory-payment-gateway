@@ -69,6 +69,14 @@ AXIOS.interceptors.response.use(
     }
 
     console.log("api error:", error);
+
+    if (error.status === 401) {
+      toast.error(error?.response?.data?.message);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+      window.location.reload();
+    }
     return Promise.reject(error?.response?.data);
   }
 );

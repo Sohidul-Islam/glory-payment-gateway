@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -33,7 +34,7 @@ export const ResetPassword = () => {
     }
 
     try {
-      await resetPassword({ token, password: data.password });
+      await resetPassword({ token, newPassword: data.password });
       toast.success("Password reset successful!");
       navigate("/login");
     } catch (error) {
@@ -59,7 +60,10 @@ export const ResetPassword = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 New Password
               </label>
               <div className="mt-1 relative">
@@ -88,12 +92,17 @@ export const ResetPassword = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm New Password
               </label>
               <div className="mt-1 relative">
@@ -120,7 +129,9 @@ export const ResetPassword = () => {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-2 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -138,4 +149,4 @@ export const ResetPassword = () => {
       </div>
     </div>
   );
-}; 
+};

@@ -14,7 +14,7 @@ import UserManagement from "./pages/UserManagement";
 import Notifications from "./pages/Notifications";
 // import { Login } from "./components/auth/Login";
 // import { Register } from "./components/auth/Register";
-import { ResetPassword } from "./components/auth/ResetPassword";
+// import { ResetPassword } from "./components/auth/ResetPassword";
 import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,6 +38,7 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 

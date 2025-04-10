@@ -71,7 +71,7 @@ export interface ForgotPasswordData {
 
 export interface ResetPasswordData {
   token: string;
-  password: string;
+  newPassword: string;
 }
 
 export type PaymentMethodType =
@@ -99,7 +99,7 @@ export const forgotPassword = async (
 
 export const resetPassword = async (data: ResetPasswordData) => {
   const response = await AXIOS.post("/reset-password", data);
-  return response.data;
+  return response;
 };
 
 export const createPaymentMethod = async (

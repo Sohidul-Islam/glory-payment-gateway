@@ -19,7 +19,7 @@ export const Login = () => {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      login(data);
+      login(data.data.user);
     },
     onError: (error: Error) => {
       successToast(error?.message || "Login failed", "error");
