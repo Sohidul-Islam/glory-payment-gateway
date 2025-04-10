@@ -23,7 +23,8 @@ import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
-import { ForgotPassword } from "./components/auth/ForgotPassword";
+// import { ForgotPassword } from "./components/auth/ForgotPassword";
+
 import { PaymentTypes } from "./pages/PaymentTypes";
 import { PaymentDetails } from "./pages/PaymentDetails";
 // import { Home } from "./pages/Home";
@@ -36,6 +37,7 @@ import AgentPaymentDetails from "./pages/AgentPaymentDetails";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AXIOS from "./Axios";
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T = any> {
   status: boolean;
   message: string;
   data: T;
@@ -89,8 +90,10 @@ export interface PaymentMethodData {
 
 // API Functions
 
-export const forgotPassword = async (data: ForgotPasswordData) => {
-  const response = await AXIOS.post("/forgot-password", data);
+export const forgotPassword = async (
+  data: ForgotPasswordData
+): Promise<ApiResponse> => {
+  const response = await AXIOS.post("/request-reset", data);
   return response.data;
 };
 
