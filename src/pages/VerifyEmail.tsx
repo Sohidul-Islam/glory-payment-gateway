@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import {
@@ -10,6 +10,17 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { verifyEmail } from "../network/services";
+import AgentLinkCard from "../components/AgentLinkCard";
+import AXIOS from "../network/Axios";
+
+interface UserData {
+  id: number;
+  fullName: string;
+  email: string;
+  agentId: string;
+  isVerified: boolean;
+  accountType: string;
+}
 
 const VerifyEmail = () => {
   const location = useLocation();
@@ -20,6 +31,7 @@ const VerifyEmail = () => {
     "idle" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   // Extract token and email from URL parameters
   useEffect(() => {
@@ -35,16 +47,44 @@ const VerifyEmail = () => {
     }
   }, [location]);
 
+  // Fetch user data after successful verification
+  const fetchUserData = async (email: string) => {
+    try {
+      const response = await AXIOS.get(`/profile?email=${email}`);
+      console.log("User data response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch user data", error);
+      return null;
+    }
+  };
+
+  // Query for user data
+  const userQuery = useQuery({
+    queryKey: ["userData", email],
+    queryFn: () => fetchUserData(email),
+    enabled: false, // Don't run automatically
+  });
+
   const verifyMutation = useMutation({
     mutationFn: verifyEmail,
     onSuccess: (data: any) => {
       if (data?.status) {
         setVerificationStatus("success");
         toast.success("Email verified successfully!");
-        // Redirect to login after 3 seconds
+
+        // Fetch user data
+        userQuery.refetch().then((result) => {
+          if (result.data) {
+            console.log("User data from query:", result.data);
+            setUserData(result.data);
+          }
+        });
+
+        // Redirect to login after 5 seconds (increased from 3 to give time to see agent card)
         setTimeout(() => {
           navigate("/login");
-        }, 3000);
+        }, 5000);
       } else {
         setVerificationStatus("error");
         setErrorMessage(data?.message || "Email verification failed");
@@ -258,6 +298,30 @@ const VerifyEmail = () => {
                   <div className="bg-gray-50 p-4 rounded-lg w-full text-center mb-6 break-all">
                     <span className="font-medium text-gray-800">{email}</span>
                   </div>
+
+                  {/* Add Agent Link Card if user data is available and user has agentId */}
+                  {userData && userData.agentId && (
+                    <div className="w-full mb-6">
+                      <h4 className="text-base font-medium text-gray-800 mb-2">
+                        Your Agent Portal Access
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-3">
+                        As a verified user, you now have access to your
+                        dedicated agent portal. Use the link below to access
+                        your portal or share it with others.
+                      </p>
+                      <AgentLinkCard
+                        agentId={userData.agentId}
+                        agentName={userData.fullName}
+                        className="mb-2"
+                      />
+                      <p className="text-xs text-gray-500 italic">
+                        Remember to save your Agent ID for future reference. You
+                        can access your portal anytime via the link above.
+                      </p>
+                    </div>
+                  )}
+
                   <p className="text-gray-500 text-sm mb-6">
                     You'll be redirected to the login page shortly.
                   </p>

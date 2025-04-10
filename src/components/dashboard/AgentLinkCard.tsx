@@ -94,7 +94,7 @@ export const AgentLinkCard = () => {
     <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h2 className="text-lg font-semibold text-gray-900">
-          Your Payment Link 2
+          Your Payment Link
         </h2>
         <div className="flex items-center gap-2">
           {/* Mobile Share Button */}
