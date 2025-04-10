@@ -73,4 +73,6 @@ AXIOS.interceptors.response.use(
   }
 );
 
+// add interceptor for error response
+
 export default AXIOS;

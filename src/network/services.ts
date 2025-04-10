@@ -46,9 +46,7 @@ export interface LoginResponse {
   token: string;
 }
 
-export const registerUser = async (
-  data: RegisterData
-): Promise<ApiResponse<User>> => {
+export const registerUser = async (data: RegisterData) => {
   const response = await AXIOS.post<ApiResponse<User>>(`/register`, data);
   return response.data;
 };
