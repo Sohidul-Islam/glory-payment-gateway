@@ -49,10 +49,7 @@ export interface LoginResponse {
 export const registerUser = async (
   data: RegisterData
 ): Promise<ApiResponse<User>> => {
-  const response = await AXIOS.post<ApiResponse<User>>(
-    `${API_URL}/auth/register`,
-    data
-  );
+  const response = await AXIOS.post<ApiResponse<User>>(`/register`, data);
   return response.data;
 };
 

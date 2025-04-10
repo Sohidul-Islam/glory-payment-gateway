@@ -26,7 +26,7 @@ const Register = () => {
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      if (data.status) {
+      if (data?.status) {
         setSuccess("Registration successful! Redirecting to login...");
         setTimeout(() => {
           navigate("/login");
