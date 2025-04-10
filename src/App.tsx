@@ -39,6 +39,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Protected Routes */}
       <Route
@@ -98,22 +100,22 @@ const AppRoutes = () => {
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="notifications" element={<Notifications />} />
-      </Route>
 
-      <Route path="/agent/:agentId" element={<AgentHome />} />
-      <Route path="/payment/:agentId" element={<AgentPaymentMethods />} />
-      <Route
-        path="/payment/:agentId/method/:methodId"
-        element={<AgentPaymentMethods />}
-      />
-      <Route
-        path="/payment/:agentId/method/:methodId/type/:typeId"
-        element={<AgentPaymentDetails />}
-      />
-      <Route
-        path="/payment/:agentId/make-payment"
-        element={<AgentPaymentDetails />}
-      />
+        <Route path="agent/:agentId" element={<AgentHome />} />
+        <Route path="payment/:agentId" element={<AgentPaymentMethods />} />
+        <Route
+          path="payment/:agentId/method/:methodId"
+          element={<AgentPaymentMethods />}
+        />
+        <Route
+          path="payment/:agentId/method/:methodId/type/:typeId"
+          element={<AgentPaymentDetails />}
+        />
+        <Route
+          path="payment/:agentId/make-payment"
+          element={<AgentPaymentDetails />}
+        />
+      </Route>
     </Routes>
   );
 };

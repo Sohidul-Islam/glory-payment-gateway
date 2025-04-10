@@ -74,6 +74,11 @@ export interface ResetPasswordData {
   newPassword: string;
 }
 
+export interface VerifyEmailData {
+  token: string;
+  email: string;
+}
+
 export type PaymentMethodType =
   | "MOBILE_BANKING"
   | "VISA"
@@ -99,6 +104,11 @@ export const forgotPassword = async (
 
 export const resetPassword = async (data: ResetPasswordData) => {
   const response = await AXIOS.post("/reset-password", data);
+  return response;
+};
+
+export const verifyEmail = async (data: VerifyEmailData) => {
+  const response = await AXIOS.post("/verify-email", data);
   return response;
 };
 
