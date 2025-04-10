@@ -9,6 +9,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers, deleteUser, User, UserFilters } from "../network/services";
 import { format } from "date-fns";
+import UserEditModal from "../components/UserEditModal";
 
 const UserManagement = () => {
   const [page, setPage] = useState(1);
@@ -16,6 +17,8 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [accountTypeFilter, setAccountTypeFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Create filters object
@@ -43,6 +46,11 @@ const UserManagement = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       deleteUserMutation.mutate(id);
     }
+  };
+
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
   };
 
   const formatDate = (dateString: string) => {
@@ -213,7 +221,10 @@ const UserManagement = () => {
                         {formatDate(user.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-primary-600 hover:text-primary-900 mr-3">
+                        <button
+                          onClick={() => handleEditUser(user)}
+                          className="text-primary-600 hover:text-primary-900 mr-3"
+                        >
                           <PencilIcon className="w-5 h-5" />
                         </button>
                         <button
@@ -258,6 +269,16 @@ const UserManagement = () => {
           )}
         </div>
       </Card>
+
+      {/* User Edit Modal */}
+      <UserEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+      />
     </div>
   );
 };

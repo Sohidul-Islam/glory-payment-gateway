@@ -653,12 +653,9 @@ export const createUser = async (userData: Partial<User>): Promise<User> => {
   return response.data;
 };
 
-export const updateUser = async (
-  id: number,
-  userData: Partial<User>
-): Promise<User> => {
-  const response = await AXIOS.put(`/users/${id}`, userData);
-  return response.data;
+export const updateUser = async (id: number, userData: Partial<User>) => {
+  const response = await AXIOS.post(`/profile?userId=${id}`, userData);
+  return response;
 };
 
 export const deleteUser = async (id: number): Promise<void> => {
