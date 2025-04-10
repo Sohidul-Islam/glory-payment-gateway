@@ -1,16 +1,23 @@
 import AXIOS from "./Axios";
 
+export interface ApiResponse<T> {
+  status: boolean;
+  message: string;
+  data: T;
+}
+
+export const API_URL = "http://localhost:5000/api";
+
 export interface RegisterData {
   fullName: string;
   email: string;
-  image?: string;
+  password: string;
   phoneNumber: string;
   location: string;
-  businessName: string;
-  businessType: string;
-  password: string;
-  accountStatus?: string;
-  accountType?: string;
+  businessName?: string;
+  businessType?: string;
+  accountType: string;
+  image?: string;
 }
 
 export interface LoginData {
@@ -39,9 +46,14 @@ export interface LoginResponse {
   token: string;
 }
 
-export const registerUser = async (data: RegisterData) => {
-  const response = await AXIOS.post("/register", data);
-  return response;
+export const registerUser = async (
+  data: RegisterData
+): Promise<ApiResponse<User>> => {
+  const response = await AXIOS.post<ApiResponse<User>>(
+    `${API_URL}/auth/register`,
+    data
+  );
+  return response.data;
 };
 
 export const loginUser = async (data: LoginData) => {
