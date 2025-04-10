@@ -28,8 +28,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log({ token });
-
   // Profile fetch query
   const {
     refetch: refreshProfile,

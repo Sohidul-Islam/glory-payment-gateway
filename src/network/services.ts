@@ -53,7 +53,7 @@ export const registerUser = async (data: RegisterData) => {
 
 export const loginUser = async (data: LoginData) => {
   const response = await AXIOS.post("/login", data);
-  return response.data as LoginResponse;
+  return response;
 };
 
 export interface RegisterData {
