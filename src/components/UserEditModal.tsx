@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { User } from "../network/services";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../network/services";
 import { Input } from "./ui/Input";
+import { uploadFile } from "../utils/utils";
 
 interface UserEditModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form data when user changes
   useEffect(() => {
@@ -35,6 +38,11 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
         commission: user.commission,
         commissionType: user.commissionType,
       });
+
+      // Set image preview if user has an image
+      if (user.image) {
+        setImagePreview(user.image);
+      }
     }
   }, [user]);
 
@@ -51,6 +59,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
         }, 1500);
       } else {
         setError(data.message);
+        setIsSubmitting(false);
       }
     },
     onError: (error: any) => {
@@ -66,6 +75,22 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e?.target?.files?.[0];
+    if (file) {
+      // Create a preview URL
+      const previewUrl = await uploadFile(file);
+      setImagePreview(previewUrl);
+
+      setFormData((prev) => ({ ...prev, image: previewUrl }));
+      // Convert image to base64 for API submission
+    }
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -139,6 +164,41 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Profile Picture Section */}
+                  <div className="flex flex-col items-center mb-6">
+                    <div
+                      className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 cursor-pointer group"
+                      onClick={handleImageClick}
+                    >
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                          <PhotoIcon className="h-12 w-12 text-gray-400" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="text-white text-sm font-medium">
+                          Change Photo
+                        </span>
+                      </div>
+                    </div>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <p className="mt-2 text-sm text-gray-500">
+                      Click to change profile picture
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label
