@@ -256,6 +256,25 @@ const TransactionPreviewModal = ({
                       </div>
                     </div>
 
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Commission
+                        </p>
+                        <p className="text-lg font-semibold text-gray-900">
+                          ৳{transaction.commission}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">
+                          Commission Type
+                        </p>
+                        <p className="text-sm text-gray-900 capitalize">
+                          {transaction.commissionType}
+                        </p>
+                      </div>
+                    </div>
+
                     {/* Payment Source */}
                     <div>
                       <p className="text-sm font-medium text-gray-500">

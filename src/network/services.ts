@@ -473,6 +473,8 @@ export interface Transaction {
   type: string;
   amount: string;
   status: string;
+  commission: string;
+  commissionType: string;
   paymentSource: string;
   paymentSourceId: number;
   givenTransactionId: string;
