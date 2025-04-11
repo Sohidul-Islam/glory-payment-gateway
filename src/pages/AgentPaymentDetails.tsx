@@ -214,7 +214,9 @@ const AgentPaymentDetails = () => {
       },
       onError: (error) => {
         // Handle error - you can add an error notification
-        toast.error(error.message);
+        toast.error(
+          error.message || (error as unknown as { error: string }).error
+        );
         console.error("Payment submission failed:", error);
       },
     });

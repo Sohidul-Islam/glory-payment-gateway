@@ -742,3 +742,16 @@ export const deleteNotifications = async (notificationIds: number[]) => {
   );
   return response.data;
 };
+
+export interface UnreadCountResponse {
+  status: boolean;
+  message: string;
+  data: {
+    unreadCount: number;
+  };
+}
+
+export const getUnreadNotificationCount = async () => {
+  const response = await AXIOS.get(`/notifications/unread-count`);
+  return response.data;
+};

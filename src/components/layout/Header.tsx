@@ -6,6 +6,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { getUnreadNotificationCount } from "../../network/services";
 
 interface HeaderProps {
   children?: React.ReactNode;
@@ -16,6 +18,14 @@ const Header = ({ children }: HeaderProps) => {
   const navigator = useNavigate();
 
   const { user, logout } = useAuth();
+
+  const { data: unreadCountData } = useQuery({
+    queryKey: ["unreadNotifications"],
+    queryFn: getUnreadNotificationCount,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  console.log([unreadCountData]);
 
   return (
     <header className="bg-white border-b border-gray-200 h-16">
@@ -44,7 +54,7 @@ const Header = ({ children }: HeaderProps) => {
           >
             <BellIcon className="w-6 h-6" />
             <span className="absolute top-0 right-0 h-4 w-4 text-xs flex items-center justify-center bg-red-500 text-white rounded-full">
-              3
+              {unreadCountData?.unreadCount}
             </span>
           </button>
 

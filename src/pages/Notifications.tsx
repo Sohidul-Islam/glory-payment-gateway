@@ -4,7 +4,7 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   InformationCircleIcon,
-  ArrowRightIcon,
+  // ArrowRightIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,11 +16,11 @@ import {
   Notification,
 } from "../network/services";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>(
     []
@@ -36,6 +36,7 @@ const Notifications = () => {
     mutationFn: markNotificationAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unreadCountData"] });
       toast.success("Notification marked as read");
     },
     onError: () => {
@@ -47,6 +48,8 @@ const Notifications = () => {
     mutationFn: markAllNotificationsAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unreadCountData"] });
+
       toast.success("All notifications marked as read");
     },
     onError: () => {
@@ -92,7 +95,7 @@ const Notifications = () => {
 
   const handleNotificationClick = (notification: Notification) => {
     if (notification.relatedEntityType === "Transaction") {
-      navigate(`/transactions/${notification.relatedEntityId}`);
+      // navigate(`/transactions/${notification.relatedEntityId}`);
     }
   };
 
@@ -207,7 +210,7 @@ const Notifications = () => {
                             Mark as read
                           </button>
                         )}
-                        <ArrowRightIcon className="w-4 h-4 text-gray-400" />
+                        {/* <ArrowRightIcon className="w-4 h-4 text-gray-400" /> */}
                       </div>
                     </div>
                   </div>
