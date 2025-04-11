@@ -1,12 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, useState, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  PhotoIcon,
+  ArrowPathIcon,
+  ClipboardIcon,
+} from "@heroicons/react/24/outline";
 import { User } from "../network/services";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../network/services";
 import { Input } from "./ui/Input";
 import { uploadFile } from "../utils/utils";
+import { toast } from "react-hot-toast";
+import AXIOS from "../network/Axios";
+import { useAuth } from "../hooks/useAuth";
 
 interface UserEditModalProps {
   isOpen: boolean;
@@ -16,11 +24,16 @@ interface UserEditModalProps {
 
 const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
   const queryClient = useQueryClient();
+
+  const { user: currentUser } = useAuth();
+
   const [formData, setFormData] = useState<Partial<User>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isGeneratingAgentId, setIsGeneratingAgentId] = useState(false);
+  const [agentIdCopied, setAgentIdCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form data when user changes
@@ -37,6 +50,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
         accountType: user.accountType,
         commission: user.commission,
         commissionType: user.commissionType,
+        agentId: user.agentId,
       });
 
       // Set image preview if user has an image
@@ -68,6 +82,29 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
     },
   });
 
+  const generateAgentIdMutation = useMutation({
+    mutationFn: async (agentId?: string) => {
+      const response = await AXIOS.post(`/assign-agentId/${user?.id || ""}`, {
+        agentId,
+      });
+
+      return response;
+    },
+    onSuccess: (data) => {
+      if (data && data?.data?.agentId) {
+        setFormData((prev) => ({ ...prev, agentId: data?.data?.agentId }));
+        toast.success("New Agent ID generated successfully");
+      } else {
+        toast.error("Failed to generate Agent ID");
+      }
+      setIsGeneratingAgentId(false);
+    },
+    onError: () => {
+      toast.error("Failed to generate Agent ID");
+      setIsGeneratingAgentId(false);
+    },
+  });
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -93,6 +130,20 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
     fileInputRef.current?.click();
   };
 
+  const handleGenerateAgentId = () => {
+    setIsGeneratingAgentId(true);
+    generateAgentIdMutation.mutate(formData.agentId);
+  };
+
+  const copyAgentIdToClipboard = () => {
+    if (formData.agentId) {
+      navigator.clipboard.writeText(formData.agentId);
+      setAgentIdCopied(true);
+      toast.success("Agent ID copied to clipboard!");
+      setTimeout(() => setAgentIdCopied(false), 2000);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -108,6 +159,8 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
   };
 
   if (!user) return null;
+
+  const agentUrl = `${window.location.origin}/agent/${formData.agentId}`;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -348,6 +401,111 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                     </div>
                   </div>
 
+                  {/* Agent ID Section */}
+                  <div className="border-t pt-4 mt-4">
+                    <h4 className="text-md font-medium text-gray-900 mb-3">
+                      Agent Portal Settings
+                    </h4>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label
+                          htmlFor="agentId"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Agent ID
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <div className="relative flex-grow">
+                            <Input
+                              type="text"
+                              id="agentId"
+                              name="agentId"
+                              value={formData?.agentId || ""}
+                              onChange={handleChange}
+                              disabled={
+                                currentUser?.accountType !== "super admin"
+                              }
+                              className="block w-full rounded-md border-gray-300 pr-10 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                              placeholder="Agent ID"
+                            />
+                            <div>
+                              {formData?.agentId && (
+                                <button
+                                  type="button"
+                                  onClick={copyAgentIdToClipboard}
+                                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                  title="Copy Agent ID"
+                                >
+                                  <ClipboardIcon className="h-4 w-4" />
+                                  {agentIdCopied && (
+                                    <span className="absolute text-xs text-green-600 whitespace-nowrap -bottom-5 right-0">
+                                      Copied!
+                                    </span>
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleGenerateAgentId}
+                            disabled={
+                              isGeneratingAgentId ||
+                              currentUser?.accountType !== "super admin"
+                            }
+                            className="flex-shrink-0 inline-flex items-center justify-center h-10 px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                          >
+                            {isGeneratingAgentId ? (
+                              <>
+                                <ArrowPathIcon className="animate-spin h-4 w-4 mr-1.5" />
+                                <span>Generating...</span>
+                              </>
+                            ) : (
+                              <>
+                                <ArrowPathIcon className="h-4 w-4 mr-1.5" />
+                                <span>Generate</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          Used for agent portal access and referrals. Leave
+                          empty for non-agent users.
+                          {formData.agentId && (
+                            <div className="mt-2 p-2 bg-gray-50 border border-gray-200 rounded-md">
+                              <span className="font-medium text-gray-700">
+                                Agent Portal URL:
+                              </span>
+                              <div className="flex items-center mt-1">
+                                <a
+                                  href={agentUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-primary-600 hover:text-primary-700 hover:underline truncate mr-1 flex-1"
+                                >
+                                  {agentUrl}
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(agentUrl);
+                                    toast.success(
+                                      "Agent URL copied to clipboard!"
+                                    );
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                  title="Copy URL"
+                                >
+                                  <ClipboardIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="border-t pt-4 mt-4">
                     <h4 className="text-md font-medium text-gray-900 mb-3">
                       Commission Settings
@@ -367,7 +525,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                             name="commission"
                             value={formData.commission || ""}
                             onChange={handleChange}
-                            className="block w-full  rounded-md border-gray-300 pl-3 pr-12 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                            className="block w-full rounded-md border-gray-300 pl-3 pr-12 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                             placeholder="0.00"
                           />
                           <div className="absolute inset-y-0 right-0 flex items-center">

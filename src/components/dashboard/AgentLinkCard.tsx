@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import {
   Copy,
@@ -6,17 +6,16 @@ import {
   Link as LinkIcon,
   ExternalLink,
   Share2,
-  RefreshCcw,
+  // RefreshCcw,
 } from "lucide-react";
 
 import { useAuth } from "../../hooks/useAuth";
-import { useMutation } from "@tanstack/react-query";
-import AXIOS from "../../network/Axios";
+
 import { toast } from "react-toastify";
 
 export const AgentLinkCard = () => {
   const [copied, setCopied] = useState(false);
-  const { user, refreshProfile } = useAuth();
+  const { user } = useAuth();
   const [agentId, setAgentId] = useState(user?.agentId);
   const baseUrl = window.location.origin;
   const agentLink = `${baseUrl}/agent/${agentId || user?.agentId}`;
@@ -55,40 +54,40 @@ export const AgentLinkCard = () => {
     }
   };
 
-  const assignAgentId = useMutation({
-    mutationFn: async (agentId?: string) => {
-      const response = await AXIOS.post(`/assign-agentId/${user?.id || ""}`, {
-        agentId,
-      });
+  // const assignAgentId = useMutation({
+  //   mutationFn: async (agentId?: string) => {
+  //     const response = await AXIOS.post(`/assign-agentId/${user?.id || ""}`, {
+  //       agentId,
+  //     });
 
-      return response;
-    },
-    onSuccess: (data) => {
-      if (data?.status) {
-        toast.success("Agent ID updated successfully");
-        if (data?.data?.agentId) {
-          refreshProfile();
-          setAgentId(data.data.agentId);
-        }
-      } else {
-        toast.error((data as any)?.message || "Failed to update Agent ID");
-      }
-    },
-    onError: (error) => {
-      toast.error("Failed to update Agent ID");
-      console.error(error);
-    },
-  });
+  //     return response;
+  //   },
+  //   onSuccess: (data) => {
+  //     if (data?.status) {
+  //       toast.success("Agent ID updated successfully");
+  //       if (data?.data?.agentId) {
+  //         refreshProfile();
+  //         setAgentId(data.data.agentId);
+  //       }
+  //     } else {
+  //       toast.error((data as any)?.message || "Failed to update Agent ID");
+  //     }
+  //   },
+  //   onError: (error) => {
+  //     toast.error("Failed to update Agent ID");
+  //     console.error(error);
+  //   },
+  // });
 
-  const handleAgentIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newId = e.target.value.replace(" ", "-"); // Only allow numbers
-    setAgentId(newId);
-  };
+  // const handleAgentIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const newId = e.target.value.replace(" ", "-"); // Only allow numbers
+  //   setAgentId(newId);
+  // };
 
-  const generateAgentId = () => {
-    setAgentId(agentId);
-    assignAgentId.mutate(agentId);
-  };
+  // const generateAgentId = () => {
+  //   setAgentId(agentId);
+  //   assignAgentId.mutate(agentId);
+  // };
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
@@ -114,7 +113,7 @@ export const AgentLinkCard = () => {
           </button>
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-2">
+      {/* <div className="flex items-center gap-2 mb-2">
         <input
           type="text"
           value={agentId}
@@ -133,7 +132,7 @@ export const AgentLinkCard = () => {
           />
           Generate
         </button>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-3 p-2 md:p-3 bg-gray-50 rounded-lg">
         <LinkIcon className="w-5 h-5 text-gray-400 flex-shrink-0 hidden md:block" />

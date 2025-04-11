@@ -100,22 +100,48 @@ const AppRoutes = () => {
         <Route path="transactions" element={<Transactions />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="notifications" element={<Notifications />} />
-
-        <Route path="agent/:agentId" element={<AgentHome />} />
-        <Route path="payment/:agentId" element={<AgentPaymentMethods />} />
-        <Route
-          path="payment/:agentId/method/:methodId"
-          element={<AgentPaymentMethods />}
-        />
-        <Route
-          path="payment/:agentId/method/:methodId/type/:typeId"
-          element={<AgentPaymentDetails />}
-        />
-        <Route
-          path="payment/:agentId/make-payment"
-          element={<AgentPaymentDetails />}
-        />
       </Route>
+
+      <Route
+        path="agent/:agentId"
+        element={
+          <ProtectedRoute>
+            <AgentHome />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="payment/:agentId"
+        element={
+          <ProtectedRoute>
+            <AgentPaymentMethods />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="payment/:agentId/method/:methodId"
+        element={
+          <ProtectedRoute>
+            <AgentPaymentMethods />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="payment/:agentId/method/:methodId/type/:typeId"
+        element={
+          <ProtectedRoute>
+            <AgentPaymentDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="payment/:agentId/make-payment"
+        element={
+          <ProtectedRoute>
+            <AgentPaymentDetails />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };
