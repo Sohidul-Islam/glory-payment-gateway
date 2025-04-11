@@ -10,9 +10,10 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   XMarkIcon,
-  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
+
+import logo from "../../assets/logo.png";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -27,11 +28,11 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     { name: "Dashboard", icon: HomeIcon, path: "/" },
     { name: "Payment Methods", icon: CreditCardIcon, path: "/payment-methods" },
     { name: "Payment Types", icon: CreditCardIcon, path: "/payment-types" },
-    {
-      name: "Payment Notes",
-      icon: ClipboardDocumentListIcon,
-      path: "/payment-notes",
-    },
+    // {
+    //   name: "Payment Notes",
+    //   icon: ClipboardDocumentListIcon,
+    //   path: "/payment-notes",
+    // },
     // { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
     { name: "Transactions", icon: ChartBarIcon, path: "/transactions" },
     { name: "User Management", icon: UserGroupIcon, path: "/users" },
@@ -45,9 +46,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
       } transition-all duration-300`}
     >
       <div className="p-4 border-b flex justify-between items-center">
-        <h1 className={`font-bold ${collapsed ? "text-center" : "text-xl"}`}>
-          {collapsed ? "PAG" : "Payment Agent"}
-        </h1>
+        <img src={logo} alt="logo" className="h-10" />
         {onClose && (
           <button
             onClick={onClose}
@@ -59,29 +58,36 @@ const Sidebar = ({ onClose }: SidebarProps) => {
       </div>
 
       <nav className="flex-1 overflow-y-auto p-4">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            onClick={onClose}
-            className={`flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-primary-600 ${
-              location.pathname === item.path
-                ? "bg-primary-50 text-primary-600"
-                : ""
-            }`}
-          >
-            <item.icon className="w-6 h-6" />
-            {!collapsed && (
-              <span>
-                {item.name === "User Management"
-                  ? user?.accountType === "super admin"
-                    ? "User Management"
-                    : "Profile"
-                  : item.name}
-              </span>
-            )}
-          </Link>
-        ))}
+        {menuItems
+          .filter((item) => {
+            if (user?.accountType === "default") {
+              return !["Payment Methods", "Payment Types"].includes(item.name);
+            }
+            return true;
+          })
+          .map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              onClick={onClose}
+              className={`flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-primary-600 ${
+                location.pathname === item.path
+                  ? "bg-primary-50 text-primary-600"
+                  : ""
+              }`}
+            >
+              <item.icon className="w-6 h-6" />
+              {!collapsed && (
+                <span>
+                  {item.name === "User Management"
+                    ? user?.accountType === "super admin"
+                      ? "User Management"
+                      : "Profile"
+                    : item.name}
+                </span>
+              )}
+            </Link>
+          ))}
       </nav>
 
       <div className="p-4 border-t">

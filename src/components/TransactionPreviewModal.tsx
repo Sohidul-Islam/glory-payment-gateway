@@ -10,6 +10,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Copy, Upload } from "lucide-react";
 import { X } from "lucide-react";
 import { uploadFile } from "../utils/utils";
+import { useAuth } from "../hooks/useAuth";
 
 interface TransactionPreviewModalProps {
   isOpen: boolean;
@@ -36,6 +37,14 @@ const TransactionPreviewModal = ({
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedStatus, setSelectedStatus] =
     useState<TransactionStatus | null>(null);
+
+  const { user } = useAuth();
+
+  const isSameUser = user?.id === transaction?.userId;
+
+  console.log({ transaction });
+
+  const isSuperAdmin = user?.accountType === "super admin";
 
   if (!transaction) return null;
 
@@ -162,31 +171,35 @@ const TransactionPreviewModal = ({
                     </div>
 
                     {/* Transaction Number for Withdrawal */}
-                    {transaction.type === "withdraw" && (
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Transaction Number
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={transactionNumber}
-                            onChange={handleTransactionNumberChange}
-                            placeholder="Enter transaction number"
-                            className="flex-1 p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:border-indigo-300 transition-colors text-sm"
-                          />
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(transactionNumber);
-                            }}
-                            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                            title="Copy transaction number"
-                          >
-                            <Copy className="w-4 h-4 text-gray-500" />
-                          </button>
+                    {transaction.type === "withdraw" &&
+                      !transaction.givenTransactionId && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Transaction Number
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={transactionNumber}
+                              onChange={handleTransactionNumberChange}
+                              disabled={!(isSameUser || isSuperAdmin)}
+                              placeholder="Enter transaction number"
+                              className="flex-1 p-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:border-indigo-300 transition-colors text-sm"
+                            />
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  transactionNumber
+                                );
+                              }}
+                              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                              title="Copy transaction number"
+                            >
+                              <Copy className="w-4 h-4 text-gray-500" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Status */}
                     <div>
@@ -267,10 +280,10 @@ const TransactionPreviewModal = ({
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Commission Type
+                          Aggent Commission
                         </p>
                         <p className="text-sm text-gray-900 capitalize">
-                          {transaction.commissionType}
+                          ৳{transaction.agentCommission}
                         </p>
                       </div>
                     </div>
@@ -371,7 +384,8 @@ const TransactionPreviewModal = ({
                       <p className="text-sm font-medium text-gray-500">
                         Attachment
                       </p>
-                      {transaction.type === "withdraw" ? (
+                      {transaction.type === "withdraw" &&
+                      !transaction?.attachment ? (
                         <div className="mt-2">
                           {attachmentUrl ? (
                             <div className="relative group">
@@ -428,6 +442,7 @@ const TransactionPreviewModal = ({
                                 id="attachment"
                                 accept="image/*,.pdf"
                                 onChange={handleAttachmentChange}
+                                disabled={!(isSameUser || isSuperAdmin)}
                                 className="hidden"
                               />
                               <label
@@ -491,29 +506,30 @@ const TransactionPreviewModal = ({
                     </div>
 
                     {/* Status Update Section */}
-                    {transaction.status === "PENDING" && (
-                      <div className="border-t pt-4">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">
-                          Update Transaction Status
-                        </h4>
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => handleStatusUpdate("APPROVED")}
-                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                          >
-                            {transaction.type === "withdraw"
-                              ? "Approve Withdrawal"
-                              : "Approve Deposit"}
-                          </button>
-                          <button
-                            onClick={() => handleStatusUpdate("REJECTED")}
-                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                          >
-                            Reject
-                          </button>
+                    {transaction.status === "PENDING" &&
+                      (isSameUser || isSuperAdmin) && (
+                        <div className="border-t pt-4">
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">
+                            Update Transaction Status
+                          </h4>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => handleStatusUpdate("APPROVED")}
+                              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                            >
+                              {transaction.type === "withdraw"
+                                ? "Approve Withdrawal"
+                                : "Approve Deposit"}
+                            </button>
+                            <button
+                              onClick={() => handleStatusUpdate("REJECTED")}
+                              className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                            >
+                              Reject
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
 
                   {/* Action Buttons */}

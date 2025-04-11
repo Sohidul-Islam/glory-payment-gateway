@@ -1,8 +1,9 @@
 import { Card } from "../components/ui/Card";
 import { LineChart, BarChart } from "../components/charts";
 import { AgentLinkCard } from "../components/dashboard/AgentLinkCard";
-
+import { useAuth } from "../hooks/useAuth";
 const Dashboard = () => {
+  const { user } = useAuth();
   const stats = [
     { title: "Total Transactions", value: "2,543", change: "+12.5%" },
     { title: "Active Payment Methods", value: "8", change: "+2" },
@@ -28,12 +29,15 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-      
       {/* Agent Link Section */}
-      <div className="max-w-3xl">
-        <AgentLinkCard />
-      </div>
+      {user?.accountType !== "default" && (
+        <>
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <div className="max-w-3xl">
+            <AgentLinkCard />
+          </div>
+        </>
+      )}
 
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Dashboard</h1>

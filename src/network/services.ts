@@ -495,6 +495,8 @@ export interface Transaction {
   remarks: string;
   withdrawAccountNumber?: string;
   withdrawDescription?: string;
+  userId: number;
+  agentCommission: string;
   PaymentMethod: {
     id: number;
     name: string;
