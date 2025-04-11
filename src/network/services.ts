@@ -617,6 +617,8 @@ export interface User {
   resetToken: string | null;
   commission: string;
   commissionType: string;
+  agentCommission: string;
+  agentCommissionType: string;
   isLoggedIn: boolean;
   createdAt: string;
   updatedAt: string;
@@ -682,4 +684,61 @@ export const updateUser = async (id: number, userData: Partial<User>) => {
 
 export const deleteUser = async (id: number): Promise<void> => {
   await AXIOS.delete(`/users/${id}`);
+};
+
+export interface Notification {
+  id: number;
+  type: "success" | "error" | "warning" | "info";
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  relatedEntityType: string;
+  relatedEntityId: number;
+}
+
+export interface NotificationsResponse {
+  status: boolean;
+  message: string;
+  data: {
+    notifications: Notification[];
+    pagination: {
+      total: number;
+      totalPages: number;
+      currentPage: number;
+      limit: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+    unreadCount: number;
+  };
+}
+
+export const getNotifications = async (page = 1, limit = 10) => {
+  const response = await AXIOS.get(`/notifications`, {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+export const markNotificationAsRead = async (notificationIds: number[]) => {
+  const response = await AXIOS.post<ApiResponse>(`/notifications/mark-read`, {
+    notificationIds,
+  });
+  return response.data;
+};
+
+export const markAllNotificationsAsRead = async () => {
+  const response = await AXIOS.post<ApiResponse>(`/notifications/read-all`);
+  return response.data;
+};
+
+export const deleteNotifications = async (notificationIds: number[]) => {
+  const response = await AXIOS.post<ApiResponse>(
+    `/notifications/delete-notification`,
+    {
+      notificationIds,
+    }
+  );
+  return response.data;
 };

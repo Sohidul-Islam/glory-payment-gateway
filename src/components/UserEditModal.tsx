@@ -27,7 +27,21 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
 
   const { user: currentUser } = useAuth();
 
-  const [formData, setFormData] = useState<Partial<User>>({});
+  const [formData, setFormData] = useState({
+    agentId: "",
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    location: "",
+    businessName: "",
+    businessType: "",
+    accountType: "",
+    accountStatus: "",
+    commission: "",
+    commissionType: "",
+    agentCommission: "",
+    agentCommissionType: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -40,17 +54,19 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
   useEffect(() => {
     if (user) {
       setFormData({
-        fullName: user.fullName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        location: user.location,
-        businessName: user.businessName,
-        businessType: user.businessType,
-        accountStatus: user.accountStatus,
-        accountType: user.accountType,
-        commission: user.commission,
-        commissionType: user.commissionType,
-        agentId: user.agentId,
+        agentId: user.agentId || "",
+        fullName: user.fullName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        location: user.location || "",
+        businessName: user.businessName || "",
+        businessType: user.businessType || "",
+        accountType: user.accountType || "",
+        accountStatus: user.accountStatus || "",
+        commission: user.commission || "",
+        commissionType: user.commissionType || "",
+        agentCommission: user.agentCommission || "",
+        agentCommissionType: user.agentCommissionType || "",
       });
 
       // Set image preview if user has an image
@@ -510,7 +526,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                     <h4 className="text-md font-medium text-gray-900 mb-3">
                       Commission Settings
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       <div>
                         <label
                           htmlFor="commission"
@@ -518,34 +534,72 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                         >
                           Commission Amount
                         </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <Input
-                            type="text"
-                            id="commission"
-                            name="commission"
-                            value={formData.commission || ""}
-                            onChange={handleChange}
-                            className="block w-full rounded-md border-gray-300 pl-3 pr-12 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                            placeholder="0.00"
-                          />
-                          <div className="absolute inset-y-0 right-0 flex items-center">
-                            <select
-                              id="commissionType"
-                              name="commissionType"
-                              value={formData.commissionType || ""}
-                              onChange={handleChange}
-                              className="h-full border p-2 rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                            >
-                              <option value="percentage">%</option>
-                              <option value="fixed">Fixed</option>
-                            </select>
-                          </div>
-                        </div>
-                        <p className="mt-1 text-xs text-gray-500">
-                          {formData.commissionType === "percentage"
-                            ? "Percentage of transaction amount"
-                            : "Fixed amount per transaction"}
-                        </p>
+                        <input
+                          type="text"
+                          name="commission"
+                          id="commission"
+                          disabled={currentUser?.accountType !== "super admin"}
+                          value={formData.commission}
+                          onChange={handleChange}
+                          className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="commissionType"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Commission Type
+                        </label>
+                        <select
+                          id="commissionType"
+                          name="commissionType"
+                          value={formData.commissionType}
+                          disabled={currentUser?.accountType !== "super admin"}
+                          onChange={handleChange}
+                          className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                          <option value="">Select Type</option>
+                          <option value="percentage">Percentage</option>
+                          <option value="fixed">Fixed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="agentCommission"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Agent Commission Amount
+                        </label>
+                        <input
+                          type="text"
+                          name="agentCommission"
+                          id="agentCommission"
+                          disabled={currentUser?.accountType !== "super admin"}
+                          value={formData.agentCommission}
+                          onChange={handleChange}
+                          className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="agentCommissionType"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Agent Commission Type
+                        </label>
+                        <select
+                          id="agentCommissionType"
+                          name="agentCommissionType"
+                          value={formData.agentCommissionType}
+                          disabled={currentUser?.accountType !== "super admin"}
+                          onChange={handleChange}
+                          className="mt-1 p-2 border block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                          <option value="">Select Type</option>
+                          <option value="percentage">Percentage</option>
+                          <option value="fixed">Fixed</option>
+                        </select>
                       </div>
                     </div>
                   </div>

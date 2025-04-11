@@ -204,7 +204,10 @@ const AgentPaymentDetails = () => {
           );
           window.location.reload();
         } else {
-          toast.error("Payment submission failed");
+          toast.error(
+            (response as unknown as { message: string }).message ||
+              "Payment submission failed"
+          );
         }
         // Handle success - you can add a success notification or redirect
         console.log("Payment submitted successfully:", response);

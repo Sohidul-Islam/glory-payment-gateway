@@ -12,6 +12,7 @@ import {
   XMarkIcon,
   ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
+import { useAuth } from "../../hooks/useAuth";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -19,6 +20,7 @@ interface SidebarProps {
 
 const Sidebar = ({ onClose }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { user } = useAuth();
   const location = useLocation();
 
   const menuItems = [
@@ -69,7 +71,15 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             }`}
           >
             <item.icon className="w-6 h-6" />
-            {!collapsed && <span>{item.name}</span>}
+            {!collapsed && (
+              <span>
+                {item.name === "User Management"
+                  ? user?.accountType === "super admin"
+                    ? "User Management"
+                    : "Profile"
+                  : item.name}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
