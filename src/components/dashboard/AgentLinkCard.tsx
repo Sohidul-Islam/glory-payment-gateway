@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import {
   Copy,
@@ -16,7 +15,7 @@ import { toast } from "react-toastify";
 export const AgentLinkCard = () => {
   const [copied, setCopied] = useState(false);
   const { user } = useAuth();
-  const [agentId, setAgentId] = useState(user?.agentId);
+  const [agentId] = useState(user?.agentId);
   const baseUrl = window.location.origin;
   const agentLink = `${baseUrl}/agent/${agentId || user?.agentId}`;
 
