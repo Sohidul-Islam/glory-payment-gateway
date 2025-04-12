@@ -4,13 +4,14 @@ import {
   getTransactions,
   updateTransactionStatus,
   UpdateTransactionStatusData,
-  Transaction,
 } from "../network/services";
-import TransactionPreviewModal from "../components/TransactionPreviewModal";
+import TransactionPreviewModal, {
+  ExtendedTransaction,
+} from "../components/TransactionPreviewModal";
 import { format } from "date-fns";
 
 interface TransactionsResponse {
-  transactions: Transaction[];
+  transactions: ExtendedTransaction[];
   pagination: {
     currentPage: number;
     totalPages: number;
