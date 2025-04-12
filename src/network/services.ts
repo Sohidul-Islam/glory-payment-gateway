@@ -567,13 +567,14 @@ export const approveTransaction = async (transactionId: number) => {
   return response.data;
 };
 
-export type TransactionStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type TransactionStatus = "PENDING" | "APPROVED" | "REJECTED" | "SETTLED";
 
 export interface UpdateTransactionStatusData {
   status: TransactionStatus;
   remarks?: string;
   attachment?: string;
   transactionId?: string;
+  settledCommission?: number;
 }
 
 export const updateTransactionStatus = async (
