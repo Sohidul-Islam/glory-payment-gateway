@@ -551,6 +551,7 @@ export interface TransactionFilters {
   endDate?: string;
   page?: number;
   limit?: number;
+  status?: string;
 }
 
 export const getTransactions = async (filters: TransactionFilters = {}) => {
@@ -756,5 +757,62 @@ export interface UnreadCountResponse {
 
 export const getUnreadNotificationCount = async () => {
   const response = await AXIOS.get(`/notifications/unread-count`);
+  return response.data;
+};
+
+export interface DashboardData {
+  stats: {
+    title: string;
+    value: string | number;
+    change: string;
+  }[];
+  transactionData: {
+    name: string;
+    value: number;
+  }[];
+  methodsData: {
+    name: string;
+    value: number;
+  }[];
+}
+
+export interface DashboardResponse {
+  status: boolean;
+  message: string;
+  data: DashboardData;
+}
+
+export const getDashboardData = async () => {
+  const response = await AXIOS.get<DashboardResponse>("/dashboard");
+  return response.data;
+};
+
+export interface DashboardOverview {
+  paymentMethods: number;
+  paymentTypes: number;
+  transactions: {
+    count: number;
+    totalAmount: number;
+    totalCommission: number;
+    agentCommission: number;
+    settledAmount: number;
+  };
+}
+
+export interface DashboardOverviewResponse {
+  status: boolean;
+  message: string;
+  data: DashboardOverview;
+}
+
+export const getDashboardOverview = async (
+  startDate?: string,
+  endDate?: string
+) => {
+  const params = new URLSearchParams();
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  const response = await AXIOS.get(`/dashboard/overview?${params.toString()}`);
   return response.data;
 };
