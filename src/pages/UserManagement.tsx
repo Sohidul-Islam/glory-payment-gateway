@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers, deleteUser, User, UserFilters } from "../network/services";
 import { format } from "date-fns";
 import UserEditModal from "../components/UserEditModal";
+import { displayAccountType } from "../utils/utils";
 
 const UserManagement = () => {
   const [page, setPage] = useState(1);
@@ -188,25 +189,25 @@ const UserManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900 capitalize">
-                          {user.accountType}
+                          {displayAccountType(user?.accountType||"")}
                         </div>
-                        {user.businessName && (
+                        {user?.businessName && (
                           <div className="text-xs text-gray-500">
-                            {user.businessName}
+                            {user?.businessName}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            user.accountStatus === "active"
+                            user?.accountStatus === "active"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {user.accountStatus}
+                          {user?.accountStatus}
                         </span>
-                        {!user.isVerified && (
+                        {!user?.isVerified && (
                           <div className="text-xs text-yellow-600 mt-1">
                             Unverified
                           </div>
@@ -214,11 +215,11 @@ const UserManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {user.commission} {user.commissionType}
+                          {user?.commission} {user?.commissionType}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(user.createdAt)}
+                        {formatDate(user?.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button

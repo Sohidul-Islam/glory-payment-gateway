@@ -40,6 +40,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import AdminCharges from "./pages/TransactionsCommission";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const AppRoutes = () => {
         />
         <Route path="mobile-banking" element={<MobileBanking />} />
         <Route path="transactions" element={<Transactions />} />
+        <Route path="charges" element={<AdminCharges />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>

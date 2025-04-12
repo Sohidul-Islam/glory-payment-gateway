@@ -34,13 +34,13 @@ const Register = () => {
 
   const registerMutation = useMutation({
     mutationFn: registerUser,
-    onSuccess: (data) => {
+    onSuccess: (data:any) => {
       console.log({ data });
       if (data?.status) {
-        setSuccess("Registration successful! Redirecting to login...");
+        setSuccess(data?.message||"Registration successful! Redirecting to login...");
         setTimeout(() => {
           navigate("/login");
-        }, 2000);
+        }, 5000);
       } else {
         setError(data?.message);
       }

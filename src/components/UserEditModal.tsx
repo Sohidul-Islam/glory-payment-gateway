@@ -524,7 +524,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
 
                   <div className="border-t pt-4 mt-4">
                     <h4 className="text-md font-medium text-gray-900 mb-3">
-                      Commission Settings
+                      Charges Settings
                     </h4>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       <div>
@@ -532,7 +532,7 @@ const UserEditModal = ({ isOpen, onClose, user }: UserEditModalProps) => {
                           htmlFor="commission"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Commission Amount
+                          Admin Charges
                         </label>
                         <input
                           type="text"

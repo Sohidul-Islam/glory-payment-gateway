@@ -48,8 +48,8 @@ export interface LoginResponse {
 }
 
 export const registerUser = async (data: RegisterData) => {
-  const response = await AXIOS.post<ApiResponse<User>>(`/register`, data);
-  return response.data;
+  const response = await AXIOS.post(`/register`, data);
+  return response;
 };
 
 export const loginUser = async (data: LoginData) => {

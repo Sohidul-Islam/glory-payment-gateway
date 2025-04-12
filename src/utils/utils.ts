@@ -94,3 +94,19 @@ export const formatDate = (dateString: string) => {
 // formatDate("2025-03-14T18:55:10.000Z") -> "Mar 14, 2025, 12:55 PM"
 
 // make a cn function
+
+
+
+
+export const displayAccountType = (accountType:string)=>{
+
+  if(accountType==="super admin"){
+    return "Admin"
+  }
+
+  if(accountType==="default"){
+    return "Customer"
+  }
+
+  return accountType;
+}

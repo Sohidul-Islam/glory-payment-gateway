@@ -187,7 +187,7 @@ export default function TransactionPreviewModal({
   };
 
   const isWithdrawal = transaction.type.toLowerCase() === "withdraw";
-  const isUser = user?.id === transaction.userId;
+  const isUser = user?.id === transaction.userId || user?.accountType === "super admin";
   const canModify = isUser && transaction.status === "PENDING";
 
   return (
@@ -249,16 +249,16 @@ export default function TransactionPreviewModal({
                               {transaction.transactionId}
                             </p>
                           </div>
-                          {isWithdrawal && (
-                            <div className="space-y-1 sm:space-y-2">
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Given Transaction ID
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900 break-all">
-                                {transaction.givenTransactionId}
-                              </p>
-                            </div>
-                          )}
+
+                          <div className="space-y-1 sm:space-y-2">
+                            <p className="text-xs sm:text-sm font-medium text-gray-500">
+                              Given Transaction ID
+                            </p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-900 break-all">
+                              {transaction.givenTransactionId}
+                            </p>
+                          </div>
+
                           <div className="space-y-1 sm:space-y-2">
                             <p className="text-xs sm:text-sm font-medium text-gray-500">
                               Status
@@ -517,9 +517,9 @@ export default function TransactionPreviewModal({
                       </div>
 
                       {/* Commission Information */}
-                      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                      {isUser && <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
                         <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                          Commission Details
+                          Charges Details
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                           <div className="space-y-3 sm:space-y-4">
@@ -562,7 +562,7 @@ export default function TransactionPreviewModal({
                               )}
                           </div>
                         </div>
-                      </div>
+                      </div>}
 
                       {/* Attachment */}
                       {canModify && (
@@ -601,6 +601,20 @@ export default function TransactionPreviewModal({
                           </div>
                         </div>
                       )}
+
+
+                      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                        <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                          Attachment
+                        </h4>
+                        <button onClick={()=>{
+                          
+                        }}>
+                          View Attachment
+                        </button>
+                      </div>
+
+
 
                       {/* Remarks */}
                       {canModify && !transaction.givenTransactionId && (

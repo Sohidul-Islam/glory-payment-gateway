@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { getUnreadNotificationCount } from "../../network/services";
+import { displayAccountType } from "../../utils/utils";
 
 interface HeaderProps {
   children?: React.ReactNode;
@@ -33,7 +34,7 @@ const Header = ({ children }: HeaderProps) => {
         <div className="flex items-center gap-4">
           {children}
           {/* Search Bar - Hide on mobile */}
-          <div className="hidden md:block max-w-lg">
+          {/* <div className="hidden md:block max-w-lg">
             <div className="relative">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -42,7 +43,7 @@ const Header = ({ children }: HeaderProps) => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Section */}
@@ -69,7 +70,7 @@ const Header = ({ children }: HeaderProps) => {
                 <p className="text-sm font-medium text-gray-700">
                   {user?.fullName}
                 </p>
-                <p className="text-xs text-gray-500">{user?.accountType}</p>
+                <p className="text-xs text-gray-500">{displayAccountType(user?.accountType||"")}</p>
               </div>
             </button>
 

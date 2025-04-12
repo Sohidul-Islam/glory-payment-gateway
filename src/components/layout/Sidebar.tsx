@@ -35,6 +35,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     // },
     // { name: "Mobile Banking", icon: CogIcon, path: "/mobile-banking" },
     { name: "Transactions", icon: ChartBarIcon, path: "/transactions" },
+    { name: "Charges", icon: ChartBarIcon, path: "/charges" },
     { name: "User Management", icon: UserGroupIcon, path: "/users" },
     { name: "Notifications", icon: BellIcon, path: "/notifications" },
   ];
