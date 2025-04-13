@@ -95,18 +95,14 @@ export const formatDate = (dateString: string) => {
 
 // make a cn function
 
-
-
-
-export const displayAccountType = (accountType:string)=>{
-
-  if(accountType==="super admin"){
-    return "Admin"
+export const displayAccountType = (accountType: string) => {
+  if (accountType === "super admin") {
+    return "Admin";
   }
 
-  if(accountType==="default"){
-    return "Customer"
+  if (accountType === "default") {
+    return "Customer";
   }
 
   return accountType;
-}
+};
