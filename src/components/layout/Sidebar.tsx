@@ -62,7 +62,9 @@ const Sidebar = ({ onClose }: SidebarProps) => {
         {menuItems
           .filter((item) => {
             if (user?.accountType === "default") {
-              return !["Payment Methods", "Payment Types"].includes(item.name);
+              return !["Payment Methods", "Payment Types", "Charges"].includes(
+                item.name
+              );
             }
             return true;
           })

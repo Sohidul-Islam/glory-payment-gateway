@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser, RegisterData } from "../network/services";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import {
 
 const Register = () => {
   const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
   // const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -117,6 +118,12 @@ const Register = () => {
 
     // Submit registration
     registerMutation.mutate(registrationData);
+
+    formRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "nearest",
+      block: "start",
+    });
   };
 
   return (
@@ -319,7 +326,7 @@ const Register = () => {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
             {/* Profile Picture Section */}
             {/* <div className="flex flex-col items-center mb-6">
               <div
