@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser, RegisterData } from "../network/services";
@@ -34,10 +35,12 @@ const Register = () => {
 
   const registerMutation = useMutation({
     mutationFn: registerUser,
-    onSuccess: (data:any) => {
+    onSuccess: (data: any) => {
       console.log({ data });
       if (data?.status) {
-        setSuccess(data?.message||"Registration successful! Redirecting to login...");
+        setSuccess(
+          data?.message || "Registration successful! Redirecting to login..."
+        );
         setTimeout(() => {
           navigate("/login");
         }, 5000);
