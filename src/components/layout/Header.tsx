@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  BellIcon,
-  MagnifyingGlassIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
+import { BellIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +66,9 @@ const Header = ({ children }: HeaderProps) => {
                 <p className="text-sm font-medium text-gray-700">
                   {user?.fullName}
                 </p>
-                <p className="text-xs text-gray-500">{displayAccountType(user?.accountType||"")}</p>
+                <p className="text-xs text-gray-500">
+                  {displayAccountType(user?.accountType || "")}
+                </p>
               </div>
             </button>
 
