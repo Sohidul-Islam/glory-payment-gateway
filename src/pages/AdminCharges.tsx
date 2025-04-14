@@ -158,7 +158,7 @@ const AdminCharges = () => {
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">Admin Charges</h1>
           <p className="mt-2 text-sm text-gray-700">
-            Manage and settle commission charges from transactions.
+            Manage and settle Admin charges from transactions.
           </p>
         </div>
       </div>
@@ -295,7 +295,7 @@ const AdminCharges = () => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total Commission</p>
+                  <p className="text-sm text-gray-500">Total Charges</p>
                   <p className="text-lg font-semibold text-indigo-600">
                     ৳{calculateTotalCommission().toFixed(2)}
                   </p>
@@ -381,7 +381,7 @@ const AdminCharges = () => {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Commission
+                      Charges
                     </th>
                     <th
                       scope="col"

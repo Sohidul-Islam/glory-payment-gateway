@@ -37,7 +37,7 @@ export default function InvoiceModal({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Commission Invoice</title>
+          <title>Admin Commission Invoice</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -128,7 +128,7 @@ export default function InvoiceModal({
         </head>
         <body>
           <div class="invoice-header">
-            <div class="invoice-title">Commission Invoice</div>
+            <div class="invoice-title">Admin charges Invoice</div>
             <div>
               <div>Date: ${formatDate(new Date().toISOString())}</div>
               <div>Invoice #: INV-${Math.floor(Math.random() * 1000000)}</div>
@@ -144,7 +144,7 @@ export default function InvoiceModal({
               <div style="text-align: right;">
                 <h3 style="margin-top: 0;">Summary</h3>
                 <p>Total Amount: ${formatCurrency(totalAmount)}</p>
-                <p style="color: #4f46e5; font-weight: 600;">Total Commission: ${formatCurrency(
+                <p style="color: #4f46e5; font-weight: 600;">Total Charges: ${formatCurrency(
                   totalCommission
                 )}</p>
               </div>
@@ -159,7 +159,7 @@ export default function InvoiceModal({
                 <th>User Name</th>
                 <th>Agent ID</th>
                 <th>Amount</th>
-                <th>Commission</th>
+                <th>Charges</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -267,7 +267,7 @@ export default function InvoiceModal({
                       as="h3"
                       className="text-xl sm:text-2xl font-semibold leading-6 text-gray-900 mb-4 sm:mb-6"
                     >
-                      Commission Invoice
+                      Charges Invoice
                     </Dialog.Title>
 
                     <div
@@ -300,8 +300,7 @@ export default function InvoiceModal({
                               Total Amount: {formatCurrency(totalAmount)}
                             </p>
                             <p className="text-sm font-medium text-indigo-600">
-                              Total Commission:{" "}
-                              {formatCurrency(totalCommission)}
+                              Total Charges: {formatCurrency(totalCommission)}
                             </p>
                           </div>
                         </div>
@@ -346,7 +345,7 @@ export default function InvoiceModal({
                                 scope="col"
                                 className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                               >
-                                Commission
+                                Charges
                               </th>
                               <th
                                 scope="col"
