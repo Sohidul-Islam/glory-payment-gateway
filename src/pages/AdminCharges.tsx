@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getTransactions,
+  getAdminCharges,
   updateTransactionStatus,
   UpdateTransactionStatusData,
 } from "../network/services";
@@ -9,7 +9,11 @@ import TransactionPreviewModal, {
   ExtendedTransaction,
 } from "../components/TransactionPreviewModal";
 import { format } from "date-fns";
-import { CalendarIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import {
+  CalendarIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 
 interface TransactionsResponse {
   transactions: ExtendedTransaction[];
@@ -31,16 +35,18 @@ const AdminCharges = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState<string>("");
+  const [searchKey, setSearchKey] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<TransactionsResponse>({
-    queryKey: ["transactions", startDate, endDate, status],
+    queryKey: ["transactions", startDate, endDate, status, searchKey],
     queryFn: () =>
-      getTransactions({
+      getAdminCharges({
         startDate: startDate || undefined,
         endDate: endDate || undefined,
         status: status || undefined,
+        searchKey: searchKey || undefined,
       }),
   });
 
@@ -87,15 +93,16 @@ const AdminCharges = () => {
     setStartDate("");
     setEndDate("");
     setStatus("");
+    setSearchKey("");
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -140,7 +147,7 @@ const AdminCharges = () => {
                     id="startDate"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                    className="focus:ring-indigo-500 p-2 border focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
               </div>
@@ -161,7 +168,7 @@ const AdminCharges = () => {
                     id="endDate"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                    className="focus:ring-indigo-500 p-2 border focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
                   />
                 </div>
               </div>
@@ -177,7 +184,7 @@ const AdminCharges = () => {
                   name="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  className="mt-1 block p-2 border w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 >
                   <option value="">All Status</option>
                   <option value="PENDING">Pending</option>
@@ -187,6 +194,31 @@ const AdminCharges = () => {
                 </select>
               </div>
             </div>
+
+            {/* Search Input */}
+            <div>
+              <label
+                htmlFor="searchKey"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Search
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  name="searchKey"
+                  id="searchKey"
+                  value={searchKey}
+                  onChange={(e) => setSearchKey(e.target.value)}
+                  placeholder="Search by ID, amount, or status"
+                  className="focus:ring-indigo-500 p-2 border focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+            </div>
+
             <div className="flex justify-end">
               <button
                 type="button"
@@ -240,36 +272,49 @@ const AdminCharges = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {data?.transactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {transaction.id}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {formatDate(transaction.createdAt)}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        ৳{transaction.amount}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                            transaction.status
-                          )}`}
-                        >
-                          {transaction.status}
-                        </span>
-                      </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <button
-                          onClick={() => setSelectedTransaction(transaction.id)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          View Details
-                        </button>
+                  {isLoading ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="text-center relative flex justify-center items-center"
+                      >
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    data?.transactions.map((transaction) => (
+                      <tr key={transaction.id}>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                          {transaction.id}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {formatDate(transaction.createdAt)}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          ৳{transaction.amount}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
+                              transaction.status
+                            )}`}
+                          >
+                            {transaction.status}
+                          </span>
+                        </td>
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                          <button
+                            onClick={() =>
+                              setSelectedTransaction(transaction.id)
+                            }
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

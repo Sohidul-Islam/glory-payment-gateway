@@ -40,7 +40,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
-import AdminCharges from "./pages/TransactionsCommission";
+import AdminCharges from "./pages/AdminCharges";
 
 const queryClient = new QueryClient();
 

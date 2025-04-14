@@ -552,10 +552,18 @@ export interface TransactionFilters {
   page?: number;
   limit?: number;
   status?: string;
+  searchKey?: string;
 }
 
 export const getTransactions = async (filters: TransactionFilters = {}) => {
   const response = await AXIOS.get("/payment/transactions", {
+    params: filters,
+  });
+  return response.data;
+};
+
+export const getAdminCharges = async (filters: TransactionFilters = {}) => {
+  const response = await AXIOS.get("/payment/transactions-charges", {
     params: filters,
   });
   return response.data;
