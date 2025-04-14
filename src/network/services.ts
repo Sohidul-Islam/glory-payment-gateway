@@ -821,6 +821,13 @@ export const getDashboardOverview = async (
   if (startDate) params.append("startDate", startDate);
   if (endDate) params.append("endDate", endDate);
 
-  const response = await AXIOS.get(`/dashboard/overview?${params.toString()}`);
+  console.log({ startDate, endDate });
+
+  const response = await AXIOS.get(`/dashboard/overview`, {
+    params: {
+      startDate,
+      endDate,
+    },
+  });
   return response.data;
 };

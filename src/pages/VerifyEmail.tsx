@@ -70,6 +70,7 @@ const VerifyEmail = () => {
     mutationFn: verifyEmail,
     onSuccess: (data: any) => {
       if (data?.status) {
+        console.log({ data });
         setVerificationStatus("success");
         toast.success("Email verified successfully!");
 
@@ -100,10 +101,10 @@ const VerifyEmail = () => {
 
   // Auto-verify on component mount if token and email are present
   useEffect(() => {
-    if (token && email && verificationStatus === "idle") {
+    if (token && email) {
       verifyMutation.mutate({ token, email });
     }
-  }, [token, email, verificationStatus]);
+  }, [token, email]);
 
   const handleManualVerify = () => {
     if (!token || !email) {

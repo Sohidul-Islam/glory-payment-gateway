@@ -4,29 +4,21 @@ import { useAuth } from "../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardOverview } from "../network/services";
 import { useState } from "react";
-import { format, subDays } from "date-fns";
+// import { format, subDays } from "date-fns";
+import { CalendarIcon } from "@heroicons/react/24/outline";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [dateRange, setDateRange] = useState("7"); // Default to 7 days
+  // const [dateRange, setDateRange] = useState("7"); // Default to 7 days
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const getDateRange = () => {
-    const endDate = new Date();
-    const startDate = subDays(endDate, parseInt(dateRange));
-    return {
-      startDate: format(startDate, "yyyy-MM-dd"),
-      endDate: format(endDate, "yyyy-MM-dd"),
-    };
-  };
-
-  const { startDate, endDate } = getDateRange();
+  // const { startDate, endDate } = getDateRange();
 
   const { data: overviewData, isLoading } = useQuery({
     queryKey: ["dashboard-overview", startDate, endDate],
     queryFn: () => getDashboardOverview(startDate, endDate),
   });
-
-  console.log({ overviewData });
 
   if (isLoading) {
     return (
@@ -58,14 +50,14 @@ const Dashboard = () => {
       // change: "N/A",
     },
     {
-      title: "Total Commission",
+      title: "Total Charges",
       value: `$${
         overviewData?.transactions?.totalCommission.toFixed(2) || "0.00"
       }`,
       // change: "N/A",
     },
     {
-      title: "Agent Commission",
+      title: "Agent Charges",
       value: `$${
         overviewData?.transactions?.agentCommission.toFixed(2) || "0.00"
       }`,
@@ -92,18 +84,48 @@ const Dashboard = () => {
         </>
       )}
 
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
-        <div className="flex gap-4">
-          <select
-            className="input-field max-w-xs"
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label
+            htmlFor="startDate"
+            className="block text-sm font-medium text-gray-700"
           >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-          </select>
+            Start Date
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <CalendarIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="date"
+              name="startDate"
+              id="startDate"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="focus:ring-indigo-500 p-2 border focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="endDate"
+            className="block text-sm font-medium text-gray-700"
+          >
+            End Date
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <CalendarIcon className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="date"
+              name="endDate"
+              id="endDate"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="focus:ring-indigo-500 p-2 border focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
         </div>
       </div>
 
