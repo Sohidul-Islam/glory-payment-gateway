@@ -95,11 +95,9 @@ export interface PaymentMethodData {
 
 // API Functions
 
-export const forgotPassword = async (
-  data: ForgotPasswordData
-): Promise<ApiResponse> => {
+export const forgotPassword = async (data: ForgotPasswordData) => {
   const response = await AXIOS.post("/request-reset", data);
-  return response.data;
+  return response;
 };
 
 export const resetPassword = async (data: ResetPasswordData) => {
