@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon, PrinterIcon } from "@heroicons/react/24/outline";
 import { ExtendedTransaction } from "./TransactionPreviewModal";
 import { format } from "date-fns";
+// import logo from "../assets/logo.png";
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export default function InvoiceModal({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Admin Commission Invoice</title>
+          <title>Admin Charges Invoice</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -128,7 +129,14 @@ export default function InvoiceModal({
         </head>
         <body>
           <div class="invoice-header">
-            <div class="invoice-title">Admin charges Invoice</div>
+            <div>
+              <div class="invoice-title" style="display: flex; align-items: center; gap: 10px;">
+                <span>LendenPay</span>
+              </div>
+              <div style="margin-top: 10px; font-size: 14px; color: #6b7280;">
+                Admin Charges Invoice
+              </div>
+            </div>
             <div>
               <div>Date: ${formatDate(new Date().toISOString())}</div>
               <div>Invoice #: INV-${Math.floor(Math.random() * 1000000)}</div>
@@ -267,7 +275,9 @@ export default function InvoiceModal({
                       as="h3"
                       className="text-xl sm:text-2xl font-semibold leading-6 text-gray-900 mb-4 sm:mb-6"
                     >
-                      Charges Invoice
+                      <div className="flex items-center gap-3">
+                        <span>LendenPay - Charges Invoice</span>
+                      </div>
                     </Dialog.Title>
 
                     <div
