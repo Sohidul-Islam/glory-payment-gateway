@@ -13,7 +13,10 @@ import {
   CalendarIcon,
   FunnelIcon,
   MagnifyingGlassIcon,
+  DocumentTextIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
+import InvoiceModal from "../components/InvoiceModal";
 
 interface TransactionsResponse {
   transactions: ExtendedTransaction[];
@@ -32,11 +35,16 @@ const AdminCharges = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<number | null>(
     null
   );
+  const [selectedTransactions, setSelectedTransactions] = useState<
+    ExtendedTransaction[]
+  >([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState<string>("");
   const [searchKey, setSearchKey] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [isSettling, setIsSettling] = useState(false);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<TransactionsResponse>({
@@ -60,6 +68,8 @@ const AdminCharges = () => {
     }) => updateTransactionStatus(transactionId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      setSelectedTransactions([]);
+      setIsSettling(false);
     },
   });
 
@@ -96,22 +106,59 @@ const AdminCharges = () => {
     setSearchKey("");
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-  //     </div>
-  //   );
-  // }
+  const handleSelectTransaction = (transaction: ExtendedTransaction) => {
+    const isSelected = selectedTransactions.some(
+      (t) => t.id === transaction.id
+    );
+    if (isSelected) {
+      setSelectedTransactions(
+        selectedTransactions.filter((t) => t.id !== transaction.id)
+      );
+    } else {
+      setSelectedTransactions([...selectedTransactions, transaction]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTransactions.length === data?.transactions.length) {
+      setSelectedTransactions([]);
+    } else {
+      setSelectedTransactions(data?.transactions || []);
+    }
+  };
+
+  const handleSettleTransactions = async () => {
+    if (selectedTransactions.length === 0) return;
+
+    setIsSettling(true);
+
+    for (const transaction of selectedTransactions) {
+      await handleStatusUpdate(transaction.id, {
+        status: "SETTLED",
+        settledCommission: Number(transaction.commission),
+      });
+    }
+  };
+
+  const calculateTotalCommission = () => {
+    return selectedTransactions.reduce((total, transaction) => {
+      return total + Number(transaction.commission);
+    }, 0);
+  };
+
+  const calculateTotalAmount = () => {
+    return selectedTransactions.reduce((total, transaction) => {
+      return total + Number(transaction.amount);
+    }, 0);
+  };
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Transactions</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Admin Charges</h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all transactions in your account including their status
-            and details.
+            Manage and settle commission charges from transactions.
           </p>
         </div>
       </div>
@@ -232,6 +279,50 @@ const AdminCharges = () => {
         )}
       </div>
 
+      {/* Selected Transactions Summary */}
+      {selectedTransactions.length > 0 && (
+        <div className="mt-4 bg-white shadow rounded-lg p-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="mb-4 md:mb-0">
+              <h3 className="text-lg font-medium text-gray-900">
+                Selected Transactions: {selectedTransactions.length}
+              </h3>
+              <div className="mt-1 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Total Amount</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    ৳{calculateTotalAmount().toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Total Commission</p>
+                  <p className="text-lg font-semibold text-indigo-600">
+                    ৳{calculateTotalCommission().toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={() => setShowInvoiceModal(true)}
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <DocumentTextIcon className="h-5 w-5 mr-2" />
+                View Invoice
+              </button>
+              <button
+                onClick={handleSettleTransactions}
+                disabled={isSettling}
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                <BanknotesIcon className="h-5 w-5 mr-2" />
+                {isSettling ? "Settling..." : "Settle Selected"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -239,6 +330,23 @@ const AdminCharges = () => {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th
+                      scope="col"
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    >
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={
+                            selectedTransactions.length ===
+                              data?.transactions.length &&
+                            data?.transactions.length > 0
+                          }
+                          onChange={handleSelectAll}
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                      </div>
+                    </th>
                     <th
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
@@ -261,6 +369,12 @@ const AdminCharges = () => {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
+                      Commission
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Status
                     </th>
                     <th
@@ -275,7 +389,7 @@ const AdminCharges = () => {
                   {isLoading ? (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={7}
                         className="text-center relative flex justify-center items-center"
                       >
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
@@ -285,6 +399,18 @@ const AdminCharges = () => {
                     data?.transactions.map((transaction) => (
                       <tr key={transaction.id}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                          <input
+                            type="checkbox"
+                            checked={selectedTransactions.some(
+                              (t) => t.id === transaction.id
+                            )}
+                            onChange={() =>
+                              handleSelectTransaction(transaction)
+                            }
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
+                        </td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                           {transaction.id}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -292,6 +418,9 @@ const AdminCharges = () => {
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           ৳{transaction.amount}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-indigo-600 font-medium">
+                          ৳{transaction.commission}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4">
                           <span
@@ -330,6 +459,14 @@ const AdminCharges = () => {
         }
         onStatusUpdate={handleStatusUpdate}
         isUpdating={statusUpdateMutation.isPending}
+      />
+
+      <InvoiceModal
+        isOpen={showInvoiceModal}
+        onClose={() => setShowInvoiceModal(false)}
+        transactions={selectedTransactions}
+        totalAmount={calculateTotalAmount()}
+        totalCommission={calculateTotalCommission()}
       />
     </div>
   );
