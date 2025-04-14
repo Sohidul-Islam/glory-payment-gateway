@@ -42,28 +42,9 @@ export interface ExtendedTransaction {
   approvedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  PaymentMethod: {
-    id: number;
+  user?: {
     name: string;
-    image: string;
-  };
-  PaymentType: {
-    id: number;
-    name: string;
-    image: string;
-  };
-  PaymentDetail: {
-    id: number;
-    value: string;
-    description: string;
-    charge: string;
-  };
-  PaymentAccount: {
-    id: number;
-    accountNumber: string;
-    accountName: string;
-    branchName: string;
-    routingNumber: string;
+    agentId: string;
   };
   User: {
     id: number;
@@ -89,6 +70,29 @@ export interface ExtendedTransaction {
     isLoggedIn: boolean;
     createdAt: string;
     updatedAt: string;
+  };
+  PaymentMethod: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  PaymentType: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  PaymentDetail: {
+    id: number;
+    value: string;
+    description: string;
+    charge: string;
+  };
+  PaymentAccount: {
+    id: number;
+    accountNumber: string;
+    accountName: string;
+    branchName: string;
+    routingNumber: string;
   };
   requester: {
     id: number;
@@ -187,7 +191,8 @@ export default function TransactionPreviewModal({
   };
 
   const isWithdrawal = transaction.type.toLowerCase() === "withdraw";
-  const isUser = user?.id === transaction.userId || user?.accountType === "super admin";
+  const isUser =
+    user?.id === transaction.userId || user?.accountType === "super admin";
   const canModify = isUser && transaction.status === "PENDING";
 
   return (
@@ -517,52 +522,54 @@ export default function TransactionPreviewModal({
                       </div>
 
                       {/* Commission Information */}
-                      {isUser && <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-                        <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                          Charges Details
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                          <div className="space-y-3 sm:space-y-4">
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Admin Commission
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.commission}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Agent Commission
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.agentCommission}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Settled Admin Commission
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.settledCommission || 0}
-                              </p>
-                            </div>
+                      {isUser && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                          <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                            Charges Details
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="space-y-3 sm:space-y-4">
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Admin Commission
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.commission}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Agent Commission
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.agentCommission}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Settled Admin Commission
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.settledCommission || 0}
+                                </p>
+                              </div>
 
-                            {Number(transaction?.commission) > 0 &&
-                              transaction.status !== "SETTLED" && (
-                                <Input
-                                  type="number"
-                                  className="w-full rounded-lg p-2 border !border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
-                                  value={settledCommission || ""}
-                                  disabled={!isUser}
-                                  onChange={(e) =>
-                                    setSettledCommission(e.target.value)
-                                  }
-                                />
-                              )}
+                              {Number(transaction?.commission) > 0 &&
+                                transaction.status !== "SETTLED" && (
+                                  <Input
+                                    type="number"
+                                    className="w-full rounded-lg p-2 border !border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                                    value={settledCommission || ""}
+                                    disabled={!isUser}
+                                    onChange={(e) =>
+                                      setSettledCommission(e.target.value)
+                                    }
+                                  />
+                                )}
+                            </div>
                           </div>
                         </div>
-                      </div>}
+                      )}
 
                       {/* Attachment */}
                       {canModify && (
@@ -602,19 +609,12 @@ export default function TransactionPreviewModal({
                         </div>
                       )}
 
-
                       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
                         <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                           Attachment
                         </h4>
-                        <button onClick={()=>{
-                          
-                        }}>
-                          View Attachment
-                        </button>
+                        <button onClick={() => {}}>View Attachment</button>
                       </div>
-
-
 
                       {/* Remarks */}
                       {canModify && !transaction.givenTransactionId && (
