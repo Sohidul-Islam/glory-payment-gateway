@@ -42,6 +42,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import AdminCharges from "./pages/AdminCharges";
+import { AlertProvider } from "./contexts/AlertContext";
 
 const queryClient = new QueryClient();
 
@@ -176,16 +177,18 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <AuthProvider>
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-              </div>
-            }
-          >
-            <AppRoutes />
-          </Suspense>
-          <ToastContainer position="top-right" autoClose={3000} />
+          <AlertProvider>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center min-h-screen">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                </div>
+              }
+            >
+              <AppRoutes />
+            </Suspense>
+            <ToastContainer position="top-right" autoClose={3000} />
+          </AlertProvider>
         </AuthProvider>
       </Router>
     </QueryClientProvider>

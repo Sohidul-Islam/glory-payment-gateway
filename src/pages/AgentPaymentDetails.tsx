@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   getAgentPaymentDetails,
@@ -25,6 +25,7 @@ import { useState, useEffect } from "react";
 import { AgentInfo } from "../components/AgentInfo";
 import { toast } from "react-toastify";
 import { uploadFile } from "../utils/utils";
+import { useAlert } from "../contexts/AlertContext";
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
@@ -105,9 +106,11 @@ const WithdrawDetailsSection: React.FC<{
 
 const AgentPaymentDetails = () => {
   const { agentId } = useParams();
+  const { showAlert } = useAlert();
   const [searchParams] = useSearchParams();
   const paymentTypeId = searchParams.get("type");
   const detailsId = searchParams.get("detailsId");
+  const paymentType = searchParams.get("paymentType");
   const transactionType = searchParams.get("transactionType");
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedRouting, setCopiedRouting] = useState(false);
@@ -115,6 +118,8 @@ const AgentPaymentDetails = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [optionId, setOptionId] = useState("");
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+
+  const navigate = useNavigate();
 
   const [attachment, setAttachment] = useState<File | null>(null);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>(
@@ -202,12 +207,22 @@ const AgentPaymentDetails = () => {
           toast.success(
             "Payment submitted successfully. Please wait for approval."
           );
-          window.location.reload();
+
+          showAlert(
+            "Payment submitted successfully. Please wait for approval.",
+            "success"
+          );
+
+          navigate(`/payment/${agentId}?paymentType=${paymentType}`);
+
+          // window.location.reload();
         } else {
           toast.error(
             (response as unknown as { message: string }).message ||
               "Payment submission failed"
           );
+
+          showAlert("Payment submission failed", "error");
         }
         // Handle success - you can add a success notification or redirect
         console.log("Payment submitted successfully:", response);
@@ -217,6 +232,9 @@ const AgentPaymentDetails = () => {
         toast.error(
           error.message || (error as unknown as { error: string }).error
         );
+
+        showAlert("Payment submission failed", "error");
+
         console.error("Payment submission failed:", error);
       },
     });
@@ -419,7 +437,7 @@ const AgentPaymentDetails = () => {
                             Charge
                           </p>
                           <p className="text-base sm:text-lg font-semibold text-gray-900 mt-1">
-                            ৳{paymentDetails?.paymentDetail.charge}
+                            {paymentDetails?.paymentDetail.charge}%
                           </p>
                         </div>
                       )}
