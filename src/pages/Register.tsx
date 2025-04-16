@@ -384,7 +384,7 @@ const Register = () => {
                 >
                   <div className="flex items-center mb-2">
                     <UserIcon className="h-5 w-5 text-primary-600 mr-2" />
-                    <span className="font-medium">Default User</span>
+                    <span className="font-medium">Customer</span>
                   </div>
                   <p className="text-xs text-gray-500">
                     Regular account for basic payment processing
