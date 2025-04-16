@@ -324,6 +324,7 @@ export default function TransactionPreviewModal({
                               </div>
                             </div>
                           </div>
+
                           <div className="space-y-3 sm:space-y-4">
                             <div>
                               <p className="text-xs sm:text-sm font-medium text-gray-500">
@@ -333,14 +334,16 @@ export default function TransactionPreviewModal({
                                 ৳{transaction.amount}
                               </p>
                             </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Charge
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                ৳{transaction.PaymentDetail?.charge}
-                              </p>
-                            </div>
+                            {transaction.PaymentDetail?.charge && (
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Charge
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  ৳{transaction.PaymentDetail?.charge}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -377,7 +380,7 @@ export default function TransactionPreviewModal({
                       {/* User Information */}
                       <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
                         <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                          User Information
+                          Receiver Information
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                           <div className="space-y-3 sm:space-y-4">
@@ -452,81 +455,83 @@ export default function TransactionPreviewModal({
                       </div>
 
                       {/* Requester Information */}
-                      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-                        <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                          Requester Information
-                        </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                          <div className="space-y-3 sm:space-y-4">
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Full Name
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.fullName}
-                              </p>
+                      {transaction?.requester?.id && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                          <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                            Sender Information
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="space-y-3 sm:space-y-4">
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Full Name
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.fullName}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Email
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900 break-all">
+                                  {transaction.requester?.email}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Phone
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.phoneNumber}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Location
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.location}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Email
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900 break-all">
-                                {transaction.requester?.email}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Phone
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.phoneNumber}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Location
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.location}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="space-y-3 sm:space-y-4">
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Business Name
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.businessName || "N/A"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Business Type
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.businessType || "N/A"}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Account Type
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900 capitalize">
-                                {transaction.requester?.accountType}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium text-gray-500">
-                                Agent ID
-                              </p>
-                              <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                {transaction.requester?.agentId}
-                              </p>
+                            <div className="space-y-3 sm:space-y-4">
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Business Name
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.businessName || "N/A"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Business Type
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.businessType || "N/A"}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Account Type
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900 capitalize">
+                                  {transaction.requester?.accountType}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500">
+                                  Agent ID
+                                </p>
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                                  {transaction.requester?.agentId}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Commission Information */}
                       {isUser && (
@@ -616,12 +621,22 @@ export default function TransactionPreviewModal({
                         </div>
                       )}
 
-                      <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-                        <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-                          Attachment
-                        </h4>
-                        <button onClick={() => {}}>View Attachment</button>
-                      </div>
+                      {transaction.attachment && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                          <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                            Attachment
+                          </h4>
+                          <button
+                            onClick={() => {
+                              if (transaction.attachment) {
+                                window.open(transaction.attachment, "_blank");
+                              }
+                            }}
+                          >
+                            View Attachment
+                          </button>
+                        </div>
+                      )}
 
                       {/* Remarks */}
                       {canModify && !transaction.givenTransactionId && (
@@ -630,7 +645,7 @@ export default function TransactionPreviewModal({
                             Transaction ID
                           </h4>
                           <Input
-                            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+                            className="w-full p-2 border rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                             placeholder="Enter Transaction ID"
                             value={transactionId}
                             onChange={(e) => setTransactionId(e.target.value)}
