@@ -348,6 +348,30 @@ export default function TransactionPreviewModal({
                         </div>
                       </div>
 
+                      <div>
+                        <div className="gap-4 sm:gap-6 bg-white rounded-xl space-y-4 border border-gray-200 p-4 sm:p-6">
+                          <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                            Payment Source
+                          </h4>
+                          <div>
+                            <p className="text-xs sm:text-sm font-medium text-gray-500">
+                              Payment Source
+                            </p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                              {transaction.paymentSource}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs sm:text-sm font-medium text-gray-500">
+                              Payment Source ID
+                            </p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-900">
+                              {transaction.paymentSourceId}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Withdrawal Information */}
                       {isWithdrawal && (
                         <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
