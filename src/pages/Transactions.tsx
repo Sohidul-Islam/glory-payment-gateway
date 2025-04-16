@@ -10,6 +10,7 @@ import TransactionPreviewModal, {
 } from "../components/TransactionPreviewModal";
 import { format } from "date-fns";
 import { CalendarIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { useAlert } from "../contexts/AlertContext";
 
 interface TransactionsResponse {
   transactions: ExtendedTransaction[];
@@ -34,6 +35,8 @@ const Transactions = () => {
   const [showFilters, setShowFilters] = useState(false);
   const queryClient = useQueryClient();
 
+  const { showAlert } = useAlert();
+
   const { data, isLoading } = useQuery<TransactionsResponse>({
     queryKey: ["transactions", startDate, endDate, status],
     queryFn: () =>
@@ -54,6 +57,8 @@ const Transactions = () => {
     }) => updateTransactionStatus(transactionId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      showAlert("Transaction status updated successfully", "success");
+      setSelectedTransaction(null);
     },
   });
 
@@ -223,6 +228,30 @@ const Transactions = () => {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
+                      Type
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Payment Method
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Payment Type
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Payment Details
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Amount
                     </th>
                     <th
@@ -247,6 +276,51 @@ const Transactions = () => {
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {formatDate(transaction.createdAt)}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">
+                        {transaction.type}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {transaction.PaymentMethod ? (
+                          <div className="flex items-center">
+                            <img
+                              src={transaction.PaymentMethod.image}
+                              alt={transaction.PaymentMethod.name}
+                              className="h-5 w-5 mr-2"
+                            />
+                            <span>{transaction.PaymentMethod.name}</span>
+                          </div>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {transaction.PaymentType ? (
+                          <div className="flex items-center">
+                            <img
+                              src={transaction.PaymentType.image}
+                              alt={transaction.PaymentType.name}
+                              className="h-5 w-5 mr-2"
+                            />
+                            <span>{transaction.PaymentType.name}</span>
+                          </div>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {transaction.PaymentDetail ? (
+                          <div>
+                            <div>{transaction.PaymentDetail.value}</div>
+                            {transaction.PaymentDetail.charge && (
+                              <div className="text-xs text-gray-400">
+                                Charge: {transaction.PaymentDetail.charge}%
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          "N/A"
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         ৳{transaction.amount}

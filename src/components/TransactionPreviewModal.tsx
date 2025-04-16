@@ -239,7 +239,14 @@ export default function TransactionPreviewModal({
                       as="h3"
                       className="text-xl sm:text-2xl font-semibold leading-6 text-gray-900 mb-4 sm:mb-6"
                     >
-                      Transaction Details
+                      <div className="flex flex-col">
+                        <p className="text-xl sm:text-2xl font-semibold leading-6 text-gray-900">
+                          Transaction Details
+                        </p>
+                        <p className="text-xs sm:text-sm font-medium text-gray-500 capitalize">
+                          {transaction.type}
+                        </p>
+                      </div>
                     </Dialog.Title>
 
                     <div className="mt-4 sm:mt-6 space-y-4 sm:space-y-8">
