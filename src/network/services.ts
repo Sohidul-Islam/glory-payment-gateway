@@ -63,6 +63,7 @@ export interface RegisterData {
   phoneNumber: string;
   location: string;
   password: string;
+  reference?: string;
 }
 
 export interface ForgotPasswordData {

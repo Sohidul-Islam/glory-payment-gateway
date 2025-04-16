@@ -11,6 +11,7 @@ import { getUsers, deleteUser, User, UserFilters } from "../network/services";
 import { format } from "date-fns";
 import UserEditModal from "../components/UserEditModal";
 import { displayAccountType } from "../utils/utils";
+import { useAuth } from "../hooks/useAuth";
 
 const UserManagement = () => {
   const [page, setPage] = useState(1);
@@ -21,6 +22,8 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  const { user: currentUser } = useAuth();
 
   // Create filters object
   const filters: UserFilters = {
@@ -189,7 +192,7 @@ const UserManagement = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900 capitalize">
-                          {displayAccountType(user?.accountType||"")}
+                          {displayAccountType(user?.accountType || "")}
                         </div>
                         {user?.businessName && (
                           <div className="text-xs text-gray-500">
@@ -222,18 +225,25 @@ const UserManagement = () => {
                         {formatDate(user?.createdAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-primary-600 hover:text-primary-900 mr-3"
-                        >
-                          <PencilIcon className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
+                        {["super admin", "agent"].includes(
+                          user?.accountType || ""
+                        ) &&
+                        currentUser?.accountType !== "super admin" ? null : (
+                          <>
+                            <button
+                              onClick={() => handleEditUser(user)}
+                              className="text-primary-600 hover:text-primary-900 mr-3"
+                            >
+                              <PencilIcon className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              <TrashIcon className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}

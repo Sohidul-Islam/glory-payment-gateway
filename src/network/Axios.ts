@@ -65,7 +65,7 @@ AXIOS.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
-      window.location.reload();
+      // window.location.reload();
     }
 
     console.log("api error:", error);
@@ -75,7 +75,7 @@ AXIOS.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
-      window.location.reload();
+      // window.location.reload();
     }
     return Promise.reject(error?.response?.data);
   }

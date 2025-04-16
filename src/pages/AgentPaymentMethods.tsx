@@ -225,6 +225,7 @@ export const AgentPaymentMethods = () => {
   const { agentId, methodId } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const paymentType = searchParams.get("paymentType");
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(
     null
   );
@@ -261,7 +262,10 @@ export const AgentPaymentMethods = () => {
     setTransactionType(type);
     setSelectedMethod(null);
     setSelectedType(null);
-    setSearchParams({ transactionType: type });
+    setSearchParams({
+      transactionType: type,
+      paymentType: paymentType || "",
+    });
   };
 
   if (isLoadingMethods || isLoadingTypes || isLoadingAgent) {
@@ -474,7 +478,7 @@ export const AgentPaymentMethods = () => {
                               setSelectedType(type);
                               if (type?.PaymentDetails?.length <= 0) {
                                 navigate(
-                                  `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${type.id}&transactionType=${transactionType}`
+                                  `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${type.id}&transactionType=${transactionType}&paymentType=${paymentType}`
                                 );
                               }
                             }
@@ -564,7 +568,7 @@ export const AgentPaymentMethods = () => {
                       whileHover={{ scale: 1.02 }}
                       onClick={() => {
                         navigate(
-                          `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${detail.paymentTypeId}&detailsId=${detail.id}&transactionType=${transactionType}`
+                          `/payment/${agentId}/make-payment?method=${selectedMethod?.id}&type=${detail.paymentTypeId}&detailsId=${detail.id}&transactionType=${transactionType}&paymentType=${paymentType}`
                         );
                       }}
                       className="group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 p-4 hover:border-indigo-500 hover:shadow-lg transition-all duration-300 overflow-hidden"

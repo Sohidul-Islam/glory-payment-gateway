@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser, RegisterData } from "../network/services";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 // import { PhotoIcon } from "@heroicons/react/24/outline";
 import {
   UserIcon,
@@ -19,6 +19,11 @@ import {
 const Register = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
+
+  const [searchParams] = useSearchParams();
+  const referenceUser = searchParams.get("ref");
+
+  console.log({ referralCode: referenceUser });
   // const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -114,6 +119,7 @@ const Register = () => {
       phoneNumber: formData.phoneNumber,
       location: formData.location,
       accountType: formData.accountType,
+      reference: referenceUser || "",
       // Only include optional fields if they have values
       ...(formData.businessName && { businessName: formData.businessName }),
       ...(formData.businessType && { businessType: formData.businessType }),

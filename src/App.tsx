@@ -2,6 +2,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useSearchParams,
   // Navigate,
   // useLocation,
 } from "react-router-dom";
@@ -65,6 +66,28 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const ProtectedPaymentRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoaded, isAuthenicating } = useAuth();
+  const [searchParams] = useSearchParams();
+  const paymentType = searchParams.get("paymentType");
+  // const location = useLocation();
+
+  if (isAuthenicating && paymentType !== "direct") {
+    return (
+      <div className="flex items-center justify-center content-center h-screen">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && isLoaded && paymentType !== "direct") {
+    return <Home />;
+    // return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 // App Routes Component
 const AppRoutes = () => {
   return (
@@ -107,41 +130,41 @@ const AppRoutes = () => {
       <Route
         path="agent/:agentId"
         element={
-          <ProtectedRoute>
+          <ProtectedPaymentRoute>
             <AgentHome />
-          </ProtectedRoute>
+          </ProtectedPaymentRoute>
         }
       />
       <Route
         path="payment/:agentId"
         element={
-          <ProtectedRoute>
+          <ProtectedPaymentRoute>
             <AgentPaymentMethods />
-          </ProtectedRoute>
+          </ProtectedPaymentRoute>
         }
       />
       <Route
         path="payment/:agentId/method/:methodId"
         element={
-          <ProtectedRoute>
+          <ProtectedPaymentRoute>
             <AgentPaymentMethods />
-          </ProtectedRoute>
+          </ProtectedPaymentRoute>
         }
       />
       <Route
         path="payment/:agentId/method/:methodId/type/:typeId"
         element={
-          <ProtectedRoute>
+          <ProtectedPaymentRoute>
             <AgentPaymentDetails />
-          </ProtectedRoute>
+          </ProtectedPaymentRoute>
         }
       />
       <Route
         path="payment/:agentId/make-payment"
         element={
-          <ProtectedRoute>
+          <ProtectedPaymentRoute>
             <AgentPaymentDetails />
-          </ProtectedRoute>
+          </ProtectedPaymentRoute>
         }
       />
     </Routes>

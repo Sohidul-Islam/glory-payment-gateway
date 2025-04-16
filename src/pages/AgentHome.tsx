@@ -28,13 +28,16 @@ import {
   Wallet,
 } from "lucide-react";
 import { formatDate } from "../utils/utils";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useSearchParams } from "react-router";
 
 import noImage from "../assets/no-image-overlay.webp";
 
 export const AgentHome = () => {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const { agentId } = useParams();
+
+  const [searchParams] = useSearchParams();
+  const paymentType = searchParams.get("paymentType");
 
   const { data: response, isLoading } = useQuery({
     queryKey: ["agentInfo", agentId],
@@ -322,7 +325,9 @@ export const AgentHome = () => {
                     </p>
                   </div>
                   <Link
-                    to={`/payment/${agentId}`}
+                    to={`/payment/${agentId}${
+                      paymentType ? `?paymentType=${paymentType}` : ""
+                    }`}
                     className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-2"
                   >
                     View All

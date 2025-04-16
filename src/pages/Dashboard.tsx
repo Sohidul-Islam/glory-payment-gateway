@@ -78,7 +78,7 @@ const Dashboard = () => {
       {user?.accountType !== "default" && (
         <>
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          <div className="max-w-3xl">
+          <div>
             <AgentLinkCard />
           </div>
         </>
