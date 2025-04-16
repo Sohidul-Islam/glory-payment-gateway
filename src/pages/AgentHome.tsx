@@ -28,7 +28,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { formatDate } from "../utils/utils";
-import { useParams, Link, useSearchParams } from "react-router";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router";
 
 import noImage from "../assets/no-image-overlay.webp";
 
@@ -38,6 +38,8 @@ export const AgentHome = () => {
 
   const [searchParams] = useSearchParams();
   const paymentType = searchParams.get("paymentType");
+
+  const navigate = useNavigate();
 
   const { data: response, isLoading } = useQuery({
     queryKey: ["agentInfo", agentId],
@@ -342,6 +344,13 @@ export const AgentHome = () => {
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.1 * index }}
                       className="group cursor-pointer"
+                      onClick={() => {
+                        navigate(
+                          `/payment/${agentId}${
+                            paymentType ? `?paymentType=${paymentType}` : ""
+                          }`
+                        );
+                      }}
                     >
                       <div className="relative bg-white rounded-xl border border-gray-200 p-4 transition-all duration-300 hover:border-indigo-500 hover:shadow-lg hover:scale-[1.02]">
                         {/* Decorative background elements */}

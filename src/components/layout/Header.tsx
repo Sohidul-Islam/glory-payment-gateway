@@ -22,8 +22,6 @@ const Header = ({ children }: HeaderProps) => {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  console.log([unreadCountData]);
-
   return (
     <header className="bg-white border-b border-gray-200 h-16">
       <div className="flex items-center justify-between h-full px-4 md:px-6">

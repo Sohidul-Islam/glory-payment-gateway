@@ -16,11 +16,12 @@ import {
   Notification,
 } from "../network/services";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const queryClient = useQueryClient();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>(
     []
@@ -36,7 +37,7 @@ const Notifications = () => {
     mutationFn: markNotificationAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["unreadCountData"] });
+      queryClient.invalidateQueries({ queryKey: ["unreadNotifications"] });
       toast.success("Notification marked as read");
     },
     onError: () => {
@@ -169,6 +170,9 @@ const Notifications = () => {
             className={`p-4 ${
               !notification.read ? "border-l-4 border-primary-500" : ""
             }`}
+            onClick={() => {
+              navigate(`/transactions`);
+            }}
           >
             <div className="flex gap-4">
               <div className="pt-1">
@@ -176,6 +180,9 @@ const Notifications = () => {
                   type="checkbox"
                   checked={selectedNotifications.includes(notification.id)}
                   onChange={() => toggleNotificationSelection(notification.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
               </div>
