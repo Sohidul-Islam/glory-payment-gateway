@@ -26,6 +26,7 @@ import { AgentInfo } from "../components/AgentInfo";
 import { toast } from "react-toastify";
 import { uploadFile } from "../utils/utils";
 import { useAlert } from "../contexts/AlertContext";
+import ImportantNotice, { PaymentType } from "../components/ImportantNotice";
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
@@ -155,7 +156,8 @@ const AgentPaymentDetails = () => {
     queryFn: () =>
       getAgentPaymentDetails({
         agentId: agentId as string,
-        paymentTypeId: detailsId ? Number(paymentTypeId) : undefined,
+        paymentTypeId: paymentTypeId ? Number(paymentTypeId) : undefined,
+        // paymentTypeId: detailsId ? Number(paymentTypeId) : undefined,
         detailsId: Number(detailsId) || undefined,
         transactionType: transactionType as string,
       }),
@@ -783,80 +785,17 @@ const AgentPaymentDetails = () => {
             </motion.div>
 
             {/* Important Notice Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border border-orange-100 shadow-sm overflow-hidden"
-            >
-              <div className="p-4 sm:p-6">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                    <span className="text-lg sm:text-xl font-bold text-orange-600">
-                      !
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-base sm:text-lg font-semibold text-orange-900 mb-2">
-                      গুরুত্বপূর্ণ নোটিশ - মোবাইল ওয়ালেটের জন্য
-                    </h3>
-                    <div className="space-y-3 sm:space-y-4 text-orange-800">
-                      <p className="text-xs sm:text-sm">
-                        সম্মানিত গ্রাহকবৃন্দ, মোবাইল ওয়ালেটের মাধ্যমে লেনদেনের
-                        ক্ষেত্রে নিম্নলিখিত নির্দেশনাগুলো মেনে চলুন:
-                      </p>
+            <ImportantNotice
+              type={transactionType === "deposit" ? "deposit" : "withdraw"}
+              paymentType={paymentDetails?.paymentMethod.name as PaymentType}
+            />
 
-                      <div className="space-y-2 sm:space-y-3">
-                        <div className="flex items-start gap-2 sm:gap-3">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-orange-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                            <span className="text-xs sm:text-sm font-semibold text-orange-600">
-                              ১
-                            </span>
-                          </div>
-                          <p className="text-xs sm:text-sm">
-                            সঠিক মোবাইল ওয়ালেট নির্বাচন করুন এবং সেই মোবাইল
-                            ওয়ালেটে অর্থ পাঠান। যেমন: যদি বিকাশ নির্বাচন করা হয়,
-                            তাহলে একই নম্বরের নগদ বা অন্য কোনো ওয়ালেটে অর্থ
-                            পাঠাবেন না।
-                          </p>
-                        </div>
-
-                        <div className="flex items-start gap-2 sm:gap-3">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-orange-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                            <span className="text-xs sm:text-sm font-semibold text-orange-600">
-                              ২
-                            </span>
-                          </div>
-                          <p className="text-xs sm:text-sm">
-                            নগদ প্রাপ্তি স্লিপ থেকে সঠিক রেফারেন্স/লেনদেন নম্বর
-                            প্রদান করুন।
-                          </p>
-                        </div>
-
-                        <div className="flex items-start gap-2 sm:gap-3">
-                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-orange-100 flex items-center justify-center mt-0.5 flex-shrink-0">
-                            <span className="text-xs sm:text-sm font-semibold text-orange-600">
-                              ৩
-                            </span>
-                          </div>
-                          <p className="text-xs sm:text-sm">
-                            সফল লেনদেনের নগদ প্রাপ্তি স্লিপ সংযুক্ত করুন।
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-orange-100 rounded-lg border border-orange-200">
-                        <p className="text-xs sm:text-sm font-medium text-orange-900">
-                          নোটিশ: আর্থিক ক্ষতি এড়াতে, শুধুমাত্র অফিসিয়াল
-                          ওয়েবসাইটে প্রদত্ত নম্বরেই অর্থ পাঠান। পূর্বে সংরক্ষিত
-                          নম্বরে অর্থ পাঠানো থেকে বিরত থাকুন।
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            {/* {transactionType === "withdraw" && (
+              <ImportantNotice type="withdraw" />
+            )}
+            {paymentDetails.paymentMethod.name === "bank" && (
+              <ImportantNotice type="banking" />
+            )} */}
           </div>
         </div>
       </div>
