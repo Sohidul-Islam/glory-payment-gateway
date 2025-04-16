@@ -456,7 +456,11 @@ export interface PaymentSubmissionData {
   paymentSourceId: string;
   type: string;
   amount: number;
+  charge?: number;
+  totalAmount?: number;
   status: string;
+  withdrawAccountNumber?: string;
+  withdrawDescription?: string;
 }
 
 export interface PaymentSubmissionResponse {

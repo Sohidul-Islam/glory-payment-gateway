@@ -20,6 +20,7 @@ import {
   Clock,
   ArrowUpFromLine,
   ArrowDownFromLine,
+  Percent,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AgentInfo } from "../components/AgentInfo";
@@ -130,6 +131,10 @@ const AgentPaymentDetails = () => {
   const [withdrawAccountNumber, setWithdrawAccountNumber] = useState("");
   const [withdrawDescription, setWithdrawDescription] = useState("");
 
+  // Add state for charge calculation
+  const [chargeAmount, setChargeAmount] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
   // Timer effect
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -163,6 +168,8 @@ const AgentPaymentDetails = () => {
       }),
     enabled: !!agentId,
   });
+
+  const paymentDetails = data as PaymentDetailResponse["data"];
 
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState("");
@@ -241,6 +248,24 @@ const AgentPaymentDetails = () => {
       },
     });
 
+  // Calculate charge when amount changes
+  useEffect(() => {
+    const amount =
+      selectedAmount || (customAmount ? parseFloat(customAmount) : 0);
+    const charge = paymentDetails?.paymentDetail.charge
+      ? parseFloat(paymentDetails?.paymentDetail.charge)
+      : 0;
+
+    if (amount > 0 && charge > 0) {
+      const calculatedCharge = (amount * charge) / 100;
+      setChargeAmount(calculatedCharge);
+      setTotalAmount(amount + calculatedCharge);
+    } else {
+      setChargeAmount(0);
+      setTotalAmount(amount);
+    }
+  }, [selectedAmount, customAmount, paymentDetails?.paymentDetail.charge]);
+
   // Handle payment submission
   const handlePaymentSubmit = async () => {
     if (!selectedAmount && !customAmount) {
@@ -270,16 +295,16 @@ const AgentPaymentDetails = () => {
     // Create payment data object
     const paymentData: PaymentSubmissionData = {
       agentId: agentId || "",
-      paymentMethodId: paymentDetails?.paymentMethod.id || undefined,
-      paymentTypeId: paymentDetails.paymentType?.id || undefined,
-      paymentDetailId: paymentDetails.paymentDetail?.id || undefined,
-      paymentAccountId: paymentDetails.account.id || undefined,
+      paymentMethodId: data?.paymentMethod.id || undefined,
+      paymentTypeId: data?.paymentType?.id || undefined,
+      paymentDetailId: data?.paymentDetail?.id || undefined,
+      paymentAccountId: data?.account.id || undefined,
       transactionId: transactionNumber,
       attachment: imageUrl,
       paymentSource: selectedOption,
       paymentSourceId: optionId,
       type: transactionType === "withdraw" ? "withdraw" : "deposit",
-      amount: amount,
+      amount: Number(amount + (chargeAmount || 0) || 0),
       status: "pending",
       // Add withdrawal specific fields
       ...(transactionType === "withdraw"
@@ -309,8 +334,6 @@ const AgentPaymentDetails = () => {
       </div>
     );
   }
-
-  const paymentDetails = data as PaymentDetailResponse["data"];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -782,6 +805,33 @@ const AgentPaymentDetails = () => {
                   )}
                 </button>
               </div>
+
+              {/* Add this in the Amount Selection section, after the custom amount input */}
+              {paymentDetails?.paymentDetail.charge &&
+                parseFloat(paymentDetails?.paymentDetail.charge) > 0 && (
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Percent className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">
+                          Service Charge ({paymentDetails?.paymentDetail.charge}
+                          %)
+                        </span>
+                      </div>
+                      <span className="text-sm font-semibold text-blue-900">
+                        ৳{chargeAmount.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-blue-200 flex items-center justify-between">
+                      <span className="text-base font-medium text-gray-900">
+                        Total Amount
+                      </span>
+                      <span className="text-lg font-bold text-indigo-600">
+                        ৳{totalAmount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
             </motion.div>
 
             {/* Important Notice Section */}
