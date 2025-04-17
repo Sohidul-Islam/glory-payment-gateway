@@ -244,13 +244,13 @@ const Dashboard = () => {
                       ৳{overviewData.transactions.totalAmount.toLocaleString()}
                     </p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-xs text-gray-500">Total Charges</p>
                     <p className="text-sm font-medium text-indigo-600">
                       ৳
                       {overviewData.transactions.totalCommission.toLocaleString()}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

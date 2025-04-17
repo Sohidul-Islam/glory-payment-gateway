@@ -336,7 +336,7 @@ export default function TransactionPreviewModal({
                                   Charge
                                 </p>
                                 <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                  ৳{transaction.PaymentDetail?.charge}
+                                  {transaction.PaymentDetail?.charge}%
                                 </p>
                               </div>
                             )}
