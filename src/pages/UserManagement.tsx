@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Card } from "../components/ui/Card";
-import {
-  PlusIcon,
-  PencilIcon,
-  TrashIcon,
-  FunnelIcon,
-} from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers, deleteUser, User, UserFilters } from "../network/services";
 import { format } from "date-fns";
@@ -69,10 +64,6 @@ const UserManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">User Management</h1>
-        <button className="btn-primary flex items-center gap-2">
-          <PlusIcon className="w-5 h-5" />
-          Add User
-        </button>
       </div>
 
       <Card className="p-6">

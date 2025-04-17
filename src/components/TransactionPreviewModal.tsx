@@ -1,4 +1,4 @@
-import { Button, Dialog, Input, Transition } from "@headlessui/react";
+import { Dialog, Input, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { UpdateTransactionStatusData } from "../network/services";
 import { XMarkIcon, PaperClipIcon } from "@heroicons/react/24/outline";
@@ -131,9 +131,6 @@ export default function TransactionPreviewModal({
   const [remarks, setRemarks] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
   const [attachmentUrl, setAttachmentUrl] = useState<string | null>(null);
-  const [settledCommission, setSettledCommission] = useState<string | null>(
-    null
-  );
 
   const [transactionId, setTransactionId] = useState("");
 
@@ -164,7 +161,6 @@ export default function TransactionPreviewModal({
       remarks: remarks.trim() || undefined,
       transactionId: transactionId.trim() || undefined,
       attachment: url,
-      settledCommission: Number(settledCommission) || undefined,
     });
   };
 
@@ -589,19 +585,6 @@ export default function TransactionPreviewModal({
                                   {transaction.settledCommission || 0}
                                 </p>
                               </div>
-
-                              {Number(transaction?.commission) > 0 &&
-                                transaction.status !== "SETTLED" && (
-                                  <Input
-                                    type="number"
-                                    className="w-full rounded-lg p-2 border !border-black shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
-                                    value={settledCommission || ""}
-                                    disabled={!isUser}
-                                    onChange={(e) =>
-                                      setSettledCommission(e.target.value)
-                                    }
-                                  />
-                                )}
                             </div>
                           </div>
                         </div>
@@ -713,19 +696,6 @@ export default function TransactionPreviewModal({
                           </button>
                         </div>
                       )}
-
-                      {Number(settledCommission) > 0 &&
-                        canModify &&
-                        transaction.status !== "SETTLED" && (
-                          <div className="flex justify-end rounded-xl border border-gray-200 p-4 sm:p-6">
-                            <Button
-                              onClick={() => handleStatusUpdate("SETTLED")}
-                              disabled={isUpdating}
-                            >
-                              {isUpdating ? "Settingtle..." : "Settle"}
-                            </Button>
-                          </div>
-                        )}
                     </div>
                   </div>
                 </div>
